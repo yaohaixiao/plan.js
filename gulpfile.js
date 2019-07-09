@@ -21,7 +21,7 @@ const uglify = require('gulp-uglify')
 // 创建 API 文档 HTTP 服务
 gulp.task('connect', () => {
   return connect.server({
-    root: 'dist',
+    root: 'docs',
     livereload: true
   })
 })
@@ -30,8 +30,8 @@ gulp.task('connect', () => {
 gulp.task('clean:styles', (cb) => {
   pump(
     [
-      gulp.src('dist/**/*.css'),
-      gulp.src('dist/**/*.css.map'),
+      gulp.src('docs/**/*.css'),
+      gulp.src('docs/**/*.css.map'),
       clean({force: true})
     ],
     cb
@@ -42,8 +42,8 @@ gulp.task('clean:styles', (cb) => {
 gulp.task('clean:scripts', (cb) => {
   pump(
     [
-      gulp.src('dist/**/*.js'),
-      gulp.src('dist/**/*.js.map'),
+      gulp.src('docs/**/*.js'),
+      gulp.src('docs/**/*.js.map'),
       clean({force: true})
     ],
     cb
@@ -54,7 +54,7 @@ gulp.task('clean:scripts', (cb) => {
 gulp.task('clean:html', (cb) => {
   pump(
     [
-      gulp.src('dist/**/*.html'),
+      gulp.src('docs/**/*.html'),
       clean({force: true})
     ],
     cb
@@ -73,7 +73,7 @@ gulp.task('copy:fonts', (cb) => {
   pump(
     [
       gulp.src('src/styles/icons/fonts/*.*'),
-      gulp.dest('dist/css/fonts')
+      gulp.dest('docs/css/fonts')
     ],
     cb
   )
@@ -147,7 +147,7 @@ gulp.task('compile:html', (cb) => {
         // 默认情况下，body | head 标签前会有一行空格
         extra_liners: []
       }),
-      gulp.dest('dist')
+      gulp.dest('docs')
     ],
     cb
   )
@@ -172,7 +172,7 @@ gulp.task('compile:styles', (cb) => {
       }),
       autoprefixer(),
       sourcemaps.write('./'),
-      gulp.dest('dist/css')
+      gulp.dest('docs/css')
     ],
     cb
   )
@@ -197,7 +197,7 @@ gulp.task('compile:scripts', (cb) => {
       uglify(),
       rename({suffix: '.min'}),
       sourcemaps.write('./'),
-      gulp.dest('dist/js')
+      gulp.dest('docs/js')
     ],
     cb
   )
