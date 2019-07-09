@@ -1,0 +1,54 @@
+div#add-panel.panel.panel-add
+  div.panel-hd
+    div#add-cancel.panel-button.panel-cancel-button.panel-add-cancel
+      i.icon-cheveron-left
+    h2.panel-title 创建任务
+    div#add-save.panel-button.panel-save-button.panel-add-save
+      i.icon-save-disk
+  div.panel-bd
+    div.tasks
+      div.field
+        label.field-label 任务标题：
+        div.field-content
+          div.field-input
+            input#add-title.field-input-text(type="text" autocomplete="false" placeholder="请输入任务标题")
+      div.field
+        label.field-label 截止日期：
+        div.field-content
+          div.field-date-input
+            input#add-deadline.field-date-input-text(type="text" autocomplete="false" placeholder="请输入选择截止日期")
+          div.field-date-input-icon.penel-add-date-icon
+            i.icon-calendar
+      div.field
+        label.field-label 预估工作量：
+        div.field-content
+          div.field-time-input
+            input#add-consuming.field-time-input-text(type="text" autocomplete="false" placeholder="请输入预估工作量")
+          div.field-time-input-icon.penel-add-time-icon
+            i.icon-clock
+      div.field
+        label.field-label 任务等级：
+        div.field-content
+          div#add-levels.field-levels
+            div.field-level-option.field-level-spades.panel-add-level(data-level='0' data-type='add')
+              div.field-level-icon
+                i.icon-spades
+              p.field-level-text 紧急
+            div.field-level-option.field-level-heart.panel-add-level(data-level='1' data-type='add')
+              div.field-level-icon
+                i.icon-heart
+              p.field-level-text 高
+            div.field-level-option.field-level-clubs.panel-add-level(data-level='2' data-type='add')
+              div.field-level-icon
+                i.icon-clubs
+              p.field-level-text 中
+            div.field-level-option.field-level-diamonds.panel-add-level(data-level='3' data-type='add')
+              div.field-level-icon
+                i.icon-diamonds
+              p.field-level-text 低
+            input#add-level(type="hidden" value="")
+      div.field
+        label.field-label 任务描述：
+        div.field-content
+          div.field-textarea
+            textarea#add-desc.field-textarea-text(autocomplete="false" rows="4" placeholder="请输入任务标题")

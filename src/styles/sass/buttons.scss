@@ -1,0 +1,25 @@
+@import 'colors';
+
+@mixin button($width: 30px, $height: 30px, $font: 14px, $color: $light-gray, $hover: $gray) {
+  color: $color;
+  font-size: $font;
+  height: $height;
+  line-height: $height;
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+  width: $width;
+
+  i {
+    display: block;
+    height: $height;
+    line-height: $height;
+    margin: 0;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  &:hover {
+    color: $hover;
+  }
+}

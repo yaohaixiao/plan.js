@@ -1,0 +1,5 @@
+@mixin radius($radius: 3px) {
+  // keeps background from busting out of border
+  background-clip: padding-box;
+  border-radius: $radius;
+}

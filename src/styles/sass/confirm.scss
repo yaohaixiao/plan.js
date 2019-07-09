@@ -1,0 +1,116 @@
+@import './colors';
+@import './mixins/mixins';
+
+.confirm,
+.confirm-overlay {
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 4;
+}
+
+.confirm-overlay {
+  @include opacity(.3);
+  background-color: $white;
+  z-index: 5;
+}
+
+.confirm-modal {
+  background-color: $white;
+  border: 1px solid $border-color;
+  height: 120px;
+  left: 50%;
+  margin: -60px 0 0 -100px;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+  width: 300px;
+  z-index: 6;
+}
+
+.confirm-hd {
+  @include gradient($primary, $dark-blue);
+  height: 6px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.confirm-bd {
+  height: 74px;
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.confirm-title {
+  font-size: 16px;
+  font-weight: normal;
+  height: 40px;
+  line-height: 46px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.confirm-message {
+  color: $light-gray;
+  font-size: 14px;
+  height: 34px;
+  line-height: 20px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.confirm-ft {
+  border-top: 1px solid $border-color;
+  height: 40px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.confirm-button {
+  cursor: pointer;
+  float: left;
+  font-size: 14px;
+  height: 40px;
+  line-height: 40px;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+  user-select: none;
+  width: 50%;
+  z-index: 1;
+
+  &:first-child {
+    &::after {
+      background-color: $border-color;
+      content: ' ';
+      height: 40px;
+      margin: 0;
+      overflow: hidden;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 1px;
+      z-index: 2;
+    }
+  }
+
+  &:hover {
+    background-color: $background-color;
+  }
+}
+
+.confirm-enter {
+  background-color: $primary;
+  color: $white;
+
+  &:hover {
+    @include gradient($primary, $dark-blue);
+    color: $white;
+  }
+}

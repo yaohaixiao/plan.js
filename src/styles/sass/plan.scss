@@ -1,0 +1,190 @@
+@import './buttons';
+@import './mixins/mixins';
+
+.plan,
+.toolbar,
+.column {
+  box-sizing: border-box;
+}
+
+.plan,
+.toolbar,
+.toolbar-inner,
+.main,
+.columns,
+.column,
+.column-hd {
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.side,
+.logo,
+.plus,
+.column-bd,
+.columns-overlay {
+  overflow: hidden;
+  position: absolute;
+  z-index: 2;
+}
+
+.plan {
+  height: 100%;
+}
+
+.side {
+  background-color: $dark-blue;
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 48px;
+}
+
+.logo,
+.plus {
+  left: 0;
+  width: 48px;
+}
+
+.logo,
+.toolbar-button,
+.plus {
+  @include button(100%, 48px, 18px, $light-blue, $white);
+}
+
+.logo {
+  color: $white;
+  font-size: 26px;
+  top: 0;
+}
+
+.toolbar {
+  height: 100%;
+  padding: 48px 0;
+}
+
+.toolbar-inner {
+  height: 100%;
+  overflow: auto;
+}
+
+.plus {
+  bottom: 0;
+}
+
+.plus,
+.toolbar-button {
+  cursor: pointer;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.toolbar-active {
+  color: $primary;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.main {
+  height: 100%;
+  margin: 0 0 0 48px;
+}
+
+.columns {
+  height: 100%;
+  margin: 0;
+  transition: .3s;
+
+  &.panel-add-opened,
+  &.panel-edit-opened,
+  &.panel-trash-opened {
+    margin-left: 313px;
+  }
+
+  &.panel-add-opened,
+  &.panel-edit-opened {
+    .columns-overlay {
+      display: block;
+    }
+  }
+}
+
+.columns-overlay {
+  @include opacity(.1);
+  background-color: $white;
+  display: none;
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.column {
+  border-right: 1px solid $border-color;
+  float: left;
+  height: 100%;
+  width: 25%;
+
+  &:first-child {
+    background-color: $dark-background-color;
+    border-color: $dark-border-color;
+
+    .column-hd {
+      border-color: $dark-border-color;
+    }
+
+    .task {
+      background-color: $dark-background-color;
+      border-color: $dark-background-color;
+
+      &:hover {
+        border-color: $blue;
+      }
+    }
+
+    .task-ft {
+      border-color: $dark-border-color;
+    }
+  }
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.column-hd {
+  border-bottom: 1px solid $border-color;
+  height: 40px;
+  margin: 0 10px;
+  z-index: 2;
+}
+
+.column-title,
+.column-count {
+  font-weight: normal;
+}
+
+.column-title {
+  font-size: 16px;
+  line-height: 40px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+.column-bd {
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  margin: 0;
+  overflow: auto;
+  padding-top: 41px;
+  top: 0;
+  width: 100%;
+}

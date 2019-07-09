@@ -1,0 +1,25 @@
+@import './colors';
+
+html,
+body {
+  background-color: $white;
+  color: $black;
+  font-size: 13px;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+a {
+  &:link,
+  &:visited,
+  &:hover {
+    color: $green;
+    text-decoration: none;
+  }
+}
+
+.hidden {
+  display: none;
+}

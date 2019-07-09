@@ -1,0 +1,181 @@
+@import './colors';
+@import './mixins/mixins';
+@import './buttons';
+
+.tasks,
+.task,
+.task-title,
+.task-bd,
+.task-ft,
+.task-deadline,
+.task-deadline-text,
+.task-time-consuming-text,
+.task-button {
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.task-level,
+.task-time-consuming,
+.task-time-consuming-icon,
+.task-deadline-icon,
+.task-side {
+  overflow: hidden;
+  position: absolute;
+  z-index: 2;
+}
+
+.tasks {
+  height: 100%;
+  overflow: auto;
+}
+
+.task {
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-left-width: 3px;
+  margin: 10px;
+  padding: 0;
+
+  &:hover {
+    border-color: $primary;
+
+    .task-side {
+      left: 0;
+    }
+
+    .task-main {
+      margin-left: 30px;
+    }
+  }
+}
+
+.task-main {
+  overflow: hidden;
+  position: relative;
+  transition: .3s;
+  z-index: 1;
+}
+
+.task-hd {
+  height: 40px;
+  line-height: 40px;
+  width: 100%;
+}
+
+.task-title {
+  font-size: 14px;
+  font-weight: normal;
+  height: 40px;
+  line-height: 40px;
+  margin: 0 40px 0 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    cursor: move;
+  }
+}
+
+.task-title-text {
+  color: $primary;
+  font-weight: normal;
+}
+
+.task-level {
+  @include radius(10px);
+  right: 0;
+  top: 0;
+}
+
+.task-level-0 {
+  @include button(40px, 40px, 16px, $red, $red);
+}
+
+.task-level-1 {
+  @include button(40px, 40px, 16px, $warning, $warning);
+}
+
+.task-level-2 {
+  @include button(40px, 40px, 16px, $blue, $blue);
+}
+
+.task-level-3 {
+  @include button(40px, 40px, 16px, $green, $green);
+}
+
+.task-bd {
+  margin: 0 10px;
+  padding-bottom: 10px;
+}
+
+.task-desc {
+  color: $light-gray;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 18px;
+  margin: 0 auto;
+  max-height: 36px;
+  overflow: hidden;
+}
+
+.task-ft {
+  border-top: 1px solid $border-color;
+  color: $light-gray;
+  font-size: 12px;
+  height: 30px;
+  line-height: 30px;
+  margin: 0 10px;
+}
+
+.task-deadline {
+  height: 30px;
+  line-height: 30px;
+  margin: 0 50px 0 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-deadline-icon,
+.task-time-consuming-icon {
+  @include button(20px, 30px, 12px, $light-gray, $light-gray);
+  left: 0;
+  top: 0;
+}
+
+.task-deadline-text {
+  margin: 0 0 0 20px;
+}
+
+.task-time-consuming {
+  height: 30px;
+  margin: 0;
+  right: 0;
+  top: 0;
+  width: 50px;
+}
+
+.task-time-consuming-text {
+  margin: 0 0 0 20px;
+}
+
+.task-side {
+  height: 100%;
+  left: -31px;
+  top: 0;
+  transition: .3s;
+  width: 30px;
+}
+
+.task-button {
+  @include button(30px, 27px, 13px);
+  cursor: pointer;
+}
+
+.task-marked-button {
+  .icon-bookmark {
+    color: $primary;
+  }
+}

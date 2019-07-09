@@ -1,0 +1,86 @@
+@import './colors';
+@import './mixins/mixins';
+@import './buttons';
+
+.panel {
+  background-color: $white;
+}
+
+.panel-hd {
+  border-bottom: 1px solid $border-color;
+  height: 40px;
+  margin: 0 10px;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+
+.panel,
+.panel-bd,
+.panel-button {
+  overflow: hidden;
+  position: absolute;
+  z-index: 2;
+}
+
+.panel-title,
+.panel-count {
+  font-weight: normal;
+}
+
+.panel-title {
+  font-size: 16px;
+  line-height: 40px;
+  margin: 0 40px;
+  overflow: hidden;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.panel-bd {
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  margin: 0;
+  overflow: auto;
+  padding-top: 41px;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.panel {
+  height: 100%;
+  top: 0;
+  transition: .3s;
+  width: 312px;
+}
+
+.panel-add,
+.panel-edit,
+.panel-trash {
+  border-right: 1px solid $dark-border-color;
+  left: -312px;
+
+  .panel-cancel-button {
+    left: 0;
+  }
+
+  .panel-save-button {
+    right: 0;
+  }
+
+  &.panel-add-opened,
+  &.panel-edit-opened,
+  &.panel-trash-opened {
+    left: 0;
+  }
+}
+
+.panel-button {
+  @include button(40px, 40px, 20px);
+  @include radius(10px);
+  cursor: pointer;
+  right: 0;
+  top: 0;
+}

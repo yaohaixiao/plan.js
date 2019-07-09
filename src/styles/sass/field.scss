@@ -1,0 +1,172 @@
+@import './colors';
+@import './mixins/mixins';
+@import './buttons';
+
+.field,
+.field-label,
+.field-content,
+.field-input {
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.field-date-input-icon,
+.field-time-input-icon {
+  overflow: hidden;
+  position: absolute;
+  z-index: 2;
+}
+
+.field {
+  margin: 10px;
+}
+
+.field-label {
+  color: $light-gray;
+  display: block;
+  height: 40px;
+  line-height: 40px;
+}
+
+.field-input,
+.field-date-input,
+.field-time-input,
+.field-textarea {
+  display: inline-block;
+  font-size: 14px;
+  position: relative;
+  width: 100%;
+}
+
+.field-textarea-text,
+.field-time-input-text,
+.field-date-input-text,
+.field-input-text {
+  @include radius(3px);
+  appearance: none;
+  background-color: $white;
+  background-image: none;
+  border: 1px solid $border-color;
+  box-sizing: border-box;
+  color: $gray;
+  display: inline-block;
+  font-size: inherit;
+  height: 40px;
+  line-height: 40px;
+  outline: none;
+  padding: 0 10px;
+  transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+  width: 100%;
+
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+.field-time-input-text,
+.field-date-input-text {
+  padding-right: 30px;
+}
+
+.field-time-input-icon,
+.field-date-input-icon {
+  @include button(30px, 40px, 14px);
+  cursor: pointer;
+  right: 0;
+  top: 0;
+}
+
+.field-levels {
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.field-level-option {
+  color: $light-gray;
+  cursor: pointer;
+  float: left;
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+  width: 25%;
+}
+
+.field-level-spades {
+  &:hover {
+    color: $red;
+  }
+}
+
+.field-level-heart {
+  &:hover {
+    color: $orange;
+  }
+}
+
+.field-level-clubs {
+  &:hover {
+    color: $primary;
+  }
+}
+
+.field-level-diamonds {
+  &:hover {
+    color: $green;
+  }
+}
+
+.field-level-checked {
+  &.field-level-spades {
+    color: $red;
+
+    &:hover {
+      color: $red;
+    }
+  }
+
+  &.field-level-heart {
+    color: $orange;
+
+    &:hover {
+      color: $orange;
+    }
+  }
+
+  &.field-level-clubs {
+    color: $primary;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  &.field-level-diamonds {
+    color: $green;
+
+    &:hover {
+      color: $green;
+    }
+  }
+}
+
+.field-level-icon {
+  font-size: 16px;
+}
+
+.field-level-text {
+  font-size: 13px;
+  height: 16px;
+  line-height: 16px;
+  margin: 7px auto 0;
+  overflow: hidden;
+}
+
+.field-textarea-text {
+  font-size: 13px;
+  line-height: 20px;
+  min-height: 80px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
