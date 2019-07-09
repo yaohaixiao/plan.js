@@ -610,10 +610,12 @@ class Plan {
   }
 
   checkBookmark ($button) {
-    const CLS_MARKED = 'task-marked-button'
+    const CLS_BUTTON_MARKED = 'task-marked-button'
+    const CLS_TASK_MARKED = 'task-marked'
     let id = parseInt($button.getAttribute('data-id'), 10)
     let plan = this.getPlan(id)
     let filter = this.getFilter()
+    let $plan = document.querySelector(`[data-id="${id}"]`)
     let todoPlans
     let doingPlans
     let checkingPlans
@@ -631,10 +633,12 @@ class Plan {
 
       this.updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
     } else {
-      if (DOM.hasClass($button, CLS_MARKED)) {
-        DOM.removeClass($button, CLS_MARKED)
+      if (DOM.hasClass($button, CLS_BUTTON_MARKED)) {
+        DOM.removeClass($button, CLS_BUTTON_MARKED)
+        DOM.removeClass($plan, CLS_TASK_MARKED)
       } else {
-        DOM.addClass($button, CLS_MARKED)
+        DOM.addClass($button, CLS_BUTTON_MARKED)
+        DOM.addClass($plan, CLS_TASK_MARKED)
       }
     }
 
@@ -1489,7 +1493,7 @@ class Plan {
 
     return createElement('div', {
       'id': `task-${id}`,
-      'className': 'task',
+      'className': plan.marked ? 'task task-marked' : 'task',
       'data-id': `${id}`
     }, [
       $main,

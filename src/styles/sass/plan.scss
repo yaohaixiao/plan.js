@@ -156,6 +156,10 @@
       background-color: $dark-background-color;
       border-color: $dark-background-color;
 
+      &.task-marked{
+        border-left-color: $primary;
+      }
+
       &:hover {
         border-color: $blue;
       }

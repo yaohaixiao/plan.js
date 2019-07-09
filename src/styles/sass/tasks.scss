@@ -55,6 +55,11 @@
   }
 }
 
+.task-marked {
+  background-color: $background-color;
+  border-left-color: $primary;
+}
+
 .task-main {
   overflow: hidden;
   position: relative;
