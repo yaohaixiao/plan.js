@@ -2,10 +2,6 @@
 @import './mixins/mixins';
 @import './buttons';
 
-.panel {
-  background-color: $white;
-}
-
 .panel-hd {
   border-bottom: 1px solid $border-color;
   height: 40px;
@@ -50,6 +46,7 @@
 }
 
 .panel {
+  background-color: $white;
   height: 100%;
   top: 0;
   transition: .3s;

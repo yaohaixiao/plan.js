@@ -9,6 +9,7 @@
 
 .plan,
 .toolbar,
+.toolbar-filters,
 .toolbar-inner,
 .main,
 .columns,
@@ -22,7 +23,8 @@
 
 .side,
 .logo,
-.plus,
+.toolbar-trash-button,
+.toolbar-plus-button,
 .column-bd,
 .columns-overlay {
   overflow: hidden;
@@ -30,27 +32,35 @@
   z-index: 2;
 }
 
-.plan {
+.plan,
+.side,
+.toolbar,
+.toolbar-filters,
+.toolbar-inner,
+.main,
+.columns,
+.columns-overlay,
+.column,
+.column-bd {
   height: 100%;
 }
 
 .side {
   background-color: $dark-blue;
-  height: 100%;
   left: 0;
   top: 0;
   width: 48px;
 }
 
 .logo,
-.plus {
+.toolbar-plus-button,
+.toolbar-trash-button {
   left: 0;
   width: 48px;
 }
 
 .logo,
-.toolbar-button,
-.plus {
+.toolbar-button {
   @include button(100%, 48px, 18px, $light-blue, $white);
 }
 
@@ -61,20 +71,27 @@
 }
 
 .toolbar {
-  height: 100%;
   padding: 48px 0;
 }
 
+.toolbar-filters {
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 48px 0 0;
+}
+
 .toolbar-inner {
-  height: 100%;
   overflow: auto;
 }
 
-.plus {
+.toolbar-plus-button {
+  top: 48px;
+}
+
+.toolbar-trash-button {
   bottom: 0;
 }
 
-.plus,
 .toolbar-button {
   cursor: pointer;
 
@@ -92,12 +109,10 @@
 }
 
 .main {
-  height: 100%;
   margin: 0 0 0 48px;
 }
 
 .columns {
-  height: 100%;
   margin: 0;
   transition: .3s;
 
@@ -119,7 +134,6 @@
   @include opacity(.1);
   background-color: $white;
   display: none;
-  height: 100%;
   left: 0;
   top: 0;
   width: 100%;
@@ -128,7 +142,6 @@
 .column {
   border-right: 1px solid $border-color;
   float: left;
-  height: 100%;
   width: 25%;
 
   &:first-child {
@@ -180,7 +193,6 @@
 
 .column-bd {
   box-sizing: border-box;
-  height: 100%;
   left: 0;
   margin: 0;
   overflow: auto;

@@ -1,16 +1,19 @@
-div.toolbar
-  div#toolbar.toolbar-inner
-    div.toolbar-button.toolbar-inbox-button.toolbar-active(data-filter='inbox')
-      i.icon-inbox-full
-    div.toolbar-button.toolbar-spades-button(data-filter='spades')
-      i.icon-spades
-    div.toolbar-button.toolbar-heart-button(data-filter='heart')
-      i.icon-heart
-    div.toolbar-button.toolbar-clubs-button(data-filter='clubs')
-      i.icon-clubs
-    div.toolbar-button.toolbar-diamonds-button(data-filter='diamonds')
-      i.icon-diamonds
-    div.toolbar-button.toolbar-bookmark-button(data-filter='marked')
-      i.icon-bookmark
-    div.toolbar-button.toolbar-trash-button(data-filter='deleted')
-      i.icon-trash
+div#toolbar.toolbar
+  div.toolbar-button.toolbar-plus-button
+    i.icon-plus
+  div.toolbar-filters
+    div.toolbar-inner
+      div.toolbar-button.toolbar-inbox-button.toolbar-active(data-filter='inbox')
+        i.icon-inbox-full
+      div.toolbar-button.toolbar-spades-button(data-filter='spades')
+        i.icon-spades
+      div.toolbar-button.toolbar-heart-button(data-filter='heart')
+        i.icon-heart
+      div.toolbar-button.toolbar-clubs-button(data-filter='clubs')
+        i.icon-clubs
+      div.toolbar-button.toolbar-diamonds-button(data-filter='diamonds')
+        i.icon-diamonds
+      div.toolbar-button.toolbar-bookmark-button(data-filter='marked')
+        i.icon-bookmark
+  div.toolbar-button.toolbar-trash-button(data-filter='deleted')
+    i.icon-trash

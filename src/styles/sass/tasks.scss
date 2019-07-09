@@ -29,18 +29,21 @@
 
 .tasks {
   height: 100%;
+  box-sizing: border-box;
   overflow: auto;
+  padding: 10px 0;
 }
 
 .task {
   background-color: $white;
   border: 1px solid $border-color;
   border-left-width: 3px;
-  margin: 10px;
+  margin:-1px 10px 0;
   padding: 0;
 
   &:hover {
     border-color: $primary;
+    z-index:2;
 
     .task-side {
       left: 0;
@@ -72,6 +75,7 @@
   line-height: 40px;
   margin: 0 40px 0 10px;
   text-overflow: ellipsis;
+  user-select: none;
   white-space: nowrap;
 
   &:hover {

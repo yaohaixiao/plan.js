@@ -77,7 +77,9 @@ class Plan {
       $tasksDone
     ], {
       moves: function ($plan, $column, $handle) {
-        return $handle.classList.contains('task-title');
+        let classList = $handle.classList
+
+        return classList.contains('task-title') || classList.contains('task-title-text')
       }
     })
 
@@ -108,7 +110,7 @@ class Plan {
     Delegate.on($wrap, '.toolbar-bookmark-button', 'click', this._onBookmarkFilterButtonClick, this)
 
     // 创建任务
-    Delegate.on($wrap, '.plus', 'click', this._onPlusButtonClick, this)
+    Delegate.on($wrap, '.toolbar-plus-button', 'click', this._onPlusButtonClick, this)
     Delegate.on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
     Delegate.on($wrap, '.panel-add-cancel', 'click', this._onAddCancelButtonClick, this)
     Delegate.on($wrap, '.panel-add-save', 'click', this._onAddSaveButtonClick, this)
@@ -129,81 +131,7 @@ class Plan {
 
     // 拖动完成，更新任务状态
     this.$dragula.on('drop', ($plan, $column) => {
-      let filter = this.getFilter()
-      let id = $plan.getAttribute('data-id')
-      let status = $column.getAttribute('data-status')
-      let plan = this.getPlan(parseInt(id, 10))
-      let $side = $plan.querySelector('.task-side')
-      let $edit
-      let $mark
-      let $replace
-      let $header
-      let $level
-
-
-      // 移动到回收站
-      if (status === 'deleted') {
-        plan.deleted = true
-
-        // 更新操作按钮
-        $edit = $side.querySelector('.task-edit-button')
-        $mark = $side.querySelector('.task-bookmark-button')
-        $replace = Plan.getTaskReplaceElement(plan)
-
-        $side.insertBefore($replace, $edit)
-        $side.removeChild($mark)
-        $side.removeChild($edit)
-      } else {
-        // 从回收站一出来
-        if (plan.deleted) {
-          // 根据过滤器，更新相应的属性
-          switch (filter) {
-            case 'marked':
-              plan.marked = true
-              break
-            case 'spades':
-              plan.level = 0
-              $level = $plan.querySelector('.task-level')
-              break
-            case 'heart':
-              plan.level = 1
-              $level = $plan.querySelector('.task-level')
-              break
-            case 'clubs':
-              plan.level = 2
-              $level = $plan.querySelector('.task-level')
-              break
-            case 'diamonds':
-              plan.level = 3
-              $level = $plan.querySelector('.task-level')
-              break
-          }
-
-          plan.deleted = false
-
-          // 更新操作按钮
-          $edit = Plan.getTaskEditElement(plan)
-          $mark = Plan.getTaskMarkElement(plan)
-          $replace = $side.querySelector('.task-replace-button')
-
-          $side.insertBefore($edit, $replace)
-          $side.insertBefore($mark, $replace)
-          $side.removeChild($replace)
-
-          if ($level) {
-            $header = $plan.querySelector('.task-hd')
-            $header.replaceChild(Plan.getTaskLevelElement(plan), $level)
-          }
-
-        } else {
-          // 普通状态之前的调整
-          plan.status = parseInt(status, 10)
-        }
-      }
-
-      plan.update = Utils.getMoments()
-
-      this.setPlan(plan)
+      this.drop($plan, $column)
     })
 
     return this
@@ -262,25 +190,20 @@ class Plan {
   add (plan) {
     let plans = Utils.clone(this.getPlans())
     let filter = this.getFilter()
-    let elements = this.getEls()
-    let $tasksTodo
-    let $todoCount
-    let $task
-    let count
+    let todoPlans
+    let doingPlans
+    let checkingPlans
+    let donePlans
 
     plans.push(plan)
     this.setPlans(plans)
 
-    if (filter === 'inbox') {
-      $tasksTodo = elements.tasksTodo
-      $task = Plan.getTaskElement(plan)
-      $tasksTodo.insertBefore($task, $tasksTodo.childNodes[0])
+    todoPlans = this.filterPlans(filter, 0)
+    doingPlans = this.filterPlans(filter, 1)
+    checkingPlans = this.filterPlans(filter, 2)
+    donePlans = this.filterPlans(filter, 3)
 
-      $todoCount = elements.todoCount
-      count = parseInt($todoCount.innerHTML, 10)
-      count += 1
-      $todoCount.innerHTML = count
-    }
+    this.updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
 
     return this
   }
@@ -751,13 +674,186 @@ class Plan {
     let plan = this.getPlan(parseInt(id, 10))
     let elements = this.getEls()
     let $tasksTrash = elements.tasksTrash
+    let $trashCount = elements.trashCount
     let $plan = $tasksTrash.querySelector(`[data-id="${id}"]`)
+    let count
 
     plan.deleted = false
-
     this.update(plan)
 
     $tasksTrash.removeChild($plan)
+    count = parseInt($trashCount.innerHTML,10)
+    count -= 1
+    $trashCount.innerHTML = count
+
+    return this
+  }
+
+  drop ($plan, $column) {
+    let filter = this.getFilter()
+    let id = $plan.getAttribute('data-id')
+    let status = $column.getAttribute('data-status')
+    let plan = this.getPlan(parseInt(id, 10))
+    let elements = this.getEls()
+    let $side = $plan.querySelector('.task-side')
+    let $edit
+    let $mark
+    let $replace
+    let $header
+    let $level
+    let $sourceCount
+    let $targetCount
+    let sourceCount
+    let targetCount
+
+    // 移动到回收站
+    if (status === 'deleted') {
+      plan.deleted = true
+
+      // 更新操作按钮
+      $edit = $side.querySelector('.task-edit-button')
+      $mark = $side.querySelector('.task-bookmark-button')
+      $replace = Plan.getTaskReplaceElement(plan)
+
+      $side.insertBefore($replace, $edit)
+      $side.removeChild($mark)
+      $side.removeChild($edit)
+
+      switch (plan.status) {
+        case 0:
+          $sourceCount = elements.todoCount
+          break
+        case 1:
+          $sourceCount = elements.doingCount
+          break
+        case 2:
+          $sourceCount = elements.checkingCount
+          break
+        case 3:
+          $sourceCount = elements.doneCount
+          break
+      }
+
+      sourceCount = parseInt($sourceCount.innerHTML, 10)
+      sourceCount -= 1
+      $sourceCount.innerHTML = sourceCount
+
+      $targetCount = elements.trashCount
+      targetCount = parseInt($targetCount.innerHTML, 10)
+      targetCount += 1
+      $targetCount.innerHTML = targetCount
+    } else {
+      // 从回收站移除来
+      if (plan.deleted) {
+        // 根据过滤器，更新相应的属性
+        switch (filter) {
+          case 'marked':
+            plan.marked = true
+            break
+          case 'spades':
+            plan.level = 0
+            $level = $plan.querySelector('.task-level')
+            break
+          case 'heart':
+            plan.level = 1
+            $level = $plan.querySelector('.task-level')
+            break
+          case 'clubs':
+            plan.level = 2
+            $level = $plan.querySelector('.task-level')
+            break
+          case 'diamonds':
+            plan.level = 3
+            $level = $plan.querySelector('.task-level')
+            break
+        }
+
+        plan.deleted = false
+        plan.status = parseInt(status, 10)
+
+        // 更新操作按钮
+        $edit = Plan.getTaskEditElement(plan)
+        $mark = Plan.getTaskMarkElement(plan)
+        $replace = $side.querySelector('.task-replace-button')
+
+        $side.insertBefore($edit, $replace)
+        $side.insertBefore($mark, $replace)
+        $side.removeChild($replace)
+
+        if ($level) {
+          $header = $plan.querySelector('.task-hd')
+          $header.replaceChild(Plan.getTaskLevelElement(plan), $level)
+        }
+
+        $sourceCount = elements.trashCount
+        sourceCount = parseInt($sourceCount.innerHTML, 10)
+        sourceCount -= 1
+        $sourceCount.innerHTML = sourceCount
+
+        switch (parseInt(status, 10)) {
+          case 0:
+            $targetCount = elements.todoCount
+            break
+          case 1:
+            $targetCount = elements.doingCount
+            break
+          case 2:
+            $targetCount = elements.checkingCount
+            break
+          case 3:
+            $targetCount = elements.doneCount
+            break
+        }
+
+        targetCount = parseInt($targetCount.innerHTML, 10)
+        targetCount += 1
+        $targetCount.innerHTML = targetCount
+      } else {
+        switch (plan.status) {
+          case 0:
+            $sourceCount = elements.todoCount
+            break
+          case 1:
+            $sourceCount = elements.doingCount
+            break
+          case 2:
+            $sourceCount = elements.checkingCount
+            break
+          case 3:
+            $sourceCount = elements.doneCount
+            break
+        }
+
+        sourceCount = parseInt($sourceCount.innerHTML, 10)
+        sourceCount -= 1
+        $sourceCount.innerHTML = sourceCount
+
+        switch (parseInt(status, 10)) {
+          case 0:
+            $targetCount = elements.todoCount
+            break
+          case 1:
+            $targetCount = elements.doingCount
+            break
+          case 2:
+            $targetCount = elements.checkingCount
+            break
+          case 3:
+            $targetCount = elements.doneCount
+            break
+        }
+
+        targetCount = parseInt($targetCount.innerHTML, 10)
+        targetCount += 1
+        $targetCount.innerHTML = targetCount
+
+        // 普通状态之前的调整
+        plan.status = parseInt(status, 10)
+      }
+    }
+
+    plan.update = Utils.getMoments()
+    this.setPlan(plan)
 
     return this
   }
@@ -943,18 +1039,12 @@ class Plan {
 
   closeAddPanel () {
     const CLS_ADD_OPENED = 'panel-add-opened'
-    const CLS_CHECKED = 'field-level-checked'
     let elements = this.getEls()
     let $addPanel = elements.addPanel
     let $columns = elements.columns
-    let $checked = $addPanel.querySelector('.' + CLS_CHECKED)
 
     DOM.removeClass($addPanel, CLS_ADD_OPENED)
     DOM.removeClass($columns, CLS_ADD_OPENED)
-
-    if ($checked) {
-      DOM.removeClass($checked, CLS_CHECKED)
-    }
 
     this.emptyAddPanel()
 
@@ -991,21 +1081,13 @@ class Plan {
 
   closeEditPanel () {
     const CLS_EDIT_OPENED = 'panel-edit-opened'
-    const CLS_CHECKED = 'field-level-checked'
     let elements = this.getEls()
-    let $editPanel = elements.editPanel
     let $columns = elements.columns
-    let $checked = $editPanel.querySelector('.' + CLS_CHECKED)
-
-    this.closeAddPanel()
-        .closeTrashPanel()
 
     DOM.removeClass(elements.editPanel, CLS_EDIT_OPENED)
     DOM.removeClass($columns, CLS_EDIT_OPENED)
 
-    if ($checked) {
-      DOM.removeClass($checked, CLS_CHECKED)
-    }
+    this.emptyEditPanel()
 
     return this
   }
@@ -1147,6 +1229,12 @@ class Plan {
     return $fragment
   }
 
+  _onPlusButtonClick () {
+    this.toggleAddPanel()
+
+    return this
+  }
+
   _onInBoxFilterButtonClick (evt) {
     this.checkFilter(evt.delegateTarget)
 
@@ -1191,12 +1279,6 @@ class Plan {
 
   _onTrashCancelButtonClick () {
     this.closeTrashPanel()
-
-    return this
-  }
-
-  _onPlusButtonClick () {
-    this.toggleAddPanel()
 
     return this
   }
@@ -1415,7 +1497,7 @@ class Plan {
     ])
   }
 
-  static getTaskEditElement(plan) {
+  static getTaskEditElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
 
@@ -1429,7 +1511,7 @@ class Plan {
     ])
   }
 
-  static getTaskMarkElement(plan) {
+  static getTaskMarkElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
     let classNameMarked = 'task-button task-bookmark-button'
@@ -1444,7 +1526,7 @@ class Plan {
     ])
   }
 
-  static getTasKDeleteElement(plan) {
+  static getTasKDeleteElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
 
@@ -1458,7 +1540,7 @@ class Plan {
     ])
   }
 
-  static getTaskReplaceElement(plan) {
+  static getTaskReplaceElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
 
@@ -1472,7 +1554,7 @@ class Plan {
     ])
   }
 
-  static getTaskLevelElement(plan) {
+  static getTaskLevelElement (plan) {
     const createElement = DOM.createElement
     const LEVELS = [
       'spades',
