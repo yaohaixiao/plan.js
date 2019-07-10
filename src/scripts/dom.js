@@ -120,6 +120,24 @@ const DOM = {
     allClass = Utils.trim(allClass.replace(className, ''))
 
     el.className = allClass
+  },
+  /**
+   * 替换 DOM 节点的 className 样式
+   * ========================================================================
+   * @param {Object|HTMLElement} el - DOM 节点
+   * @param {String} newClass - 样式名称
+   * @param {String} oldClass - 样式名称
+   * @returns {Boolean}
+   */
+  replaceClass (el, newClass, oldClass) {
+    let allClass = el.className
+
+    if (!allClass || !DOM.hasClass(el, oldClass)) {
+      return false
+    }
+
+    DOM.removeClass(el, oldClass)
+    DOM.addClass(el, newClass)
   }
 }
 

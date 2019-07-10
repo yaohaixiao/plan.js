@@ -1,0 +1,67 @@
+@import './colors';
+@import './buttons';
+@import './mixins/mixins';
+
+.toolbar,
+.toolbar-filters,
+.toolbar-inner {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.toolbar-trash-button,
+.toolbar-plus-button {
+  overflow: hidden;
+  position: absolute;
+  z-index: 2;
+}
+
+.toolbar-plus-button,
+.toolbar-trash-button {
+  left: 0;
+  width: 48px;
+}
+
+.toolbar {
+  box-sizing: border-box;
+  padding: 48px 0;
+}
+
+.toolbar-filters {
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 48px 0 0;
+}
+
+.toolbar-inner {
+  overflow: auto;
+  width: 68px;
+}
+
+.toolbar-plus-button {
+  top: 48px;
+}
+
+.toolbar-trash-button {
+  bottom: 0;
+}
+
+.toolbar-button {
+  @include button(48px, 48px, 18px, $light-blue, $white);
+  cursor: pointer;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.toolbar-active {
+  color: $primary;
+
+  &:hover {
+    color: $primary;
+  }
+}

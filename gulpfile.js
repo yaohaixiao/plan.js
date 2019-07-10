@@ -98,7 +98,7 @@ gulp.task('lint:html', (cb) => {
 gulp.task('lint:styles', (cb) => {
   pump(
     [
-      gulp.src('src/styles/**/*.s+(a|c)ss'),
+      gulp.src('src/styles/**/*.scss'),
       sasslint({
         files: {
           ignore: 'src/styles/**/webkit-scrollbar.scss'

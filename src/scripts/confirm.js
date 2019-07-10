@@ -61,6 +61,7 @@ class Confirm {
   addEventListeners () {
     let $wrap = this.getEls().wrap
 
+    Delegate.on($wrap, '.confirm-overlay', 'click', this._onCancelClick, this)
     Delegate.on($wrap, '.confirm-cancel', 'click', this._onCancelClick, this)
     Delegate.on($wrap, '.confirm-enter', 'click', this._onEnterClick, this)
 

@@ -1,0 +1,129 @@
+@import './colors';
+@import './buttons';
+@import './mixins/mixins';
+
+.columns,
+.column,
+.column-hd {
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.column-button,
+.column-bd,
+.columns-overlay {
+  overflow: hidden;
+  position: absolute;
+  z-index: 2;
+}
+
+.columns,
+.columns-overlay,
+.column,
+.column-bd {
+  height: 100%;
+}
+
+.columns {
+  margin: 0;
+  transition: .3s;
+
+  &.panel-add-opened,
+  &.panel-edit-opened,
+  &.panel-trash-opened {
+    margin-left: 313px;
+  }
+
+  &.panel-add-opened,
+  &.panel-edit-opened {
+    .columns-overlay {
+      display: block;
+    }
+  }
+}
+
+.columns-overlay {
+  @include opacity(.1);
+  background-color: $white;
+  display: none;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.column {
+  border-right: 1px solid $border-color;
+  box-sizing: border-box;
+  float: left;
+  width: 25%;
+
+  &:first-child {
+    background-color: $dark-background-color;
+    border-color: $dark-border-color;
+
+    .column-hd {
+      border-color: $dark-border-color;
+    }
+
+    .task {
+      background-color: $dark-background-color;
+      border-color: $dark-background-color;
+
+      &.task-marked {
+        border-left-color: $primary;
+      }
+
+      &:hover {
+        border-color: $blue;
+      }
+    }
+
+    .task-ft {
+      border-color: $dark-border-color;
+    }
+  }
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.column-hd {
+  border-bottom: 1px solid $border-color;
+  height: 40px;
+  margin: 0 10px;
+  z-index: 2;
+}
+
+.column-title,
+.column-count {
+  font-weight: normal;
+}
+
+.column-title {
+  font-size: 16px;
+  line-height: 40px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+.column-bd {
+  box-sizing: border-box;
+  left: 0;
+  margin: 0;
+  overflow: auto;
+  padding-top: 41px;
+  top: 0;
+  width: 100%;
+}
+
+.column-button{
+  @include button(40px, 40px, 24px);
+  cursor: pointer;
+  display: none;
+  right:0;
+  top:0;
+}

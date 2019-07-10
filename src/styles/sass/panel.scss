@@ -75,7 +75,7 @@
 }
 
 .panel-button {
-  @include button(40px, 40px, 20px);
+  @include button(40px, 40px, 24px);
   @include radius(10px);
   cursor: pointer;
   right: 0;

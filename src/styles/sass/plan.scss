@@ -1,20 +1,13 @@
 @import './buttons';
 @import './mixins/mixins';
 
-.plan,
-.toolbar,
-.column {
+.plan {
   box-sizing: border-box;
 }
 
 .plan,
-.toolbar,
-.toolbar-filters,
-.toolbar-inner,
-.main,
-.columns,
-.column,
-.column-hd {
+.main {
+  height: 100%;
   margin: 0;
   overflow: hidden;
   position: relative;
@@ -22,187 +15,32 @@
 }
 
 .side,
-.logo,
-.toolbar-trash-button,
-.toolbar-plus-button,
-.column-bd,
-.columns-overlay {
+.logo {
   overflow: hidden;
   position: absolute;
   z-index: 2;
 }
 
-.plan,
-.side,
-.toolbar,
-.toolbar-filters,
-.toolbar-inner,
-.main,
-.columns,
-.columns-overlay,
-.column,
-.column-bd {
-  height: 100%;
-}
-
 .side {
   background-color: $dark-blue;
+  height: 100%;
   left: 0;
+
   top: 0;
   width: 48px;
-}
-
-.logo,
-.toolbar-plus-button,
-.toolbar-trash-button {
-  left: 0;
-  width: 48px;
-}
-
-.logo,
-.toolbar-button {
-  @include button(100%, 48px, 18px, $light-blue, $white);
 }
 
 .logo {
+  @include button(48px, 48px, 18px, $light-blue, $white);
   color: $white;
   font-size: 26px;
+  left: 0;
   top: 0;
-}
-
-.toolbar {
-  padding: 48px 0;
-}
-
-.toolbar-filters {
-  box-sizing: border-box;
-  overflow: hidden;
-  padding: 48px 0 0;
-}
-
-.toolbar-inner {
-  overflow: auto;
-}
-
-.toolbar-plus-button {
-  top: 48px;
-}
-
-.toolbar-trash-button {
-  bottom: 0;
-}
-
-.toolbar-button {
-  cursor: pointer;
-
-  &:hover {
-    color: $white;
-  }
-}
-
-.toolbar-active {
-  color: $primary;
-
-  &:hover {
-    color: $primary;
-  }
+  width: 48px;
 }
 
 .main {
   margin: 0 0 0 48px;
-}
-
-.columns {
-  margin: 0;
-  transition: .3s;
-
-  &.panel-add-opened,
-  &.panel-edit-opened,
-  &.panel-trash-opened {
-    margin-left: 313px;
-  }
-
-  &.panel-add-opened,
-  &.panel-edit-opened {
-    .columns-overlay {
-      display: block;
-    }
-  }
-}
-
-.columns-overlay {
-  @include opacity(.1);
-  background-color: $white;
-  display: none;
-  left: 0;
-  top: 0;
-  width: 100%;
-}
-
-.column {
-  border-right: 1px solid $border-color;
-  float: left;
-  width: 25%;
-
-  &:first-child {
-    background-color: $dark-background-color;
-    border-color: $dark-border-color;
-
-    .column-hd {
-      border-color: $dark-border-color;
-    }
-
-    .task {
-      background-color: $dark-background-color;
-      border-color: $dark-background-color;
-
-      &.task-marked {
-        border-left-color: $primary;
-      }
-
-      &:hover {
-        border-color: $blue;
-      }
-    }
-
-    .task-ft {
-      border-color: $dark-border-color;
-    }
-  }
-
-  &:last-child {
-    border-right: 0;
-  }
-}
-
-.column-hd {
-  border-bottom: 1px solid $border-color;
-  height: 40px;
-  margin: 0 10px;
-  z-index: 2;
-}
-
-.column-title,
-.column-count {
-  font-weight: normal;
-}
-
-.column-title {
-  font-size: 16px;
-  line-height: 40px;
-  margin: 0;
-  overflow: hidden;
-  padding: 0 10px;
-}
-
-.column-bd {
-  box-sizing: border-box;
-  left: 0;
-  margin: 0;
-  overflow: auto;
-  padding-top: 41px;
-  top: 0;
-  width: 100%;
 }
 
 @media only screen and (max-width: 639px) {
@@ -239,6 +77,10 @@
       background-color: $white;
       border-color: $border-color;
 
+      .column-hd {
+        border-color: $border-color;
+      }
+
       .task {
         background-color: $white;
         border-color: $border-color;
@@ -247,10 +89,18 @@
       .task-marked {
         background-color: $background-color;
       }
+
+      .task-ft {
+        border-color: $border-color;
+      }
     }
 
-    &.last-child {
-      border-bottom: 0;
+    .column-button{
+      display: block;
+
+      &.hidden{
+        display: none;
+      }
     }
 
     .column-bd {
@@ -265,9 +115,15 @@
       z-index: 1;
     }
 
-    .gu-mirror {
-      .task-bd {
-        display: none;
+    .tasks {
+      transition: 0.3s;
+      min-height: 92px;
+
+      &.tasks-min {
+        min-height: 0;
+        height: 0;
+        padding: 0;
+        overflow: hidden;
       }
     }
 
@@ -277,6 +133,16 @@
 
     .task-button {
       @include button(30px, 24px, 13px);
+    }
+
+    &:last-child {
+      border: 0;
+    }
+  }
+
+  .gu-mirror {
+    .task-bd {
+      display: none;
     }
   }
 }

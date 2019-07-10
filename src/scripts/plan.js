@@ -107,15 +107,17 @@ class Plan {
 
     // 创建任务
     Delegate.on($wrap, '.toolbar-plus-button', 'click', this._onPlusButtonClick, this)
-    Delegate.on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
+
+    // 新建任务 Panel
     Delegate.on($wrap, '.panel-add-cancel', 'click', this._onAddCancelButtonClick, this)
     Delegate.on($wrap, '.panel-add-save', 'click', this._onAddSaveButtonClick, this)
     Delegate.on($wrap, '.panel-add-level', 'click', this._onAddLevelButtonClick, this)
 
-    // 编辑任务
+    // 编辑任务 Panel
     Delegate.on($wrap, '.panel-edit-cancel', 'click', this._onEditCancelButtonClick, this)
     Delegate.on($wrap, '.panel-edit-save', 'click', this._onEditSaveButtonClick, this)
     Delegate.on($wrap, '.panel-edit-level', 'click', this._onEditLevelButtonClick, this)
+
     Delegate.on($wrap, '.task-edit-button', 'click', this._onEditButtonClick, this)
     Delegate.on($wrap, '.task-bookmark-button', 'click', this._onMarkedButtonClick, this)
     Delegate.on($wrap, '.task-delete-button', 'click', this._onDeleteButtonClick, this)
@@ -124,6 +126,11 @@ class Plan {
     // 回收站
     Delegate.on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
     Delegate.on($wrap, '.panel-trash-cancel', 'click', this._onTrashCancelButtonClick, this)
+
+    // column
+    Delegate.on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
+    Delegate.on($wrap, '.column-up-button', 'click', this._onColumnUpButtonClick, this)
+    Delegate.on($wrap, '.column-down-button', 'click', this._onColumnDownButtonClick, this)
 
     // 拖动完成，更新任务状态
     this.$dragula.on('drop', ($plan, $column) => {
@@ -179,6 +186,8 @@ class Plan {
     // 回收站
     Delegate.off($wrap, 'click', this._onTrashButtonClick)
     Delegate.off($wrap, 'click', this._onTrashCancelButtonClick)
+    Delegate.off($wrap, 'click', this._onColumnUpButtonClick)
+    Delegate.off($wrap, 'click', this._onColumnDownButtonClick)
 
     return this
   }
@@ -595,6 +604,66 @@ class Plan {
     return this
   }
 
+  checkColumnUp ($button) {
+    const CLS_HIDDEN = 'hidden'
+    const addClass = DOM.addClass
+    let status = parseInt($button.getAttribute('data-status'), 10)
+    let elements = this.getEls()
+    let $down = $button.parentNode.querySelector('.column-down-button')
+    let $tasks
+
+    switch (status) {
+      case 0:
+        $tasks = elements.tasksTodo
+        break
+      case 1:
+        $tasks = elements.tasksDoing
+        break
+      case 2:
+        $tasks = elements.tasksChecking
+        break
+      case 3:
+        $tasks = elements.tasksDone
+        break
+    }
+
+    addClass($button,CLS_HIDDEN)
+    DOM.removeClass($down, CLS_HIDDEN)
+    addClass($tasks, 'tasks-min')
+
+    return this
+  }
+
+  checkColumnDown ($button) {
+    const CLS_HIDDEN = 'hidden'
+    const removeClass = DOM.removeClass
+    let status = parseInt($button.getAttribute('data-status'), 10)
+    let elements = this.getEls()
+    let $up = $button.parentNode.querySelector('.column-up-button')
+    let $tasks
+
+    switch (status) {
+      case 0:
+        $tasks = elements.tasksTodo
+        break
+      case 1:
+        $tasks = elements.tasksDoing
+        break
+      case 2:
+        $tasks = elements.tasksChecking
+        break
+      case 3:
+        $tasks = elements.tasksDone
+        break
+    }
+
+    DOM.addClass($button, CLS_HIDDEN)
+    removeClass($up, CLS_HIDDEN)
+    removeClass($tasks, 'tasks-min')
+
+    return this
+  }
+
   checkEdit ($button) {
     let id = $button.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
@@ -682,7 +751,7 @@ class Plan {
     this.update(plan)
 
     $tasksTrash.removeChild($plan)
-    count = parseInt($trashCount.innerHTML,10)
+    count = parseInt($trashCount.innerHTML, 10)
     count -= 1
     $trashCount.innerHTML = count
 
@@ -969,6 +1038,7 @@ class Plan {
   }
 
   emptyAddPanel () {
+    const CLS_CHECKED = 'field-level-checked'
     let elements = this.getEls()
     let $addPanel = elements.addPanel
     let $title = $addPanel.querySelector('#add-title')
@@ -976,6 +1046,7 @@ class Plan {
     let $consuming = $addPanel.querySelector('#add-consuming')
     let $level = $addPanel.querySelector('#add-level')
     let $desc = $addPanel.querySelector('#add-desc')
+    let $checked = $addPanel.querySelector('.' + CLS_CHECKED)
 
     $title.value = ''
     $deadline.value = ''
@@ -983,10 +1054,15 @@ class Plan {
     $level.value = -1
     $desc.value = ''
 
+    if ($checked) {
+      DOM.removeClass($checked, CLS_CHECKED)
+    }
+
     return this
   }
 
   emptyEditPanel () {
+    const CLS_CHECKED = 'field-level-checked'
     let elements = this.getEls()
     let $editPanel = elements.editPanel
     let $title = $editPanel.querySelector('#edit-title')
@@ -994,12 +1070,17 @@ class Plan {
     let $consuming = $editPanel.querySelector('#edit-consuming')
     let $level = $editPanel.querySelector('#edit-level')
     let $desc = $editPanel.querySelector('#edit-desc')
+    let $checked = $editPanel.querySelector('.' + CLS_CHECKED)
 
     $title.value = ''
     $deadline.value = ''
     $consuming.value = ''
     $level.value = -1
     $desc.value = ''
+
+    if ($checked) {
+      DOM.removeClass($checked, CLS_CHECKED)
+    }
 
     return this
   }
@@ -1400,6 +1481,18 @@ class Plan {
 
   _onColumnsOverlayClick () {
     this.closePanel()
+
+    return this
+  }
+
+  _onColumnUpButtonClick (evt) {
+    this.checkColumnUp(evt.delegateTarget)
+
+    return this
+  }
+
+  _onColumnDownButtonClick (evt) {
+    this.checkColumnDown(evt.delegateTarget)
 
     return this
   }
