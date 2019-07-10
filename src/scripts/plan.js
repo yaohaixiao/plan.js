@@ -1206,7 +1206,9 @@ class Plan {
     $level.value = plan.level
     $desc.value = plan.desc
 
-    DOM.addClass($checked, 'field-level-checked')
+    if ($checked) {
+      DOM.addClass($checked, 'field-level-checked')
+    }
 
     return this
   }
