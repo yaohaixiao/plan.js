@@ -156,7 +156,7 @@
       background-color: $dark-background-color;
       border-color: $dark-background-color;
 
-      &.task-marked{
+      &.task-marked {
         border-left-color: $primary;
       }
 
@@ -203,4 +203,80 @@
   padding-top: 41px;
   top: 0;
   width: 100%;
+}
+
+@media only screen and (max-width: 639px) {
+  .columns {
+    overflow: auto;
+
+    &.panel-add-opened,
+    &.panel-edit-opened,
+    &.panel-trash-opened {
+      margin-left: calc(100% + 1px);
+    }
+  }
+
+  .panel {
+    width: calc(100% - 1px);
+  }
+
+  .panel-add,
+  .panel-edit,
+  .panel-trash {
+    border-right: 0;
+    left: calc((100% + 1px) * -1);
+  }
+
+  .column {
+    border-bottom: 1px solid $border-color;
+    border-right: 0;
+    box-sizing: border-box;
+    float: none;
+    height: auto;
+    width: 100%;
+
+    &:first-child {
+      background-color: $white;
+      border-color: $border-color;
+
+      .task {
+        background-color: $white;
+        border-color: $border-color;
+      }
+
+      .task-marked {
+        background-color: $background-color;
+      }
+    }
+
+    &.last-child {
+      border-bottom: 0;
+    }
+
+    .column-bd {
+      padding-top: 0;
+    }
+
+    .column-bd,
+    .tasks {
+      height: auto;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .gu-mirror {
+      .task-bd {
+        display: none;
+      }
+    }
+
+    .task-bd {
+      display: none;
+    }
+
+    .task-button {
+      @include button(30px, 24px, 13px);
+    }
+  }
 }

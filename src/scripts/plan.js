@@ -1,3 +1,5 @@
+'use strict'
+
 import DOM from './dom'
 import Delegate from './delegate'
 import Confirm from './confirm'
@@ -75,13 +77,7 @@ class Plan {
       $tasksDoing,
       $tasksChecking,
       $tasksDone
-    ], {
-      moves: function ($plan, $column, $handle) {
-        let classList = $handle.classList
-
-        return classList.contains('task-title') || classList.contains('task-title-text')
-      }
-    })
+    ])
 
     return this
   }
@@ -1240,49 +1236,43 @@ class Plan {
   }
 
   _onInBoxFilterButtonClick (evt) {
-    this.checkFilter(evt.delegateTarget)
+    this.closePanel()
+        .checkFilter(evt.delegateTarget)
 
     return this
   }
 
   _onSpadesFilterButtonClick (evt) {
-    this.checkFilter(evt.delegateTarget)
+    this.closePanel()
+        .checkFilter(evt.delegateTarget)
 
     return this
   }
 
   _onHeartFilterButtonClick (evt) {
-    this.checkFilter(evt.delegateTarget)
+    this.closePanel()
+        .checkFilter(evt.delegateTarget)
 
     return this
   }
 
   _onClubsFilterButtonClick (evt) {
-    this.checkFilter(evt.delegateTarget)
+    this.closePanel()
+        .checkFilter(evt.delegateTarget)
 
     return this
   }
 
   _onDiamondsFilterButtonClick (evt) {
-    this.checkFilter(evt.delegateTarget)
+    this.closePanel()
+        .checkFilter(evt.delegateTarget)
 
     return this
   }
 
   _onBookmarkFilterButtonClick (evt) {
-    this.checkFilter(evt.delegateTarget)
-
-    return this
-  }
-
-  _onTrashButtonClick () {
-    this.toggleTrashPanel()
-
-    return this
-  }
-
-  _onTrashCancelButtonClick () {
-    this.closeTrashPanel()
+    this.closePanel()
+        .checkFilter(evt.delegateTarget)
 
     return this
   }
@@ -1368,6 +1358,18 @@ class Plan {
 
   _onEditLevelButtonClick (evt) {
     this.checkLevel(evt.delegateTarget)
+
+    return this
+  }
+
+  _onTrashButtonClick () {
+    this.toggleTrashPanel()
+
+    return this
+  }
+
+  _onTrashCancelButtonClick () {
+    this.closeTrashPanel()
 
     return this
   }

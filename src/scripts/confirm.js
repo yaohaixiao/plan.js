@@ -1,3 +1,5 @@
+'use strict'
+
 import Utils from './utils'
 import DOM from './dom'
 import Delegate from './delegate'

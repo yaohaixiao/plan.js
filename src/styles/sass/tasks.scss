@@ -28,8 +28,8 @@
 }
 
 .tasks {
-  height: 100%;
   box-sizing: border-box;
+  height: 100%;
   overflow: auto;
   padding: 10px 0;
 }
@@ -38,12 +38,14 @@
   background-color: $white;
   border: 1px solid $border-color;
   border-left-width: 3px;
-  margin:-1px 10px 0;
+  margin: -1px 10px 0;
   padding: 0;
+  user-select: none;
 
   &:hover {
     border-color: $primary;
-    z-index:2;
+    cursor: move;
+    z-index: 2;
 
     .task-side {
       left: 0;
@@ -82,10 +84,6 @@
   text-overflow: ellipsis;
   user-select: none;
   white-space: nowrap;
-
-  &:hover {
-    cursor: move;
-  }
 }
 
 .task-title-text {
@@ -126,7 +124,7 @@
   font-weight: normal;
   line-height: 18px;
   margin: 0 auto;
-  max-height: 36px;
+  max-height: 54px;
   overflow: hidden;
 }
 

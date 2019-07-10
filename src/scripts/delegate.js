@@ -1,3 +1,5 @@
+'use strict'
+
 import DOM from './dom'
 
 const Delegate = {
