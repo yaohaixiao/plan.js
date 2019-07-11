@@ -43,28 +43,9 @@
   margin: 0 0 0 48px;
 }
 
-@media only screen and (max-width: 639px) {
+@media only screen and (max-width: 1080px) {
   .columns {
     overflow: auto;
-
-    &.panel-view-opened,
-    &.panel-add-opened,
-    &.panel-edit-opened,
-    &.panel-trash-opened {
-      margin-left: calc(100% + 1px);
-    }
-  }
-
-  .panel {
-    width: calc(100% - 1px);
-  }
-
-  .panel-view,
-  .panel-add,
-  .panel-edit,
-  .panel-trash {
-    border-right: 0;
-    left: calc((100% + 1px) * -1);
   }
 
   .column {
@@ -143,6 +124,14 @@
       @include button(30px, 20px, 13px);
     }
 
+    &:last-child {
+      border: 0;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .column {
     .task-prev-button {
       display: block;
     }
@@ -167,15 +156,28 @@
         display: none;
       }
     }
+  }
+}
 
-    &:last-child {
-      border: 0;
+@media only screen and (max-width: 640px) {
+  .columns {
+    &.panel-view-opened,
+    &.panel-add-opened,
+    &.panel-edit-opened,
+    &.panel-trash-opened {
+      margin-left: calc(100% + 1px);
     }
   }
 
-  .gu-mirror {
-    .task-bd {
-      display: none;
-    }
+  .panel {
+    width: calc(100% - 1px);
+  }
+
+  .panel-view,
+  .panel-add,
+  .panel-edit,
+  .panel-trash {
+    border-right: 0;
+    left: calc((100% + 1px) * -1);
   }
 }
