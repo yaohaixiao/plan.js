@@ -149,6 +149,11 @@
       display: block;
     }
 
+    .task-prev-button,
+    .task-next-button {
+      font-size: 16px;
+    }
+
     .task-status-0 {
       .task-prev-button {
         display: none;
