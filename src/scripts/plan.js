@@ -689,7 +689,7 @@ class Plan {
     Plan.updateStatusChangedCount($sourceCount, $targetCount)
 
     $sourceTasks.removeChild($plan)
-    $targetTasks.appendChild(Plan.getTaskElement(plan))
+    $targetTasks.appendChild(Plan.createTaskElement(plan))
 
     return this
   }
@@ -871,7 +871,7 @@ class Plan {
 
         if ($level) {
           $header = $plan.querySelector('.task-hd')
-          $header.replaceChild(Plan.getTaskLevelElement(plan), $level)
+          $header.replaceChild(Plan.createTaskLevelElement(plan), $level)
         }
 
         $sourceCount = elements.trashCount
@@ -1208,7 +1208,7 @@ class Plan {
     $consuming.innerHTML = plan.consuming
     $desc.innerHTML = marked(plan.desc)
 
-    switch(plan.level) {
+    switch (plan.level) {
       case 0:
         $icon = createElement('div', {
           'className': 'field-level-icon field-level-checked'
@@ -1446,7 +1446,7 @@ class Plan {
     }
 
     plans.forEach((plan) => {
-      let $plan = Plan.getTaskElement(plan)
+      let $plan = Plan.createTaskElement(plan)
 
       $fragment.appendChild($plan)
     })
@@ -1671,95 +1671,11 @@ class Plan {
     return this
   }
 
-  static getTaskElement (plan) {
+  static createTaskElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
-    let $prev = Plan.getTaskPrevElement(plan)
-    let $next = Plan.getTaskNextElement(plan)
-    let $edit = Plan.getTaskEditElement(plan)
-    let $mark = Plan.getTaskMarkElement(plan)
-    let $delete = Plan.getTasKDeleteElement(plan)
-    let $replace = Plan.getTaskReplaceElement(plan)
-    let $side = createElement('div', {
-      'className': 'task-side'
-    }, [
-      $prev,
-      $edit,
-      $mark,
-      $replace,
-      $delete,
-      $next
-    ])
-    let $level = Plan.getTaskLevelElement(plan)
-    let $header = createElement('div', {
-      'className': 'task-hd'
-    }, [
-      createElement('h3', {
-        'className': 'task-title',
-        'data-id': `${id}`
-      }, [
-        '任务：',
-        createElement('strong', {
-          'className': 'task-title-text'
-        }, [
-          Utils.toSafeText(plan.title)
-        ])
-      ]),
-      $level
-    ])
-    let $desc = createElement('div', {
-      'className': 'task-desc'
-    })
-    let $body = createElement('div', {
-      'className': 'task-bd'
-    }, [
-      $desc
-    ])
-    let $deadline = createElement('div', {
-      'className': 'task-deadline'
-    }, [
-      createElement('div', {
-        'className': 'task-deadline-icon'
-      }, [
-        createElement('i', {
-          'className': 'icon-calendar'
-        })
-      ]),
-      createElement('p', {
-        'className': 'task-deadline-text'
-      }, [
-        plan.deadline
-      ])
-    ])
-    let $consuming = createElement('div', {
-      'className': 'task-time-consuming'
-    }, [
-      createElement('div', {
-        'className': 'task-time-consuming-icon'
-      }, [
-        createElement('i', {
-          'className': 'icon-clock'
-        })
-      ]),
-      createElement('p', {
-        'className': 'task-time-consuming-text'
-      }, [
-        plan.consuming
-      ])
-    ])
-    let $footer = createElement('div', {
-      'className': 'task-ft'
-    }, [
-      $deadline,
-      $consuming
-    ])
-    let $main = createElement('div', {
-      'className': 'task-main'
-    }, [
-      $header,
-      $body,
-      $footer
-    ])
+    let $side = Plan.createTaskSideElement(plan)
+    let $main = Plan.createTaskMainElement(plan)
     let classTask = 'task'
 
     if (plan.marked) {
@@ -1776,8 +1692,6 @@ class Plan {
 
     classTask += ' ' + 'task-status-' + plan.status
 
-    $desc.innerHTML = marked(Utils.toSafeText(plan.desc))
-
     return createElement('div', {
       'id': `task-${id}`,
       'className': classTask,
@@ -1792,7 +1706,7 @@ class Plan {
     ])
   }
 
-  static getTaskPrevElement (plan) {
+  static createTaskPrevElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
 
@@ -1806,7 +1720,7 @@ class Plan {
     ])
   }
 
-  static getTaskEditElement (plan) {
+  static createTaskEditElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
 
@@ -1820,7 +1734,7 @@ class Plan {
     ])
   }
 
-  static getTaskMarkElement (plan) {
+  static createTaskMarkElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
 
@@ -1834,7 +1748,7 @@ class Plan {
     ])
   }
 
-  static getTasKDeleteElement (plan) {
+  static createTasKDeleteElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
 
@@ -1848,7 +1762,7 @@ class Plan {
     ])
   }
 
-  static getTaskReplaceElement (plan) {
+  static createTaskReplaceElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
 
@@ -1862,7 +1776,42 @@ class Plan {
     ])
   }
 
-  static getTaskLevelElement (plan) {
+  static createTaskNextElement (plan) {
+    const createElement = DOM.createElement
+    let id = plan.id
+
+    return createElement('div', {
+      'className': 'task-button task-next-button',
+      'data-id': `${id}`
+    }, [
+      createElement('i', {
+        'className': 'icon-cheveron-down'
+      })
+    ])
+  }
+
+  static createTaskSideElement (plan) {
+    const createElement = DOM.createElement
+    let $prev = Plan.createTaskPrevElement(plan)
+    let $next = Plan.createTaskNextElement(plan)
+    let $edit = Plan.createTaskEditElement(plan)
+    let $mark = Plan.createTaskMarkElement(plan)
+    let $delete = Plan.createTasKDeleteElement(plan)
+    let $replace = Plan.createTaskReplaceElement(plan)
+
+    return createElement('div', {
+      'className': 'task-side'
+    }, [
+      $prev,
+      $edit,
+      $mark,
+      $replace,
+      $delete,
+      $next
+    ])
+  }
+
+  static createTaskLevelElement (plan) {
     const createElement = DOM.createElement
     const LEVELS = [
       'spades',
@@ -1881,17 +1830,131 @@ class Plan {
     ])
   }
 
-  static getTaskNextElement (plan) {
+  static createTaskTitleTextElement (plan) {
+    const createElement = DOM.createElement
+
+    return createElement('strong', {
+      'className': 'task-title-text'
+    }, [
+      Utils.toSafeText(plan.title)
+    ])
+  }
+
+  static createTaskTitleElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
+    let $text = Plan.createTaskTitleTextElement(plan)
 
-    return createElement('div', {
-      'className': 'task-button task-next-button',
+    return createElement('h3', {
+      'className': 'task-title',
       'data-id': `${id}`
     }, [
-      createElement('i', {
-        'className': 'icon-cheveron-down'
-      })
+      '任务：',
+      $text
+    ])
+  }
+
+  static createTaskHeaderElement (plan) {
+    const createElement = DOM.createElement
+    let $level = Plan.createTaskLevelElement(plan)
+    let $title = Plan.createTaskTitleElement(plan)
+
+    return createElement('div', {
+      'className': 'task-hd'
+    }, [
+      $title,
+      $level
+    ])
+  }
+
+  static createTaskDescElement (plan) {
+    const createElement = DOM.createElement
+
+    return createElement('div', {
+      'className': 'task-desc'
+    }, [
+      marked(Utils.toSafeText(plan.desc))
+    ])
+  }
+
+  static createTaskBodyElement (plan) {
+    const createElement = DOM.createElement
+    let $desc = Plan.createTaskDescElement(plan)
+
+    return createElement('div', {
+      'className': 'task-bd'
+    }, [
+      $desc
+    ])
+  }
+
+  static createTaskDeadlineElement (plan) {
+    const createElement = DOM.createElement
+
+    return createElement('div', {
+      'className': 'task-deadline'
+    }, [
+      createElement('div', {
+        'className': 'task-deadline-icon'
+      }, [
+        createElement('i', {
+          'className': 'icon-calendar'
+        })
+      ]),
+      createElement('p', {
+        'className': 'task-deadline-text'
+      }, [
+        plan.deadline
+      ])
+    ])
+  }
+
+  static createTaskConsumingElement (plan) {
+    const createElement = DOM.createElement
+
+    return createElement('div', {
+      'className': 'task-time-consuming'
+    }, [
+      createElement('div', {
+        'className': 'task-time-consuming-icon'
+      }, [
+        createElement('i', {
+          'className': 'icon-clock'
+        })
+      ]),
+      createElement('p', {
+        'className': 'task-time-consuming-text'
+      }, [
+        plan.consuming
+      ])
+    ])
+  }
+
+  static createTaskFooterElement (plan) {
+    const createElement = DOM.createElement
+    let $deadline = Plan.createTaskDeadlineElement(plan)
+    let $consuming = Plan.createTaskConsumingElement(plan)
+
+    return createElement('div', {
+      'className': 'task-ft'
+    }, [
+      $deadline,
+      $consuming
+    ])
+  }
+
+  static createTaskMainElement (plan) {
+    const createElement = DOM.createElement
+    let $header = Plan.createTaskHeaderElement(plan)
+    let $body = Plan.createTaskBodyElement(plan)
+    let $footer = Plan.createTaskFooterElement(plan)
+
+    return createElement('div', {
+      'className': 'task-main'
+    }, [
+      $header,
+      $body,
+      $footer
     ])
   }
 

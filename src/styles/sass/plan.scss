@@ -43,7 +43,7 @@
   margin: 0 0 0 48px;
 }
 
-@media only screen and (max-width: 1080px) {
+@media only screen and (max-width: 960px) {
   .columns {
     overflow: auto;
   }
@@ -130,7 +130,7 @@
   }
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 760px) {
   .column {
     .task-prev-button {
       display: block;
