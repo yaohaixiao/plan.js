@@ -623,7 +623,7 @@ class Plan {
     return this
   }
 
-  checkPrevStage ($button) {
+  checkChangeStatus ($button, direction) {
     let id = $button.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
     let status = parseInt(plan.status, 10)
@@ -632,13 +632,21 @@ class Plan {
     let $plan = $sourceTasks.querySelector(`div.task[data-id="${id}"]`)
     let $targetCount
     let $targetTasks
-    let sourceCount
-    let targetCount
 
-    plan.status -= 1
+    if (direction === 'prev') {
+      plan.status -= 1
 
-    if (plan.status < 0) {
-      plan.status = 0
+      if (plan.status < 0) {
+        plan.status = 0
+      }
+    } else {
+      if (direction === 'next') {
+        plan.status += 1
+
+        if (plan.status > 3) {
+          plan.status = 3
+        }
+      }
     }
 
     plan.delayed = Plan.isDelayed(plan.deadline)
@@ -648,56 +656,9 @@ class Plan {
     $targetCount = this.getStatusCountEl(plan.status)
     $targetTasks = this.getStatusTasksEl(plan.status)
 
-    sourceCount = parseInt($sourceCount.innerHTML, 10)
-    sourceCount -= 1
+    Plan.updateStatusChangedCount($sourceCount, $targetCount)
 
-    targetCount = parseInt($targetCount.innerHTML, 10)
-    targetCount += 1
-
-    $sourceCount.innerHTML = sourceCount
     $sourceTasks.removeChild($plan)
-
-    $targetCount.innerHTML = targetCount
-    $targetTasks.appendChild(Plan.getTaskElement(plan))
-
-    return this
-  }
-
-  checkNextStage ($button) {
-    let id = $button.getAttribute('data-id')
-    let plan = this.getPlan(parseInt(id, 10))
-    let status = parseInt(plan.status, 10)
-    let $sourceCount = this.getStatusCountEl(status)
-    let $sourceTasks = this.getStatusTasksEl(status)
-    let $plan = $sourceTasks.querySelector(`div.task[data-id="${id}"]`)
-    let $targetCount
-    let $targetTasks
-    let sourceCount
-    let targetCount
-
-    plan.status += 1
-
-    if (plan.status > 3) {
-      plan.status = 3
-    }
-
-    plan.delayed = Plan.isDelayed(plan.deadline)
-    plan.update = Utils.getMoments()
-    this.setPlan(plan)
-
-    $targetCount = this.getStatusCountEl(plan.status)
-    $targetTasks = this.getStatusTasksEl(plan.status)
-
-    sourceCount = parseInt($sourceCount.innerHTML, 10)
-    sourceCount -= 1
-
-    targetCount = parseInt($targetCount.innerHTML, 10)
-    targetCount += 1
-
-    $sourceCount.innerHTML = sourceCount
-    $sourceTasks.removeChild($plan)
-
-    $targetCount.innerHTML = targetCount
     $targetTasks.appendChild(Plan.getTaskElement(plan))
 
     return this
@@ -834,16 +795,6 @@ class Plan {
   }
 
   drop ($plan, $column) {
-    const updateCount = ($sourceCount, $targetCount) => {
-      let sourceCount = parseInt($sourceCount.innerHTML, 10)
-      let targetCount = parseInt($targetCount.innerHTML, 10)
-
-      sourceCount -= 1
-      $sourceCount.innerHTML = sourceCount
-
-      targetCount += 1
-      $targetCount.innerHTML = targetCount
-    }
     let filter = this.getFilter()
     let id = $plan.getAttribute('data-id')
     let status = $column.getAttribute('data-status')
@@ -859,7 +810,7 @@ class Plan {
       $sourceCount = this.getStatusCountEl(plan.status)
       $targetCount = elements.trashCount
 
-      updateCount($sourceCount, $targetCount)
+      Plan.updateStatusChangedCount($sourceCount, $targetCount)
 
       plan.deleted = true
     } else {
@@ -897,7 +848,7 @@ class Plan {
         $targetCount = this.getStatusCountEl(parseInt(status, 10))
 
         DOM.removeClass($plan, 'task-status-' + plan.status)
-        updateCount($sourceCount, $targetCount)
+        Plan.updateStatusChangedCount($sourceCount, $targetCount)
 
         plan.deleted = false
         plan.status = parseInt(status, 10)
@@ -906,7 +857,7 @@ class Plan {
         $targetCount = this.getStatusCountEl(parseInt(status, 10))
 
         DOM.removeClass($plan, 'task-status-' + plan.status)
-        updateCount($sourceCount, $targetCount)
+        Plan.updateStatusChangedCount($sourceCount, $targetCount)
 
         // 普通状态之前的调整
         plan.status = parseInt(status, 10)
@@ -1497,7 +1448,13 @@ class Plan {
   }
 
   _onPrevButtonClick (evt) {
-    this.checkPrevStage(evt.delegateTarget)
+    this.checkChangeStatus(evt.delegateTarget, 'next')
+
+    return this
+  }
+
+  _onNextButtonClick (evt) {
+    this.checkChangeStatus(evt.delegateTarget, 'next')
 
     return this
   }
@@ -1522,12 +1479,6 @@ class Plan {
 
   _onReplaceButtonClick (evt) {
     this.checkReplace(evt.delegateTarget)
-
-    return this
-  }
-
-  _onNextButtonClick (evt) {
-    this.checkNextStage(evt.delegateTarget)
 
     return this
   }
@@ -1807,6 +1758,17 @@ class Plan {
 
   static isDelayed (deadline) {
     return new Date().getTime() > new Date(deadline).getTime() > 0
+  }
+
+  static updateStatusChangedCount ($sourceCount, $targetCount) {
+    let sourceCount = parseInt($sourceCount.innerHTML, 10)
+    let targetCount = parseInt($targetCount.innerHTML, 10)
+
+    sourceCount -= 1
+    $sourceCount.innerHTML = sourceCount
+
+    targetCount += 1
+    $targetCount.innerHTML = targetCount
   }
 }
 

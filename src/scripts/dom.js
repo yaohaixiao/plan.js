@@ -136,8 +136,9 @@ const DOM = {
       return false
     }
 
-    DOM.removeClass(el, oldClass)
-    DOM.addClass(el, newClass)
+    allClass = Utils.trim(allClass.replace(oldClass, newClass))
+
+    el.className = allClass
   }
 }
 

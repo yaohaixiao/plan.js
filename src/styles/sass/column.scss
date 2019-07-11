@@ -120,10 +120,10 @@
   width: 100%;
 }
 
-.column-button{
+.column-button {
   @include button(40px, 40px, 24px);
   cursor: pointer;
   display: none;
-  right:0;
-  top:0;
+  right: 0;
+  top: 0;
 }
