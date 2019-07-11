@@ -97,6 +97,9 @@ class Plan {
     let elements = this.getEls()
     let $wrap = elements.wrap
 
+    // ---------- toolbar ----------
+    // 添加
+    Delegate.on($wrap, '.toolbar-plus-button', 'click', this._onPlusButtonClick, this)
     // 过滤任务
     Delegate.on($wrap, '.toolbar-inbox-button', 'click', this._onInBoxFilterButtonClick, this)
     Delegate.on($wrap, '.toolbar-spades-button', 'click', this._onSpadesFilterButtonClick, this)
@@ -104,37 +107,42 @@ class Plan {
     Delegate.on($wrap, '.toolbar-clubs-button', 'click', this._onClubsFilterButtonClick, this)
     Delegate.on($wrap, '.toolbar-diamonds-button', 'click', this._onDiamondsFilterButtonClick, this)
     Delegate.on($wrap, '.toolbar-bookmark-button', 'click', this._onBookmarkFilterButtonClick, this)
+    // 回收站
+    Delegate.on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
 
-    // 创建任务
-    Delegate.on($wrap, '.toolbar-plus-button', 'click', this._onPlusButtonClick, this)
-
+    // ---------- panel ----------
     // 新建任务 Panel
     Delegate.on($wrap, '.panel-add-cancel', 'click', this._onAddCancelButtonClick, this)
     Delegate.on($wrap, '.panel-add-save', 'click', this._onAddSaveButtonClick, this)
     Delegate.on($wrap, '.panel-add-level', 'click', this._onAddLevelButtonClick, this)
-
     // 编辑任务 Panel
     Delegate.on($wrap, '.panel-edit-cancel', 'click', this._onEditCancelButtonClick, this)
     Delegate.on($wrap, '.panel-edit-save', 'click', this._onEditSaveButtonClick, this)
     Delegate.on($wrap, '.panel-edit-level', 'click', this._onEditLevelButtonClick, this)
-
-    Delegate.on($wrap, '.task-edit-button', 'click', this._onEditButtonClick, this)
-    Delegate.on($wrap, '.task-bookmark-button', 'click', this._onMarkedButtonClick, this)
-    Delegate.on($wrap, '.task-delete-button', 'click', this._onDeleteButtonClick, this)
-    Delegate.on($wrap, '.task-replace-button', 'click', this._onReplaceButtonClick, this)
-
     // 回收站
-    Delegate.on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
     Delegate.on($wrap, '.panel-trash-cancel', 'click', this._onTrashCancelButtonClick, this)
 
-    // column
-    Delegate.on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
+    // ---------- task ----------
+    // 切换状态
+    Delegate.on($wrap, '.task-prev-button', 'click', this._onPrevButtonClick, this)
+    Delegate.on($wrap, '.task-next-button', 'click', this._onNextButtonClick, this)
+    // 编辑
+    Delegate.on($wrap, '.task-edit-button', 'click', this._onEditButtonClick, this)
+    // 标记重要
+    Delegate.on($wrap, '.task-bookmark-button', 'click', this._onMarkedButtonClick, this)
+    // 删除
+    Delegate.on($wrap, '.task-delete-button', 'click', this._onDeleteButtonClick, this)
+    // 恢复
+    Delegate.on($wrap, '.task-replace-button', 'click', this._onReplaceButtonClick, this)
+
+    // ---------- column ----------
     Delegate.on($wrap, '.column-up-button', 'click', this._onColumnUpButtonClick, this)
     Delegate.on($wrap, '.column-down-button', 'click', this._onColumnDownButtonClick, this)
+    Delegate.on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
 
     // 拖动完成，更新任务状态
-    this.$dragula.on('drop', ($plan, $column) => {
-      this.drop($plan, $column)
+    this.$dragula.on('drop', ($plan, $target) => {
+      this.drop($plan, $target)
     })
 
     return this
@@ -159,35 +167,37 @@ class Plan {
   removeEventListeners () {
     let $wrap = this.getEls().wrap
 
-    // 过滤任务
+    // ---------- toolbar ----------
+    Delegate.off($wrap, 'click', this._onPlusButtonClick)
     Delegate.off($wrap, 'click', this._onInBoxFilterButtonClick)
     Delegate.off($wrap, 'click', this._onSpadesFilterButtonClick)
     Delegate.off($wrap, 'click', this._onHeartFilterButtonClick)
     Delegate.off($wrap, 'click', this._onClubsFilterButtonClick)
     Delegate.off($wrap, 'click', this._onDiamondsFilterButtonClick)
     Delegate.off($wrap, 'click', this._onBookmarkFilterButtonClick)
+    Delegate.off($wrap, 'click', this._onTrashButtonClick)
 
-    // 添加任务
-    Delegate.off($wrap, 'click', this._onPlusButtonClick)
-    Delegate.off($wrap, 'click', this._onColumnsOverlayClick)
+    // ---------- panel ----------
     Delegate.off($wrap, 'click', this._onAddCancelButtonClick)
     Delegate.off($wrap, 'click', this._onAddSaveButtonClick)
     Delegate.off($wrap, 'click', this._onAddLevelButtonClick)
-
-    // 编辑任务
     Delegate.off($wrap, 'click', this._onEditCancelButtonClick)
     Delegate.off($wrap, 'click', this._onEditSaveButtonClick)
     Delegate.off($wrap, 'click', this._onEditLevelButtonClick)
+    Delegate.off($wrap, 'click', this._onTrashCancelButtonClick)
+
+    // ---------- task ----------
+    Delegate.off($wrap, 'click', this._onPrevButtonClick)
     Delegate.off($wrap, 'click', this._onEditButtonClick)
     Delegate.off($wrap, 'click', this._onMarkedButtonClick)
     Delegate.off($wrap, 'click', this._onDeleteButtonClick)
     Delegate.off($wrap, 'click', this._onReplaceButtonClick)
+    Delegate.off($wrap, 'click', this._onNextButtonClick)
 
-    // 回收站
-    Delegate.off($wrap, 'click', this._onTrashButtonClick)
-    Delegate.off($wrap, 'click', this._onTrashCancelButtonClick)
+    // ---------- column ----------
     Delegate.off($wrap, 'click', this._onColumnUpButtonClick)
     Delegate.off($wrap, 'click', this._onColumnDownButtonClick)
+    Delegate.off($wrap, 'click', this._onColumnsOverlayClick)
 
     return this
   }
@@ -200,6 +210,7 @@ class Plan {
     let checkingPlans
     let donePlans
 
+    plan.delayed = Plan.isDelayed(plan.deadline)
     plans.push(plan)
     this.setPlans(plans)
 
@@ -214,45 +225,22 @@ class Plan {
   }
 
   remove (plan) {
-    let plans = Utils.clone(this.getPlans())
-    let elements = this.getEls()
-    let $column
-    let $count
+    let status = plan.status
+    let $tasks = this.getStatusTasksEl(status)
+    let $count = this.getStatusCountEl(status)
     let $plan
     let count
 
-    plans.forEach((task) => {
-      if (plan.id === task.id) {
-        task.deleted = true
-        task.update = Utils.getMoments()
-      }
-    })
-    this.setPlans(plans)
-
-    switch (plan.status) {
-      case 0:
-        $column = elements.tasksTodo
-        $count = elements.todoCount
-        break
-      case 1:
-        $column = elements.tasksDoing
-        $count = elements.doingCount
-        break
-      case 2:
-        $column = elements.tasksChecking
-        $count = elements.checkingCount
-        break
-      case 3:
-        $column = elements.tasksDone
-        $count = elements.doneCount
-        break
-    }
+    plan.deleted = true
+    plan.delayed = Plan.isDelayed(plan.deadline)
+    plan.update = Utils.getMoments()
+    this.setPlan(plan)
 
     count = parseInt($count.innerHTML, 10)
     count -= 1
 
-    $plan = $column.querySelector(`[data-id="${plan.id}"]`)
-    $column.removeChild($plan)
+    $plan = $tasks.querySelector(`div.task[data-id="${plan.id}"]`)
+    $tasks.removeChild($plan)
     $count.innerHTML = count
 
     return this
@@ -265,6 +253,7 @@ class Plan {
     let checkingPlans
     let donePlans
 
+    plan.delayed = Plan.isDelayed(plan.deadline)
     plan.update = Utils.getMoments()
     this.setPlan(plan)
 
@@ -303,7 +292,7 @@ class Plan {
     count = parseInt($count.innerHTML, 10)
     count -= 1
 
-    $plan = $tasksTrash.querySelector(`[data-id="${plan.id}"]`)
+    $plan = $tasksTrash.querySelector(`div.task[data-id="${plan.id}"]`)
     $tasksTrash.removeChild($plan)
     $count.innerHTML = count
 
@@ -332,10 +321,8 @@ class Plan {
       wrap: null,
       toolbar: null,
       addPanel: null,
-      addCancel: null,
-      addSave: null,
-      columns: null,
-      columnsOverlay: null,
+      trashPanel: null,
+      editPanel: null,
       todoCount: null,
       tasksTodo: null,
       doingCount: null,
@@ -344,16 +331,10 @@ class Plan {
       tasksChecking: null,
       doneCount: null,
       tasksDone: null,
-      editPanel: null,
-      editCancel: null,
-      editSave: null,
-      confirm: null,
-      confirmCancel: null,
-      confirmEnter: null,
-      trashPanel: null,
-      trashCancel: null,
       trashCount: null,
-      tasksTrash: null
+      tasksTrash: null,
+      columns: null,
+      columnsOverlay: null
     }
 
     this.data = {
@@ -510,6 +491,50 @@ class Plan {
     return this.elements
   }
 
+  getStatusCountEl (status) {
+    let elements = this.getEls()
+    let $count
+
+    switch (status) {
+      case 0:
+        $count = elements.todoCount
+        break
+      case 1:
+        $count = elements.doingCount
+        break
+      case 2:
+        $count = elements.checkingCount
+        break
+      case 3:
+        $count = elements.doneCount
+        break
+    }
+
+    return $count
+  }
+
+  getStatusTasksEl (status) {
+    let elements = this.getEls()
+    let $tasks
+
+    switch (status) {
+      case 0:
+        $tasks = elements.tasksTodo
+        break
+      case 1:
+        $tasks = elements.tasksDoing
+        break
+      case 2:
+        $tasks = elements.tasksChecking
+        break
+      case 3:
+        $tasks = elements.tasksDone
+        break
+    }
+
+    return $tasks
+  }
+
   queryElements () {
     let elements = this.getEls()
 
@@ -518,11 +543,8 @@ class Plan {
     elements.toolbar = document.querySelector('#toolbar')
 
     elements.addPanel = document.querySelector('#add-panel')
-    elements.addCancel = document.querySelector('#add-cancel')
-    elements.addSave = document.querySelector('#add-save')
-
-    elements.columns = document.querySelector('#columns')
-    elements.columnsOverlay = document.querySelector('#columns-overlay')
+    elements.editPanel = document.querySelector('#edit-panel')
+    elements.trashPanel = document.querySelector('#trash-panel')
 
     elements.todoCount = document.querySelector('#todo-count')
     elements.tasksTodo = document.querySelector('#tasks-todo')
@@ -536,14 +558,11 @@ class Plan {
     elements.doneCount = document.querySelector('#done-count')
     elements.tasksDone = document.querySelector('#tasks-done')
 
-    elements.editPanel = document.querySelector('#edit-panel')
-    elements.editCancel = document.querySelector('#edit-cancel')
-    elements.editSave = document.querySelector('#edit-save')
-
-    elements.trashPanel = document.querySelector('#trash-panel')
-    elements.trashCancel = document.querySelector('#trash-cancel')
     elements.trashCount = document.querySelector('#trash-count')
     elements.tasksTrash = document.querySelector('#tasks-trash')
+
+    elements.columns = document.querySelector('#columns')
+    elements.columnsOverlay = document.querySelector('#columns-overlay')
 
     return this
   }
@@ -604,62 +623,82 @@ class Plan {
     return this
   }
 
-  checkColumnUp ($button) {
-    const CLS_HIDDEN = 'hidden'
-    const addClass = DOM.addClass
-    let status = parseInt($button.getAttribute('data-status'), 10)
-    let elements = this.getEls()
-    let $down = $button.parentNode.querySelector('.column-down-button')
-    let $tasks
+  checkPrevStage ($button) {
+    let id = $button.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+    let status = parseInt(plan.status, 10)
+    let $sourceCount = this.getStatusCountEl(status)
+    let $sourceTasks = this.getStatusTasksEl(status)
+    let $plan = $sourceTasks.querySelector(`div.task[data-id="${id}"]`)
+    let $targetCount
+    let $targetTasks
+    let sourceCount
+    let targetCount
 
-    switch (status) {
-      case 0:
-        $tasks = elements.tasksTodo
-        break
-      case 1:
-        $tasks = elements.tasksDoing
-        break
-      case 2:
-        $tasks = elements.tasksChecking
-        break
-      case 3:
-        $tasks = elements.tasksDone
-        break
+    plan.status -= 1
+
+    if (plan.status < 0) {
+      plan.status = 0
     }
 
-    addClass($button,CLS_HIDDEN)
-    DOM.removeClass($down, CLS_HIDDEN)
-    addClass($tasks, 'tasks-min')
+    plan.delayed = Plan.isDelayed(plan.deadline)
+    plan.update = Utils.getMoments()
+    this.setPlan(plan)
+
+    $targetCount = this.getStatusCountEl(plan.status)
+    $targetTasks = this.getStatusTasksEl(plan.status)
+
+    sourceCount = parseInt($sourceCount.innerHTML, 10)
+    sourceCount -= 1
+
+    targetCount = parseInt($targetCount.innerHTML, 10)
+    targetCount += 1
+
+    $sourceCount.innerHTML = sourceCount
+    $sourceTasks.removeChild($plan)
+
+    $targetCount.innerHTML = targetCount
+    $targetTasks.appendChild(Plan.getTaskElement(plan))
 
     return this
   }
 
-  checkColumnDown ($button) {
-    const CLS_HIDDEN = 'hidden'
-    const removeClass = DOM.removeClass
-    let status = parseInt($button.getAttribute('data-status'), 10)
-    let elements = this.getEls()
-    let $up = $button.parentNode.querySelector('.column-up-button')
-    let $tasks
+  checkNextStage ($button) {
+    let id = $button.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+    let status = parseInt(plan.status, 10)
+    let $sourceCount = this.getStatusCountEl(status)
+    let $sourceTasks = this.getStatusTasksEl(status)
+    let $plan = $sourceTasks.querySelector(`div.task[data-id="${id}"]`)
+    let $targetCount
+    let $targetTasks
+    let sourceCount
+    let targetCount
 
-    switch (status) {
-      case 0:
-        $tasks = elements.tasksTodo
-        break
-      case 1:
-        $tasks = elements.tasksDoing
-        break
-      case 2:
-        $tasks = elements.tasksChecking
-        break
-      case 3:
-        $tasks = elements.tasksDone
-        break
+    plan.status += 1
+
+    if (plan.status > 3) {
+      plan.status = 3
     }
 
-    DOM.addClass($button, CLS_HIDDEN)
-    removeClass($up, CLS_HIDDEN)
-    removeClass($tasks, 'tasks-min')
+    plan.delayed = Plan.isDelayed(plan.deadline)
+    plan.update = Utils.getMoments()
+    this.setPlan(plan)
+
+    $targetCount = this.getStatusCountEl(plan.status)
+    $targetTasks = this.getStatusTasksEl(plan.status)
+
+    sourceCount = parseInt($sourceCount.innerHTML, 10)
+    sourceCount -= 1
+
+    targetCount = parseInt($targetCount.innerHTML, 10)
+    targetCount += 1
+
+    $sourceCount.innerHTML = sourceCount
+    $sourceTasks.removeChild($plan)
+
+    $targetCount.innerHTML = targetCount
+    $targetTasks.appendChild(Plan.getTaskElement(plan))
 
     return this
   }
@@ -675,35 +714,43 @@ class Plan {
   }
 
   checkBookmark ($button) {
-    const CLS_BUTTON_MARKED = 'task-marked-button'
-    const CLS_TASK_MARKED = 'task-marked'
+    const CLS_MARKED = 'task-marked'
     let id = parseInt($button.getAttribute('data-id'), 10)
     let plan = this.getPlan(id)
     let filter = this.getFilter()
-    let $plan = document.querySelector(`[data-id="${id}"]`)
-    let todoPlans
-    let doingPlans
-    let checkingPlans
-    let donePlans
+    let status = plan.status
+    let elements = this.getEls()
+    let selector = `div.task[data-id="${id}"]`
+    let $plan
 
     plan.marked = !plan.marked
     plan.update = Utils.getMoments()
     this.setPlan(plan)
 
-    if (filter === 'marked') {
-      todoPlans = this.filterPlans(0, 'marked')
-      doingPlans = this.filterPlans(1, 'marked')
-      checkingPlans = this.filterPlans(2, 'marked')
-      donePlans = this.filterPlans(3, 'marked')
+    switch (status) {
+      case 0:
+        $plan = elements.tasksTodo.querySelector(selector)
+        break
+      case 1:
+        $plan = elements.tasksDoing.querySelector(selector)
+        break
+      case 2:
+        $plan = elements.tasksChecking.querySelector(selector)
+        break
+      case 3:
+        $plan = elements.tasksDone.querySelector(selector)
+        break
+    }
 
-      this.updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
+    if (filter === 'marked') {
+      this.updateColumn(status, this.filterPlans(status, 'marked'))
     } else {
-      if (DOM.hasClass($button, CLS_BUTTON_MARKED)) {
-        DOM.removeClass($button, CLS_BUTTON_MARKED)
-        DOM.removeClass($plan, CLS_TASK_MARKED)
+      if (plan.marked) {
+        DOM.addClass($plan, CLS_MARKED)
+        $plan.setAttribute('data-marked', '1')
       } else {
-        DOM.addClass($button, CLS_BUTTON_MARKED)
-        DOM.addClass($plan, CLS_TASK_MARKED)
+        DOM.removeClass($plan, CLS_MARKED)
+        $plan.setAttribute('data-marked', '0')
       }
     }
 
@@ -758,61 +805,65 @@ class Plan {
     return this
   }
 
+  checkColumnUp ($button) {
+    const CLS_HIDDEN = 'hidden'
+    const addClass = DOM.addClass
+    let status = parseInt($button.getAttribute('data-status'), 10)
+    let $down = $button.parentNode.querySelector('.column-down-button')
+    let $tasks = this.getStatusTasksEl(status)
+
+    addClass($button, CLS_HIDDEN)
+    DOM.removeClass($down, CLS_HIDDEN)
+    addClass($tasks, 'tasks-min')
+
+    return this
+  }
+
+  checkColumnDown ($button) {
+    const CLS_HIDDEN = 'hidden'
+    const removeClass = DOM.removeClass
+    let status = parseInt($button.getAttribute('data-status'), 10)
+    let $up = $button.parentNode.querySelector('.column-up-button')
+    let $tasks = this.getStatusTasksEl(status)
+
+    DOM.addClass($button, CLS_HIDDEN)
+    removeClass($up, CLS_HIDDEN)
+    removeClass($tasks, 'tasks-min')
+
+    return this
+  }
+
   drop ($plan, $column) {
+    const updateCount = ($sourceCount, $targetCount) => {
+      let sourceCount = parseInt($sourceCount.innerHTML, 10)
+      let targetCount = parseInt($targetCount.innerHTML, 10)
+
+      sourceCount -= 1
+      $sourceCount.innerHTML = sourceCount
+
+      targetCount += 1
+      $targetCount.innerHTML = targetCount
+    }
     let filter = this.getFilter()
     let id = $plan.getAttribute('data-id')
     let status = $column.getAttribute('data-status')
     let plan = this.getPlan(parseInt(id, 10))
     let elements = this.getEls()
-    let $side = $plan.querySelector('.task-side')
-    let $edit
-    let $mark
-    let $replace
     let $header
     let $level
     let $sourceCount
     let $targetCount
-    let sourceCount
-    let targetCount
 
     // 移动到回收站
     if (status === 'deleted') {
-      plan.deleted = true
-
-      // 更新操作按钮
-      $edit = $side.querySelector('.task-edit-button')
-      $mark = $side.querySelector('.task-bookmark-button')
-      $replace = Plan.getTaskReplaceElement(plan)
-
-      $side.insertBefore($replace, $edit)
-      $side.removeChild($mark)
-      $side.removeChild($edit)
-
-      switch (plan.status) {
-        case 0:
-          $sourceCount = elements.todoCount
-          break
-        case 1:
-          $sourceCount = elements.doingCount
-          break
-        case 2:
-          $sourceCount = elements.checkingCount
-          break
-        case 3:
-          $sourceCount = elements.doneCount
-          break
-      }
-
-      sourceCount = parseInt($sourceCount.innerHTML, 10)
-      sourceCount -= 1
-      $sourceCount.innerHTML = sourceCount
-
+      $sourceCount = this.getStatusCountEl(plan.status)
       $targetCount = elements.trashCount
-      targetCount = parseInt($targetCount.innerHTML, 10)
-      targetCount += 1
-      $targetCount.innerHTML = targetCount
+
+      updateCount($sourceCount, $targetCount)
+
+      plan.deleted = true
     } else {
-      // 从回收站移除来
+      // 从回收站移出来
       if (plan.deleted) {
         // 根据过滤器，更新相应的属性
         switch (filter) {
@@ -837,84 +888,25 @@ class Plan {
             break
         }
 
-        plan.deleted = false
-        plan.status = parseInt(status, 10)
-
-        // 更新操作按钮
-        $edit = Plan.getTaskEditElement(plan)
-        $mark = Plan.getTaskMarkElement(plan)
-        $replace = $side.querySelector('.task-replace-button')
-
-        $side.insertBefore($edit, $replace)
-        $side.insertBefore($mark, $replace)
-        $side.removeChild($replace)
-
         if ($level) {
           $header = $plan.querySelector('.task-hd')
           $header.replaceChild(Plan.getTaskLevelElement(plan), $level)
         }
 
         $sourceCount = elements.trashCount
-        sourceCount = parseInt($sourceCount.innerHTML, 10)
-        sourceCount -= 1
-        $sourceCount.innerHTML = sourceCount
+        $targetCount = this.getStatusCountEl(parseInt(status, 10))
 
-        switch (parseInt(status, 10)) {
-          case 0:
-            $targetCount = elements.todoCount
-            break
-          case 1:
-            $targetCount = elements.doingCount
-            break
-          case 2:
-            $targetCount = elements.checkingCount
-            break
-          case 3:
-            $targetCount = elements.doneCount
-            break
-        }
+        DOM.removeClass($plan, 'task-status-' + plan.status)
+        updateCount($sourceCount, $targetCount)
 
-        targetCount = parseInt($targetCount.innerHTML, 10)
-        targetCount += 1
-        $targetCount.innerHTML = targetCount
+        plan.deleted = false
+        plan.status = parseInt(status, 10)
       } else {
-        switch (plan.status) {
-          case 0:
-            $sourceCount = elements.todoCount
-            break
-          case 1:
-            $sourceCount = elements.doingCount
-            break
-          case 2:
-            $sourceCount = elements.checkingCount
-            break
-          case 3:
-            $sourceCount = elements.doneCount
-            break
-        }
+        $sourceCount = this.getStatusCountEl(plan.status)
+        $targetCount = this.getStatusCountEl(parseInt(status, 10))
 
-        sourceCount = parseInt($sourceCount.innerHTML, 10)
-        sourceCount -= 1
-        $sourceCount.innerHTML = sourceCount
-
-        switch (parseInt(status, 10)) {
-          case 0:
-            $targetCount = elements.todoCount
-            break
-          case 1:
-            $targetCount = elements.doingCount
-            break
-          case 2:
-            $targetCount = elements.checkingCount
-            break
-          case 3:
-            $targetCount = elements.doneCount
-            break
-        }
-
-        targetCount = parseInt($targetCount.innerHTML, 10)
-        targetCount += 1
-        $targetCount.innerHTML = targetCount
+        DOM.removeClass($plan, 'task-status-' + plan.status)
+        updateCount($sourceCount, $targetCount)
 
         // 普通状态之前的调整
         plan.status = parseInt(status, 10)
@@ -922,7 +914,35 @@ class Plan {
     }
 
     plan.update = Utils.getMoments()
+    plan.delayed = Plan.isDelayed(plan.deadline)
     this.setPlan(plan)
+
+    if (plan.deleted) {
+      $plan.setAttribute('data-deleted', '1')
+      DOM.addClass($plan, 'task-deleted')
+    } else {
+      $plan.setAttribute('data-deleted', '0')
+      DOM.removeClass($plan, 'task-deleted')
+    }
+
+    if (plan.marked) {
+      $plan.setAttribute('data-marked', '1')
+      DOM.addClass($plan, 'task-marked')
+    } else {
+      $plan.setAttribute('data-marked', '0')
+      DOM.removeClass($plan, 'task-marked')
+    }
+
+    if (plan.delayed) {
+      $plan.setAttribute('data-delayed', '1')
+      DOM.addClass($plan, 'task-delayed')
+    } else {
+      $plan.setAttribute('data-delayed', '0')
+      DOM.removeClass($plan, 'task-delayed')
+    }
+
+    $plan.setAttribute('data-status', plan.status.toString())
+    DOM.addClass($plan, 'task-status-' + plan.status)
 
     return this
   }
@@ -979,6 +999,25 @@ class Plan {
     $doneCount.innerHTML = `${donePlans.length}`
     $tasksDone.innerHTML = ''
     $tasksDone.appendChild($doneFragment)
+
+    return this
+  }
+
+  updateColumn (status, plans) {
+    switch (status) {
+      case 0:
+        this.updateTodoColumn(plans)
+        break
+      case 1:
+        this.updateDoingColumn(plans)
+        break
+      case 2:
+        this.updateCheckingColumn(plans)
+        break
+      case 3:
+        this.updateDoneColumn(plans)
+        break
+    }
 
     return this
   }
@@ -1360,8 +1399,20 @@ class Plan {
     return this
   }
 
+  _onTrashButtonClick () {
+    this.toggleTrashPanel()
+
+    return this
+  }
+
   _onAddCancelButtonClick () {
     this.closeAddPanel()
+
+    return this
+  }
+
+  _onAddLevelButtonClick (evt) {
+    this.checkLevel(evt.delegateTarget)
 
     return this
   }
@@ -1403,6 +1454,12 @@ class Plan {
     return this
   }
 
+  _onEditLevelButtonClick (evt) {
+    this.checkLevel(evt.delegateTarget)
+
+    return this
+  }
+
   _onEditSaveButtonClick () {
     let elements = this.getEls()
     let $editPanel = elements.editPanel
@@ -1433,26 +1490,14 @@ class Plan {
     return this
   }
 
-  _onAddLevelButtonClick (evt) {
-    this.checkLevel(evt.delegateTarget)
-
-    return this
-  }
-
-  _onEditLevelButtonClick (evt) {
-    this.checkLevel(evt.delegateTarget)
-
-    return this
-  }
-
-  _onTrashButtonClick () {
-    this.toggleTrashPanel()
-
-    return this
-  }
-
   _onTrashCancelButtonClick () {
     this.closeTrashPanel()
+
+    return this
+  }
+
+  _onPrevButtonClick (evt) {
+    this.checkPrevStage(evt.delegateTarget)
 
     return this
   }
@@ -1481,6 +1526,12 @@ class Plan {
     return this
   }
 
+  _onNextButtonClick (evt) {
+    this.checkNextStage(evt.delegateTarget)
+
+    return this
+  }
+
   _onColumnsOverlayClick () {
     this.closePanel()
 
@@ -1501,21 +1552,22 @@ class Plan {
 
   static getTaskElement (plan) {
     const createElement = DOM.createElement
-    let isDeleted = plan.deleted
     let id = plan.id
+    let $prev = Plan.getTaskPrevElement(plan)
+    let $next = Plan.getTaskNextElement(plan)
     let $edit = Plan.getTaskEditElement(plan)
     let $mark = Plan.getTaskMarkElement(plan)
     let $delete = Plan.getTasKDeleteElement(plan)
     let $replace = Plan.getTaskReplaceElement(plan)
     let $side = createElement('div', {
       'className': 'task-side'
-    }, isDeleted ? [
-      $replace,
-      $delete
-    ] : [
+    }, [
+      $prev,
       $edit,
       $mark,
-      $delete
+      $replace,
+      $delete,
+      $next
     ])
     let $level = Plan.getTaskLevelElement(plan)
     let $header = createElement('div', {
@@ -1587,14 +1639,47 @@ class Plan {
       $body,
       $footer
     ])
+    let classTask = 'task'
+
+    if (plan.marked) {
+      classTask += ' ' + 'task-marked'
+    }
+
+    if (plan.deleted) {
+      classTask += ' ' + 'task-deleted'
+    }
+
+    if (plan.delayed) {
+      classTask += ' ' + 'task-delayed'
+    }
+
+    classTask += ' ' + 'task-status-' + plan.status
 
     return createElement('div', {
       'id': `task-${id}`,
-      'className': plan.marked ? 'task task-marked' : 'task',
-      'data-id': `${id}`
+      'className': classTask,
+      'data-id': `${id}`,
+      'data-status': `${plan.status}`,
+      'data-deleted': `${plan.deleted ? 1 : 0}`,
+      'data-delayed': `${plan.delayed ? 1 : 0}`,
+      'data-marked': `${plan.marked ? 1 : 0}`
     }, [
       $main,
       $side
+    ])
+  }
+
+  static getTaskPrevElement (plan) {
+    const createElement = DOM.createElement
+    let id = plan.id
+
+    return createElement('div', {
+      'className': 'task-button task-prev-button',
+      'data-id': `${id}`
+    }, [
+      createElement('i', {
+        'className': 'icon-cheveron-up'
+      })
     ])
   }
 
@@ -1615,10 +1700,9 @@ class Plan {
   static getTaskMarkElement (plan) {
     const createElement = DOM.createElement
     let id = plan.id
-    let classNameMarked = 'task-button task-bookmark-button'
 
     return createElement('div', {
-      'className': plan.marked ? classNameMarked + ' ' + 'task-marked-button' : classNameMarked,
+      'className': 'task-button task-bookmark-button',
       'data-id': `${id}`
     }, [
       createElement('i', {
@@ -1674,6 +1758,20 @@ class Plan {
     ])
   }
 
+  static getTaskNextElement (plan) {
+    const createElement = DOM.createElement
+    let id = plan.id
+
+    return createElement('div', {
+      'className': 'task-button task-next-button',
+      'data-id': `${id}`
+    }, [
+      createElement('i', {
+        'className': 'icon-cheveron-down'
+      })
+    ])
+  }
+
   static guid (len, radix) {
     let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
     let uuid = []
@@ -1705,6 +1803,10 @@ class Plan {
     }
 
     return uuid.join('')
+  }
+
+  static isDelayed (deadline) {
+    return new Date().getTime() > new Date(deadline).getTime() > 0
   }
 }
 

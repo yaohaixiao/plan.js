@@ -57,11 +57,6 @@
   }
 }
 
-.task-marked {
-  background-color: $background-color;
-  border-left-color: $primary;
-}
-
 .task-main {
   overflow: hidden;
   position: relative;
@@ -124,7 +119,7 @@
   font-weight: normal;
   line-height: 18px;
   margin: 0 auto;
-  max-height: 54px;
+  max-height: 36px;
   overflow: hidden;
 }
 
@@ -181,8 +176,57 @@
   cursor: pointer;
 }
 
-.task-marked-button {
+.task-prev-button {
+  display: none;
+}
+
+.task-replace-button {
+  display: none;
+}
+
+.task-next-button {
+  display: none;
+}
+
+.task-marked {
+  background-color: $background-color;
+  border-left-color: $primary;
+
   .icon-bookmark {
     color: $primary;
+  }
+}
+
+.task-deleted {
+  .task-prev-button {
+    display: none;
+  }
+
+  .task-edit-button {
+    display: none;
+  }
+
+  .task-bookmark-button {
+    display: none;
+  }
+
+  .task-replace-button {
+    display: block;
+  }
+
+  .task-next-button {
+    display: none;
+  }
+}
+
+.task-status-0 {
+  .task-prev-button {
+    display: none;
+  }
+}
+
+.task-status-3 {
+  .task-next-button {
+    display: none;
   }
 }

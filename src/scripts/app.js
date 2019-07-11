@@ -1,9 +1,9 @@
 'use strict'
 
 import Plan from './plan'
-import Tasks from './tasks'
+import Templates from './templates'
 import 'babel-polyfill'
 
 new Plan({
-  plans: Tasks
+  plans: Templates[0].tasks
 })
