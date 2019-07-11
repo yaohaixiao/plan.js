@@ -1246,6 +1246,7 @@ class Plan {
         break
     }
 
+    $level.innerHTML = ''
     $level.appendChild($icon)
 
     return this
