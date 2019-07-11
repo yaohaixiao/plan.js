@@ -1448,7 +1448,7 @@ class Plan {
   }
 
   _onPrevButtonClick (evt) {
-    this.checkChangeStatus(evt.delegateTarget, 'next')
+    this.checkChangeStatus(evt.delegateTarget, 'prev')
 
     return this
   }
