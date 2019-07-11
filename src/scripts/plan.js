@@ -5,6 +5,7 @@ import Delegate from './delegate'
 import Confirm from './confirm'
 import Utils from './utils'
 import dragula from 'dragula'
+import marked from 'marked'
 
 class Plan {
   constructor (options) {
@@ -15,11 +16,10 @@ class Plan {
     this.elements = {
       wrap: null,
       toolbar: null,
+      viewPanel: null,
       addPanel: null,
-      addCancel: null,
-      addSave: null,
-      columns: null,
-      columnsOverlay: null,
+      editPanel: null,
+      trashPanel: null,
       todoCount: null,
       tasksTodo: null,
       doingCount: null,
@@ -28,13 +28,10 @@ class Plan {
       tasksChecking: null,
       doneCount: null,
       tasksDone: null,
-      editPanel: null,
-      editCancel: null,
-      editSave: null,
-      trashPanel: null,
-      trashCancel: null,
       trashCount: null,
-      tasksTrash: null
+      tasksTrash: null,
+      columns: null,
+      columnsOverlay: null
     }
 
     this.$confirm = null
@@ -111,6 +108,8 @@ class Plan {
     Delegate.on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
 
     // ---------- panel ----------
+    Delegate.on($wrap, '.panel-view-cancel', 'click', this._onViewCancelButtonClick, this)
+    Delegate.on($wrap, '.panel-view-edit', 'click', this._onViewEditButtonClick, this)
     // 新建任务 Panel
     Delegate.on($wrap, '.panel-add-cancel', 'click', this._onAddCancelButtonClick, this)
     Delegate.on($wrap, '.panel-add-save', 'click', this._onAddSaveButtonClick, this)
@@ -123,6 +122,7 @@ class Plan {
     Delegate.on($wrap, '.panel-trash-cancel', 'click', this._onTrashCancelButtonClick, this)
 
     // ---------- task ----------
+    Delegate.on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
     // 切换状态
     Delegate.on($wrap, '.task-prev-button', 'click', this._onPrevButtonClick, this)
     Delegate.on($wrap, '.task-next-button', 'click', this._onNextButtonClick, this)
@@ -178,6 +178,8 @@ class Plan {
     Delegate.off($wrap, 'click', this._onTrashButtonClick)
 
     // ---------- panel ----------
+    Delegate.off($wrap, 'click', this._onViewCancelButtonClick)
+    Delegate.off($wrap, 'click', this._onViewEditButtonClick)
     Delegate.off($wrap, 'click', this._onAddCancelButtonClick)
     Delegate.off($wrap, 'click', this._onAddSaveButtonClick)
     Delegate.off($wrap, 'click', this._onAddLevelButtonClick)
@@ -187,6 +189,7 @@ class Plan {
     Delegate.off($wrap, 'click', this._onTrashCancelButtonClick)
 
     // ---------- task ----------
+    Delegate.off($wrap, 'click', this._onTaskTitleClick)
     Delegate.off($wrap, 'click', this._onPrevButtonClick)
     Delegate.off($wrap, 'click', this._onEditButtonClick)
     Delegate.off($wrap, 'click', this._onMarkedButtonClick)
@@ -320,9 +323,10 @@ class Plan {
     this.elements = {
       wrap: null,
       toolbar: null,
+      viewPanel: null,
       addPanel: null,
-      trashPanel: null,
       editPanel: null,
+      trashPanel: null,
       todoCount: null,
       tasksTodo: null,
       doingCount: null,
@@ -542,6 +546,7 @@ class Plan {
 
     elements.toolbar = document.querySelector('#toolbar')
 
+    elements.viewPanel = document.querySelector('#view-panel')
     elements.addPanel = document.querySelector('#add-panel')
     elements.editPanel = document.querySelector('#edit-panel')
     elements.trashPanel = document.querySelector('#trash-panel')
@@ -602,7 +607,7 @@ class Plan {
     let id = $button.getAttribute('data-level')
     let type = $button.getAttribute('data-type')
     let elements = this.getEls()
-    let $panel = type === 'add' ? elements.addPanel : elements.editPanel
+    let $panel
     let $checked
     let $input
 
@@ -610,7 +615,20 @@ class Plan {
       return this
     }
 
-    $input = $panel.querySelector(`#${type}-level`)
+    switch (type) {
+      case 'view':
+        $panel = elements.viewPanel
+        break
+      case 'add':
+        $panel = elements.addPanel
+        $input = $panel.querySelector(`#${type}-level`)
+        break
+      case 'edit':
+        $panel = elements.editPanel
+        $input = $panel.querySelector(`#${type}-level`)
+        break
+    }
+
     $checked = $panel.querySelector('.' + CLS_CHECKED)
 
     if ($checked) {
@@ -618,7 +636,19 @@ class Plan {
     }
     DOM.addClass($button, CLS_CHECKED)
 
-    $input.value = id
+    if ($input) {
+      $input.value = id
+    }
+
+    return this
+  }
+
+  checkTitle ($title) {
+    let id = $title.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+
+    this.setEditPlan(plan)
+        .openViewPanel()
 
     return this
   }
@@ -1027,6 +1057,24 @@ class Plan {
     return this
   }
 
+  emptyViewPanel () {
+    let elements = this.getEls()
+    let $viewPanel = elements.viewPanel
+    let $title = $viewPanel.querySelector('#view-title')
+    let $deadline = $viewPanel.querySelector('#view-deadline')
+    let $consuming = $viewPanel.querySelector('#view-consuming')
+    let $level = $viewPanel.querySelector('#view-level')
+    let $desc = $viewPanel.querySelector('#view-desc')
+
+    $title.innerHTML = ''
+    $deadline.innerHTML = ''
+    $consuming.innerHTML = ''
+    $level.innerHTML = ''
+    $desc.innerHTML = ''
+
+    return this
+  }
+
   emptyAddPanel () {
     const CLS_CHECKED = 'field-level-checked'
     let elements = this.getEls()
@@ -1087,11 +1135,16 @@ class Plan {
   }
 
   emptyPanel () {
+    const CLS_VIEW_OPENED = 'panel-view-opened'
     const CLS_ADD_OPENED = 'panel-add-opened'
     const CLS_EDIT_OPENED = 'panel-edit-opened'
     const CLS_TRASH_OPENED = 'panel-trash-opened'
     let elements = this.getEls()
     let $columns = elements.columns
+
+    if (DOM.hasClass($columns, CLS_VIEW_OPENED)) {
+      this.emptyViewPanel()
+    }
 
     if (DOM.hasClass($columns, CLS_ADD_OPENED)) {
       this.emptyAddPanel()
@@ -1108,14 +1161,104 @@ class Plan {
     return this
   }
 
+  closeViewPanel () {
+    const CLS_OPENED = 'panel-view-opened'
+    let elements = this.getEls()
+    let $columns = elements.columns
+
+    DOM.removeClass(elements.viewPanel, CLS_OPENED)
+    DOM.removeClass($columns, CLS_OPENED)
+
+    this.emptyViewPanel()
+
+    return this
+  }
+
+  openViewPanel () {
+    const CLS_OPENED = 'panel-view-opened'
+    let elements = this.getEls()
+    let $viewPanel = elements.viewPanel
+    let $columns = elements.columns
+
+    this.closeAddPanel()
+        .closeEditPanel()
+        .closeTrashPanel()
+        .updateViewPanel()
+
+    DOM.addClass($viewPanel, CLS_OPENED)
+    DOM.addClass($columns, CLS_OPENED)
+
+    return this
+  }
+
+  updateViewPanel () {
+    const createElement = DOM.createElement
+    let elements = this.getEls()
+    let plan = this.getEditPlan()
+    let $viewPanel = elements.viewPanel
+    let $title = $viewPanel.querySelector('#view-title')
+    let $deadline = $viewPanel.querySelector('#view-deadline')
+    let $consuming = $viewPanel.querySelector('#view-consuming')
+    let $level = $viewPanel.querySelector('#view-level')
+    let $desc = $viewPanel.querySelector('#view-desc')
+    let $icon
+
+    $title.innerHTML = plan.title
+    $deadline.innerHTML = plan.deadline
+    $consuming.innerHTML = plan.consuming
+    $desc.innerHTML = marked(plan.desc)
+
+    switch(plan.level) {
+      case 0:
+        $icon = createElement('div', {
+          'className': 'field-level-icon field-level-checked'
+        }, [
+          createElement('i', {
+            'className': 'icon-spades'
+          })
+        ])
+      case 1:
+        $icon = createElement('div', {
+          'className': 'field-level-icon field-level-checked'
+        }, [
+          createElement('i', {
+            'className': 'icon-heart'
+          })
+        ])
+        break
+      case 2:
+        $icon = createElement('div', {
+          'className': 'field-level-icon field-level-checked'
+        }, [
+          createElement('i', {
+            'className': 'icon-clubs'
+          })
+        ])
+        break
+      case 3:
+        $icon = createElement('div', {
+          'className': 'field-level-icon field-level-checked'
+        }, [
+          createElement('i', {
+            'className': 'icon-diamonds'
+          })
+        ])
+        break
+    }
+
+    $level.appendChild($icon)
+
+    return this
+  }
+
   closeAddPanel () {
-    const CLS_ADD_OPENED = 'panel-add-opened'
+    const CLS_OPENED = 'panel-add-opened'
     let elements = this.getEls()
     let $addPanel = elements.addPanel
     let $columns = elements.columns
 
-    DOM.removeClass($addPanel, CLS_ADD_OPENED)
-    DOM.removeClass($columns, CLS_ADD_OPENED)
+    DOM.removeClass($addPanel, CLS_OPENED)
+    DOM.removeClass($columns, CLS_OPENED)
 
     this.emptyAddPanel()
 
@@ -1128,7 +1271,8 @@ class Plan {
     let $addPanel = elements.addPanel
     let $columns = elements.columns
 
-    this.closeEditPanel()
+    this.closeViewPanel()
+        .closeEditPanel()
         .closeTrashPanel()
 
     DOM.addClass($addPanel, CLS_OPENED)
@@ -1151,12 +1295,12 @@ class Plan {
   }
 
   closeEditPanel () {
-    const CLS_EDIT_OPENED = 'panel-edit-opened'
+    const CLS_OPENED = 'panel-edit-opened'
     let elements = this.getEls()
     let $columns = elements.columns
 
-    DOM.removeClass(elements.editPanel, CLS_EDIT_OPENED)
-    DOM.removeClass($columns, CLS_EDIT_OPENED)
+    DOM.removeClass(elements.editPanel, CLS_OPENED)
+    DOM.removeClass($columns, CLS_OPENED)
 
     this.emptyEditPanel()
 
@@ -1169,7 +1313,8 @@ class Plan {
     let $editPanel = elements.editPanel
     let $columns = elements.columns
 
-    this.closeAddPanel()
+    this.closeViewPanel()
+        .closeAddPanel()
         .closeTrashPanel()
         .updateEditPanel()
 
@@ -1204,15 +1349,15 @@ class Plan {
   }
 
   closeTrashPanel () {
-    const CLS_TRASH_OPENED = 'panel-trash-opened'
+    const CLS_OPENED = 'panel-trash-opened'
     let elements = this.getEls()
     let $columns = elements.columns
     let $trashPanel = elements.trashPanel
     let $trashButton = elements.toolbar.querySelector('.toolbar-trash-button')
 
     DOM.removeClass($trashButton, 'toolbar-active')
-    DOM.removeClass($trashPanel, CLS_TRASH_OPENED)
-    DOM.removeClass($columns, CLS_TRASH_OPENED)
+    DOM.removeClass($trashPanel, CLS_OPENED)
+    DOM.removeClass($columns, CLS_OPENED)
 
     this.emptyTrashPanel()
 
@@ -1220,19 +1365,20 @@ class Plan {
   }
 
   openTrashPanel () {
-    const CLS_TRASH_OPENED = 'panel-trash-opened'
+    const CLS_OPENED = 'panel-trash-opened'
     let elements = this.getEls()
     let $columns = elements.columns
     let $trashPanel = elements.trashPanel
     let $trashButton = elements.toolbar.querySelector('.toolbar-trash-button')
 
-    this.closeAddPanel()
+    this.closeViewPanel()
+        .closeAddPanel()
         .closeEditPanel()
         .updateTrashPanel()
 
     DOM.addClass($trashButton, 'toolbar-active')
-    DOM.addClass($trashPanel, CLS_TRASH_OPENED)
-    DOM.addClass($columns, CLS_TRASH_OPENED)
+    DOM.addClass($trashPanel, CLS_OPENED)
+    DOM.addClass($columns, CLS_OPENED)
 
     return this
   }
@@ -1265,11 +1411,16 @@ class Plan {
   }
 
   closePanel () {
+    const CLS_VIEW_OPENED = 'panel-view-opened'
     const CLS_ADD_OPENED = 'panel-add-opened'
     const CLS_EDIT_OPENED = 'panel-edit-opened'
     const CLS_TRASH_OPENED = 'panel-trash-opened'
     let elements = this.getEls()
     let $columns = elements.columns
+
+    if (DOM.hasClass($columns, CLS_VIEW_OPENED)) {
+      this.closeViewPanel()
+    }
 
     if (DOM.hasClass($columns, CLS_ADD_OPENED)) {
       this.closeAddPanel()
@@ -1352,6 +1503,18 @@ class Plan {
 
   _onTrashButtonClick () {
     this.toggleTrashPanel()
+
+    return this
+  }
+
+  _onViewCancelButtonClick () {
+    this.closeViewPanel()
+
+    return this
+  }
+
+  _onViewEditButtonClick () {
+    this.openEditPanel()
 
     return this
   }
@@ -1447,6 +1610,12 @@ class Plan {
     return this
   }
 
+  _onTaskTitleClick (evt) {
+    this.checkTitle(evt.delegateTarget)
+
+    return this
+  }
+
   _onPrevButtonClick (evt) {
     this.checkChangeStatus(evt.delegateTarget, 'prev')
 
@@ -1525,25 +1694,25 @@ class Plan {
       'className': 'task-hd'
     }, [
       createElement('h3', {
-        'className': 'task-title'
+        'className': 'task-title',
+        'data-id': `${id}`
       }, [
         '任务：',
         createElement('strong', {
           'className': 'task-title-text'
         }, [
-          `${plan.title}`
+          Utils.toSafeText(plan.title)
         ])
       ]),
       $level
     ])
+    let $desc = createElement('div', {
+      'className': 'task-desc'
+    })
     let $body = createElement('div', {
       'className': 'task-bd'
     }, [
-      createElement('p', {
-        'className': 'task-desc'
-      }, [
-        plan.desc
-      ])
+      $desc
     ])
     let $deadline = createElement('div', {
       'className': 'task-deadline'
@@ -1605,6 +1774,8 @@ class Plan {
     }
 
     classTask += ' ' + 'task-status-' + plan.status
+
+    $desc.innerHTML = marked(Utils.toSafeText(plan.desc))
 
     return createElement('div', {
       'id': `task-${id}`,

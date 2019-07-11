@@ -47,6 +47,7 @@
   .columns {
     overflow: auto;
 
+    &.panel-view-opened,
     &.panel-add-opened,
     &.panel-edit-opened,
     &.panel-trash-opened {
@@ -58,6 +59,7 @@
     width: calc(100% - 1px);
   }
 
+  .panel-view,
   .panel-add,
   .panel-edit,
   .panel-trash {
@@ -127,7 +129,7 @@
       }
     }
 
-    .task-bd {
+    .task-desc {
       max-height: 18px;
     }
 

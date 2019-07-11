@@ -12,6 +12,7 @@
   z-index: 1;
 }
 
+.field-view-label,
 .field-date-input-icon,
 .field-time-input-icon {
   overflow: hidden;
@@ -30,6 +31,11 @@
   line-height: 40px;
 }
 
+.field-desc-content {
+  color: $gray;
+  line-height: 150%;
+}
+
 .field-input,
 .field-date-input,
 .field-time-input,
@@ -46,8 +52,7 @@
 .field-input-text {
   @include radius(3px);
   appearance: none;
-  background-color: $white;
-  background-image: none;
+  background: $white none;
   border: 1px solid $border-color;
   box-sizing: border-box;
   color: $gray;
@@ -169,4 +174,19 @@
   min-height: 80px;
   padding-bottom: 5px;
   padding-top: 5px;
+}
+
+.field-view-label {
+  left: 0;
+  top: 0;
+  width: 80px;
+}
+
+.field-text {
+  color: $gray;
+  line-height: 40px;
+  margin: 0 0 0 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

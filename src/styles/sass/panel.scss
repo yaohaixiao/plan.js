@@ -53,6 +53,7 @@
   width: 312px;
 }
 
+.panel-view,
 .panel-add,
 .panel-edit,
 .panel-trash {
@@ -67,6 +68,7 @@
     right: 0;
   }
 
+  &.panel-view-opened,
   &.panel-add-opened,
   &.panel-edit-opened,
   &.panel-trash-opened {
@@ -75,9 +77,37 @@
 }
 
 .panel-button {
-  @include button(40px, 40px, 24px);
+  @include button(40px, 40px, 20px);
   @include radius(10px);
   cursor: pointer;
   right: 0;
   top: 0;
+}
+
+.panel-view-edit {
+  @include button(40px, 40px, 16px);
+}
+
+.panel-view {
+  .field-level-icon {
+    @include button(20px, 40px, 18px);
+  }
+
+  .field-level-checked {
+    .icon-spades {
+      color: $red;
+    }
+
+    .icon-heart {
+      color: $orange;
+    }
+
+    .icon-clubs {
+      color: $primary;
+    }
+
+    .icon-diamonds {
+      color: $green;
+    }
+  }
 }

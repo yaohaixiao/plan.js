@@ -8,7 +8,7 @@ const Templates = [
         deadline: '2019-07-14',
         consuming: '3d',
         level: 0,
-        desc: '于客户进行多轮沟通，收集尽可能多用户需求，并分析整理出项目计划',
+        desc: '- 于客户进行多轮沟通，收集尽可能多用户需求 \n- 并分析整理出项目计划',
         create: '2019-07-05',
         update: '2019-07-14',
         status: 3,

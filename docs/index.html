@@ -31,6 +31,32 @@
       </div>
     </div>
     <div class="main">
+      <div class="panel panel-view" id="view-panel">
+        <div class="panel-hd">
+          <div class="panel-button panel-cancel-button panel-view-cancel" id="view-cancel"><i class="icon-cheveron-left"></i></div>
+          <h2 class="panel-title">任务详情</h2>
+          <div class="panel-button panel-edit-button panel-view-edit" id="view-save"><i class="icon-edit-pencil"></i></div>
+        </div>
+        <div class="panel-bd">
+          <div class="tasks">
+            <div class="field"><label class="field-label field-view-label">任务标题：</label>
+              <p class="field-text" id="view-title"></p>
+            </div>
+            <div class="field"><label class="field-label field-view-label">截止日期：</label>
+              <p class="field-text" id="view-deadline"></p>
+            </div>
+            <div class="field"><label class="field-label field-view-label">预估工作量：</label>
+              <p class="field-text" id="view-consuming"></p>
+            </div>
+            <div class="field"><label class="field-label field-view-label">任务等级：</label>
+              <p class="field-text" id="view-level"></p>
+            </div>
+            <div class="field"><label class="field-label">任务描述：</label>
+              <div class="field-content field-desc-content" id="view-desc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="panel panel-add" id="add-panel">
         <div class="panel-hd">
           <div class="panel-button panel-cancel-button panel-add-cancel" id="add-cancel"><i class="icon-cheveron-left"></i></div>
@@ -78,7 +104,7 @@
                 </div>
               </div>
             </div>
-            <div class="field"><label class="field-label">任务描述：</label>
+            <div class="field"><label class="field-label">任务描述（支持 markdown）：</label>
               <div class="field-content">
                 <div class="field-textarea"><textarea class="field-textarea-text" id="add-desc" autocomplete="false" rows="4" placeholder="请输入任务标题"></textarea></div>
               </div>
@@ -133,7 +159,7 @@
                 </div>
               </div>
             </div>
-            <div class="field"><label class="field-label">任务描述：</label>
+            <div class="field"><label class="field-label">任务描述（支持 markdown）：</label>
               <div class="field-content">
                 <div class="field-textarea"><textarea class="field-textarea-text" id="edit-desc" autocomplete="false" rows="4" placeholder="请输入任务标题"></textarea></div>
               </div>
