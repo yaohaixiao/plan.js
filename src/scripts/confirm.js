@@ -1,8 +1,20 @@
 'use strict'
 
-import Utils from './utils'
-import DOM from './dom'
-import Delegate from './delegate'
+import {
+  isFunction,
+  toSafeText
+} from './utils'
+
+import {
+  createElement,
+  addClass,
+  removeClass
+} from './dom'
+
+import {
+  on,
+  off
+} from './delegate'
 
 class Confirm {
   constructor (options) {
@@ -61,9 +73,9 @@ class Confirm {
   addEventListeners () {
     let $wrap = this.getEls().wrap
 
-    Delegate.on($wrap, '.confirm-overlay', 'click', this._onCancelClick, this)
-    Delegate.on($wrap, '.confirm-cancel', 'click', this._onCancelClick, this)
-    Delegate.on($wrap, '.confirm-enter', 'click', this._onEnterClick, this)
+    on($wrap, '.confirm-overlay', 'click', this._onOverlayClick, this)
+    on($wrap, '.confirm-cancel', 'click', this._onCancelClick, this)
+    on($wrap, '.confirm-enter', 'click', this._onEnterClick, this)
 
     return this
   }
@@ -71,8 +83,9 @@ class Confirm {
   removeEventListeners () {
     let $wrap = this.getEls().wrap
 
-    Delegate.off($wrap, 'click', this._onCancelClick)
-    Delegate.off($wrap, 'click', this._onEnterClick)
+    off($wrap, 'click', this._onOverlayClick)
+    off($wrap, 'click', this._onCancelClick)
+    off($wrap, 'click', this._onEnterClick)
 
     return this
   }
@@ -153,7 +166,7 @@ class Confirm {
   }
 
   setTitle (title) {
-    this.data.title = Utils.toSafeText(title)
+    this.data.title = toSafeText(title)
 
     return this
   }
@@ -163,7 +176,7 @@ class Confirm {
   }
 
   setMessage (message) {
-    this.data.message = Utils.toSafeText(message)
+    this.data.message = toSafeText(message)
 
     return this
   }
@@ -171,7 +184,7 @@ class Confirm {
   open () {
     let $wrap = this.getEls().wrap
 
-    DOM.removeClass($wrap, 'hidden')
+    removeClass($wrap, 'hidden')
 
     return this
   }
@@ -180,9 +193,9 @@ class Confirm {
     let $wrap = this.getEls().wrap
     let afterClose = this.get('afterClose')
 
-    DOM.addClass($wrap, 'hidden')
+    addClass($wrap, 'hidden')
 
-    if (Utils.isFunction(afterClose)) {
+    if (isFunction(afterClose)) {
       afterClose()
     }
 
@@ -190,8 +203,7 @@ class Confirm {
   }
 
   _createElements () {
-    const createElement = DOM.createElement
-    const toSaveText = Utils.toSafeText
+    const toSaveText = toSafeText
     let elements = this.getEls()
     let title = this.getTitle()
     let message = this.getMessage()
@@ -205,13 +217,13 @@ class Confirm {
     elements.title = createElement('h2', {
       'className': 'confirm-title'
     }, [
-      title
+      toSafeText(title)
     ])
 
     elements.message = createElement('p', {
       'className': 'confirm-message'
     }, [
-      message
+      toSafeText(message)
     ])
 
     elements.body = createElement('div', {
@@ -262,12 +274,18 @@ class Confirm {
     return this
   }
 
+  _onOverlayClick () {
+    this.close()
+
+    return this
+  }
+
   _onCancelClick () {
     let afterCancel = this.get('afterCancel')
 
     this.close()
 
-    if (Utils.isFunction(afterCancel)) {
+    if (isFunction(afterCancel)) {
       afterCancel()
     }
 
@@ -279,7 +297,7 @@ class Confirm {
 
     this.close()
 
-    if (Utils.isFunction(afterEnter)) {
+    if (isFunction(afterEnter)) {
       afterEnter()
     }
 

@@ -13,12 +13,17 @@ div#add-panel.panel.panel-add
           div.field-input
             input#add-title.field-input-text(type="text" autocomplete="false" placeholder="请输入任务标题")
       div.field
+        label.field-label 创建日期：
+        div.field-content
+          div#add-create.field-date-input.field-view-text
+      div.field
         label.field-label 截止日期：
         div.field-content
           div.field-date-input
-            input#add-deadline.field-date-input-text(type="text" autocomplete="false" placeholder="请输入选择截止日期")
-          div.field-date-input-icon.penel-add-date-icon
+            input#add-deadline.field-date-input-text(type="text" readonly="readonly" autocomplete="false" placeholder="请选择截止日期")
+          div.field-date-input-icon.panel-add-deadline
             i.icon-calendar
+          div#add-calendar.field-calendar
       div.field
         label.field-label 预估工作量：
         div.field-content

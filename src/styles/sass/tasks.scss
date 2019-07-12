@@ -71,6 +71,7 @@
 }
 
 .task-title {
+  cursor: pointer;
   font-size: 14px;
   font-weight: normal;
   height: 40px;
@@ -84,6 +85,10 @@
 .task-title-text {
   color: $primary;
   font-weight: normal;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .task-level {
@@ -122,13 +127,24 @@
   max-height: 36px;
   overflow: hidden;
 
-  p,
   ul,
   li {
-    line-height: 18px;
     list-style-type: none;
+  }
+
+  dt,
+  dd,
+  li {
     margin: 0;
     padding: 0;
+  }
+
+  p,
+  ul,
+  li,
+  dt,
+  dd {
+    line-height: 18px;
   }
 }
 

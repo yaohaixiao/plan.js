@@ -84,6 +84,12 @@
   top: 0;
 }
 
+.panel-deadline-active {
+  .icon-calendar {
+    color: $primary;
+  }
+}
+
 .panel-view-edit {
   @include button(40px, 40px, 16px);
 }

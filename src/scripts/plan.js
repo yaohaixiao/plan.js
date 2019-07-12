@@ -1,9 +1,26 @@
 'use strict'
 
-import DOM from './dom'
-import Delegate from './delegate'
+import {
+  createElement,
+  addClass,
+  removeClass,
+  hasClass
+} from './dom'
+
+import {
+  on,
+  off
+} from './delegate'
+
+import {
+  clone,
+  getMoments,
+  guid,
+  toSafeText
+} from './utils'
+
+import Calendar from './calendar'
 import Confirm from './confirm'
-import Utils from './utils'
 import dragula from 'dragula'
 import marked from 'marked'
 
@@ -34,6 +51,7 @@ class Plan {
       columnsOverlay: null
     }
 
+    this.$calendar = null
     this.$confirm = null
     this.$dragula = null
 
@@ -60,7 +78,7 @@ class Plan {
 
     this.set(options)
         .queryElements()
-        .setPlans(Utils.clone(this.get('plans')))
+        .setPlans(clone(this.get('plans')))
 
     $tasksTrash = elements.tasksTrash
     $tasksTodo = elements.tasksTodo
@@ -96,49 +114,51 @@ class Plan {
 
     // ---------- toolbar ----------
     // 添加
-    Delegate.on($wrap, '.toolbar-plus-button', 'click', this._onPlusButtonClick, this)
+    on($wrap, '.toolbar-plus-button', 'click', this._onPlusButtonClick, this)
     // 过滤任务
-    Delegate.on($wrap, '.toolbar-inbox-button', 'click', this._onInBoxFilterButtonClick, this)
-    Delegate.on($wrap, '.toolbar-spades-button', 'click', this._onSpadesFilterButtonClick, this)
-    Delegate.on($wrap, '.toolbar-heart-button', 'click', this._onHeartFilterButtonClick, this)
-    Delegate.on($wrap, '.toolbar-clubs-button', 'click', this._onClubsFilterButtonClick, this)
-    Delegate.on($wrap, '.toolbar-diamonds-button', 'click', this._onDiamondsFilterButtonClick, this)
-    Delegate.on($wrap, '.toolbar-bookmark-button', 'click', this._onBookmarkFilterButtonClick, this)
+    on($wrap, '.toolbar-inbox-button', 'click', this._onInBoxFilterButtonClick, this)
+    on($wrap, '.toolbar-spades-button', 'click', this._onSpadesFilterButtonClick, this)
+    on($wrap, '.toolbar-heart-button', 'click', this._onHeartFilterButtonClick, this)
+    on($wrap, '.toolbar-clubs-button', 'click', this._onClubsFilterButtonClick, this)
+    on($wrap, '.toolbar-diamonds-button', 'click', this._onDiamondsFilterButtonClick, this)
+    on($wrap, '.toolbar-bookmark-button', 'click', this._onBookmarkFilterButtonClick, this)
     // 回收站
-    Delegate.on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
+    on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
 
     // ---------- panel ----------
-    Delegate.on($wrap, '.panel-view-cancel', 'click', this._onViewCancelButtonClick, this)
-    Delegate.on($wrap, '.panel-view-edit', 'click', this._onViewEditButtonClick, this)
+    on($wrap, '.panel-view-cancel', 'click', this._onViewCancelButtonClick, this)
+    on($wrap, '.panel-view-edit', 'click', this._onViewEditButtonClick, this)
     // 新建任务 Panel
-    Delegate.on($wrap, '.panel-add-cancel', 'click', this._onAddCancelButtonClick, this)
-    Delegate.on($wrap, '.panel-add-save', 'click', this._onAddSaveButtonClick, this)
-    Delegate.on($wrap, '.panel-add-level', 'click', this._onAddLevelButtonClick, this)
+    on($wrap, '.panel-add-cancel', 'click', this._onAddCancelButtonClick, this)
+    on($wrap, '.panel-add-save', 'click', this._onAddSaveButtonClick, this)
+    on($wrap, '.panel-add-level', 'click', this._onAddLevelButtonClick, this)
+    on($wrap, '.panel-add-deadline', 'click', this._onAddDeadlineIconClick, this)
     // 编辑任务 Panel
-    Delegate.on($wrap, '.panel-edit-cancel', 'click', this._onEditCancelButtonClick, this)
-    Delegate.on($wrap, '.panel-edit-save', 'click', this._onEditSaveButtonClick, this)
-    Delegate.on($wrap, '.panel-edit-level', 'click', this._onEditLevelButtonClick, this)
+    on($wrap, '.panel-edit-cancel', 'click', this._onEditCancelButtonClick, this)
+    on($wrap, '.panel-edit-save', 'click', this._onEditSaveButtonClick, this)
+    on($wrap, '.panel-edit-level', 'click', this._onEditLevelButtonClick, this)
+    on($wrap, '.panel-edit-deadline', 'click', this._onEditDeadlineIconClick, this)
     // 回收站
-    Delegate.on($wrap, '.panel-trash-cancel', 'click', this._onTrashCancelButtonClick, this)
+    on($wrap, '.panel-trash-cancel', 'click', this._onTrashCancelButtonClick, this)
 
     // ---------- task ----------
-    Delegate.on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
+    on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
     // 切换状态
-    Delegate.on($wrap, '.task-prev-button', 'click', this._onPrevButtonClick, this)
-    Delegate.on($wrap, '.task-next-button', 'click', this._onNextButtonClick, this)
+    on($wrap, '.task-prev-button', 'click', this._onPrevButtonClick, this)
+    on($wrap, '.task-next-button', 'click', this._onNextButtonClick, this)
     // 编辑
-    Delegate.on($wrap, '.task-edit-button', 'click', this._onEditButtonClick, this)
+    on($wrap, '.task-edit-button', 'click', this._onEditButtonClick, this)
     // 标记重要
-    Delegate.on($wrap, '.task-bookmark-button', 'click', this._onMarkedButtonClick, this)
+    on($wrap, '.task-bookmark-button', 'click', this._onMarkedButtonClick, this)
     // 删除
-    Delegate.on($wrap, '.task-delete-button', 'click', this._onDeleteButtonClick, this)
+    on($wrap, '.task-delete-button', 'click', this._onDeleteButtonClick, this)
     // 恢复
-    Delegate.on($wrap, '.task-replace-button', 'click', this._onReplaceButtonClick, this)
+    on($wrap, '.task-replace-button', 'click', this._onReplaceButtonClick, this)
 
     // ---------- column ----------
-    Delegate.on($wrap, '.column-up-button', 'click', this._onColumnUpButtonClick, this)
-    Delegate.on($wrap, '.column-down-button', 'click', this._onColumnDownButtonClick, this)
-    Delegate.on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
+    on($wrap, '.column-up-button', 'click', this._onColumnUpButtonClick, this)
+    on($wrap, '.column-down-button', 'click', this._onColumnDownButtonClick, this)
+    on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
 
     // 拖动完成，更新任务状态
     this.$dragula.on('drop', ($plan, $target) => {
@@ -168,45 +188,48 @@ class Plan {
     let $wrap = this.getEls().wrap
 
     // ---------- toolbar ----------
-    Delegate.off($wrap, 'click', this._onPlusButtonClick)
-    Delegate.off($wrap, 'click', this._onInBoxFilterButtonClick)
-    Delegate.off($wrap, 'click', this._onSpadesFilterButtonClick)
-    Delegate.off($wrap, 'click', this._onHeartFilterButtonClick)
-    Delegate.off($wrap, 'click', this._onClubsFilterButtonClick)
-    Delegate.off($wrap, 'click', this._onDiamondsFilterButtonClick)
-    Delegate.off($wrap, 'click', this._onBookmarkFilterButtonClick)
-    Delegate.off($wrap, 'click', this._onTrashButtonClick)
+    off($wrap, 'click', this._onPlusButtonClick)
+    off($wrap, 'click', this._onInBoxFilterButtonClick)
+    off($wrap, 'click', this._onSpadesFilterButtonClick)
+    off($wrap, 'click', this._onHeartFilterButtonClick)
+    off($wrap, 'click', this._onClubsFilterButtonClick)
+    off($wrap, 'click', this._onDiamondsFilterButtonClick)
+    off($wrap, 'click', this._onBookmarkFilterButtonClick)
+    off($wrap, 'click', this._onTrashButtonClick)
 
     // ---------- panel ----------
-    Delegate.off($wrap, 'click', this._onViewCancelButtonClick)
-    Delegate.off($wrap, 'click', this._onViewEditButtonClick)
-    Delegate.off($wrap, 'click', this._onAddCancelButtonClick)
-    Delegate.off($wrap, 'click', this._onAddSaveButtonClick)
-    Delegate.off($wrap, 'click', this._onAddLevelButtonClick)
-    Delegate.off($wrap, 'click', this._onEditCancelButtonClick)
-    Delegate.off($wrap, 'click', this._onEditSaveButtonClick)
-    Delegate.off($wrap, 'click', this._onEditLevelButtonClick)
-    Delegate.off($wrap, 'click', this._onTrashCancelButtonClick)
+    off($wrap, 'click', this._onViewCancelButtonClick)
+    off($wrap, 'click', this._onViewEditButtonClick)
+    off($wrap, 'click', this._onAddCancelButtonClick)
+    off($wrap, 'click', this._onAddSaveButtonClick)
+    off($wrap, 'click', this._onAddLevelButtonClick)
+    off($wrap, 'click', this._onAddDeadlineIconClick)
+    off($wrap, 'click', this._onEditCancelButtonClick)
+    off($wrap, 'click', this._onEditSaveButtonClick)
+    off($wrap, 'click', this._onEditLevelButtonClick)
+    off($wrap, 'click', this._onEditDeadlineIconClick)
+    off($wrap, 'click', this._onTrashCancelButtonClick)
+
 
     // ---------- task ----------
-    Delegate.off($wrap, 'click', this._onTaskTitleClick)
-    Delegate.off($wrap, 'click', this._onPrevButtonClick)
-    Delegate.off($wrap, 'click', this._onEditButtonClick)
-    Delegate.off($wrap, 'click', this._onMarkedButtonClick)
-    Delegate.off($wrap, 'click', this._onDeleteButtonClick)
-    Delegate.off($wrap, 'click', this._onReplaceButtonClick)
-    Delegate.off($wrap, 'click', this._onNextButtonClick)
+    off($wrap, 'click', this._onTaskTitleClick)
+    off($wrap, 'click', this._onPrevButtonClick)
+    off($wrap, 'click', this._onEditButtonClick)
+    off($wrap, 'click', this._onMarkedButtonClick)
+    off($wrap, 'click', this._onDeleteButtonClick)
+    off($wrap, 'click', this._onReplaceButtonClick)
+    off($wrap, 'click', this._onNextButtonClick)
 
     // ---------- column ----------
-    Delegate.off($wrap, 'click', this._onColumnUpButtonClick)
-    Delegate.off($wrap, 'click', this._onColumnDownButtonClick)
-    Delegate.off($wrap, 'click', this._onColumnsOverlayClick)
+    off($wrap, 'click', this._onColumnUpButtonClick)
+    off($wrap, 'click', this._onColumnDownButtonClick)
+    off($wrap, 'click', this._onColumnsOverlayClick)
 
     return this
   }
 
   add (plan) {
-    let plans = Utils.clone(this.getPlans())
+    let plans = clone(this.getPlans())
     let filter = this.getFilter()
     let todoPlans
     let doingPlans
@@ -236,7 +259,7 @@ class Plan {
 
     plan.deleted = true
     plan.delayed = Plan.isDelayed(plan.deadline)
-    plan.update = Utils.getMoments()
+    plan.update = getMoments()
     this.setPlan(plan)
 
     count = parseInt($count.innerHTML, 10)
@@ -257,7 +280,7 @@ class Plan {
     let donePlans
 
     plan.delayed = Plan.isDelayed(plan.deadline)
-    plan.update = Utils.getMoments()
+    plan.update = getMoments()
     this.setPlan(plan)
 
     todoPlans = this.filterPlans(filter, 0)
@@ -271,7 +294,7 @@ class Plan {
   }
 
   delete (plan) {
-    let plans = Utils.clone(this.getPlans())
+    let plans = clone(this.getPlans())
     let elements = this.getEls()
     let $tasksTrash = elements.tasksTrash
     let $count = elements.trashCount
@@ -367,7 +390,7 @@ class Plan {
   }
 
   setPlan (plan) {
-    let plans = Utils.clone(this.getPlans())
+    let plans = clone(this.getPlans())
     let index = -1
 
     // 查询是否存在
@@ -417,47 +440,48 @@ class Plan {
   }
 
   filterPlans (prop, status) {
+    let originPlans = this.getPlans()
     let plans = []
 
     switch (prop) {
       case 'spades':
-        plans = this.getPlans().filter((plan) => {
+        plans = originPlans.filter((plan) => {
           return plan.status === status && plan.level === 0 && !plan.deleted
         })
 
         break
       case 'heart':
-        plans = this.getPlans().filter((plan) => {
+        plans = originPlans.filter((plan) => {
           return plan.status === status && plan.level === 1 && !plan.deleted
         })
 
         break
       case 'clubs':
-        plans = this.getPlans().filter((plan) => {
+        plans = originPlans.filter((plan) => {
           return plan.status === status && plan.level === 2 && !plan.deleted
         })
 
         break
       case 'diamonds':
-        plans = this.getPlans().filter((plan) => {
+        plans = originPlans.filter((plan) => {
           return plan.status === status && plan.level === 3 && !plan.deleted
         })
 
         break
       case 'marked':
-        plans = this.getPlans().filter((plan) => {
+        plans = originPlans.filter((plan) => {
           return plan.status === status && plan.marked && !plan.deleted
         })
 
         break
       case 'deleted':
-        plans = this.getPlans().filter((plan) => {
+        plans = originPlans.filter((plan) => {
           return plan.deleted
         })
 
         break
       default:
-        plans = this.getPlans().filter((plan) => {
+        plans = originPlans.filter((plan) => {
           return plan.status === status && !plan.deleted
         })
 
@@ -582,14 +606,14 @@ class Plan {
     let checkingPlans
     let donePlans
 
-    if (DOM.hasClass($button, CLS_ACTIVE)) {
+    if (hasClass($button, CLS_ACTIVE)) {
       return this
     }
 
     $active = $toolbar.querySelector('.' + CLS_ACTIVE)
 
-    DOM.removeClass($active, CLS_ACTIVE)
-    DOM.addClass($button, CLS_ACTIVE)
+    removeClass($active, CLS_ACTIVE)
+    addClass($button, CLS_ACTIVE)
 
     todoPlans = this.filterPlans(prop, 0)
     doingPlans = this.filterPlans(prop, 1)
@@ -611,14 +635,11 @@ class Plan {
     let $checked
     let $input
 
-    if (DOM.hasClass($button, CLS_CHECKED)) {
+    if (hasClass($button, CLS_CHECKED)) {
       return this
     }
 
     switch (type) {
-      case 'view':
-        $panel = elements.viewPanel
-        break
       case 'add':
         $panel = elements.addPanel
         $input = $panel.querySelector(`#${type}-level`)
@@ -632,9 +653,9 @@ class Plan {
     $checked = $panel.querySelector('.' + CLS_CHECKED)
 
     if ($checked) {
-      DOM.removeClass($checked, CLS_CHECKED)
+      removeClass($checked, CLS_CHECKED)
     }
-    DOM.addClass($button, CLS_CHECKED)
+    addClass($button, CLS_CHECKED)
 
     if ($input) {
       $input.value = id
@@ -680,7 +701,7 @@ class Plan {
     }
 
     plan.delayed = Plan.isDelayed(plan.deadline)
-    plan.update = Utils.getMoments()
+    plan.update = getMoments()
     this.setPlan(plan)
 
     $targetCount = this.getStatusCountEl(plan.status)
@@ -715,7 +736,7 @@ class Plan {
     let $plan
 
     plan.marked = !plan.marked
-    plan.update = Utils.getMoments()
+    plan.update = getMoments()
     this.setPlan(plan)
 
     switch (status) {
@@ -737,10 +758,10 @@ class Plan {
       this.updateColumn(status, this.filterPlans(status, 'marked'))
     } else {
       if (plan.marked) {
-        DOM.addClass($plan, CLS_MARKED)
+        addClass($plan, CLS_MARKED)
         $plan.setAttribute('data-marked', '1')
       } else {
-        DOM.removeClass($plan, CLS_MARKED)
+        removeClass($plan, CLS_MARKED)
         $plan.setAttribute('data-marked', '0')
       }
     }
@@ -798,13 +819,12 @@ class Plan {
 
   checkColumnUp ($button) {
     const CLS_HIDDEN = 'hidden'
-    const addClass = DOM.addClass
     let status = parseInt($button.getAttribute('data-status'), 10)
     let $down = $button.parentNode.querySelector('.column-down-button')
     let $tasks = this.getStatusTasksEl(status)
 
     addClass($button, CLS_HIDDEN)
-    DOM.removeClass($down, CLS_HIDDEN)
+    removeClass($down, CLS_HIDDEN)
     addClass($tasks, 'tasks-min')
 
     return this
@@ -812,12 +832,12 @@ class Plan {
 
   checkColumnDown ($button) {
     const CLS_HIDDEN = 'hidden'
-    const removeClass = DOM.removeClass
+    const removeClass = removeClass
     let status = parseInt($button.getAttribute('data-status'), 10)
     let $up = $button.parentNode.querySelector('.column-up-button')
     let $tasks = this.getStatusTasksEl(status)
 
-    DOM.addClass($button, CLS_HIDDEN)
+    addClass($button, CLS_HIDDEN)
     removeClass($up, CLS_HIDDEN)
     removeClass($tasks, 'tasks-min')
 
@@ -877,7 +897,7 @@ class Plan {
         $sourceCount = elements.trashCount
         $targetCount = this.getStatusCountEl(parseInt(status, 10))
 
-        DOM.removeClass($plan, 'task-status-' + plan.status)
+        removeClass($plan, 'task-status-' + plan.status)
         Plan.updateStatusChangedCount($sourceCount, $targetCount)
 
         plan.deleted = false
@@ -886,7 +906,7 @@ class Plan {
         $sourceCount = this.getStatusCountEl(plan.status)
         $targetCount = this.getStatusCountEl(parseInt(status, 10))
 
-        DOM.removeClass($plan, 'task-status-' + plan.status)
+        removeClass($plan, 'task-status-' + plan.status)
         Plan.updateStatusChangedCount($sourceCount, $targetCount)
 
         // 普通状态之前的调整
@@ -894,36 +914,36 @@ class Plan {
       }
     }
 
-    plan.update = Utils.getMoments()
+    plan.update = getMoments()
     plan.delayed = Plan.isDelayed(plan.deadline)
     this.setPlan(plan)
 
     if (plan.deleted) {
       $plan.setAttribute('data-deleted', '1')
-      DOM.addClass($plan, 'task-deleted')
+      addClass($plan, 'task-deleted')
     } else {
       $plan.setAttribute('data-deleted', '0')
-      DOM.removeClass($plan, 'task-deleted')
+      removeClass($plan, 'task-deleted')
     }
 
     if (plan.marked) {
       $plan.setAttribute('data-marked', '1')
-      DOM.addClass($plan, 'task-marked')
+      addClass($plan, 'task-marked')
     } else {
       $plan.setAttribute('data-marked', '0')
-      DOM.removeClass($plan, 'task-marked')
+      removeClass($plan, 'task-marked')
     }
 
     if (plan.delayed) {
       $plan.setAttribute('data-delayed', '1')
-      DOM.addClass($plan, 'task-delayed')
+      addClass($plan, 'task-delayed')
     } else {
       $plan.setAttribute('data-delayed', '0')
-      DOM.removeClass($plan, 'task-delayed')
+      removeClass($plan, 'task-delayed')
     }
 
     $plan.setAttribute('data-status', plan.status.toString())
-    DOM.addClass($plan, 'task-status-' + plan.status)
+    addClass($plan, 'task-status-' + plan.status)
 
     return this
   }
@@ -1061,12 +1081,14 @@ class Plan {
     let elements = this.getEls()
     let $viewPanel = elements.viewPanel
     let $title = $viewPanel.querySelector('#view-title')
+    let $create = $viewPanel.querySelector('#view-create')
     let $deadline = $viewPanel.querySelector('#view-deadline')
     let $consuming = $viewPanel.querySelector('#view-consuming')
     let $level = $viewPanel.querySelector('#view-level')
     let $desc = $viewPanel.querySelector('#view-desc')
 
     $title.innerHTML = ''
+    $create.innerHTML = ''
     $deadline.innerHTML = ''
     $consuming.innerHTML = ''
     $level.innerHTML = ''
@@ -1080,6 +1102,7 @@ class Plan {
     let elements = this.getEls()
     let $addPanel = elements.addPanel
     let $title = $addPanel.querySelector('#add-title')
+    let $create = $addPanel.querySelector('#add-create')
     let $deadline = $addPanel.querySelector('#add-deadline')
     let $consuming = $addPanel.querySelector('#add-consuming')
     let $level = $addPanel.querySelector('#add-level')
@@ -1087,13 +1110,14 @@ class Plan {
     let $checked = $addPanel.querySelector('.' + CLS_CHECKED)
 
     $title.value = ''
+    $create.innerHTML = ''
     $deadline.value = ''
     $consuming.value = ''
     $level.value = -1
     $desc.value = ''
 
     if ($checked) {
-      DOM.removeClass($checked, CLS_CHECKED)
+      removeClass($checked, CLS_CHECKED)
     }
 
     return this
@@ -1104,6 +1128,7 @@ class Plan {
     let elements = this.getEls()
     let $editPanel = elements.editPanel
     let $title = $editPanel.querySelector('#edit-title')
+    let $create = $editPanel.querySelector('#edit-create')
     let $deadline = $editPanel.querySelector('#edit-deadline')
     let $consuming = $editPanel.querySelector('#edit-consuming')
     let $level = $editPanel.querySelector('#edit-level')
@@ -1111,13 +1136,14 @@ class Plan {
     let $checked = $editPanel.querySelector('.' + CLS_CHECKED)
 
     $title.value = ''
+    $create.innerHTML = ''
     $deadline.value = ''
     $consuming.value = ''
     $level.value = -1
     $desc.value = ''
 
     if ($checked) {
-      DOM.removeClass($checked, CLS_CHECKED)
+      removeClass($checked, CLS_CHECKED)
     }
 
     return this
@@ -1142,19 +1168,19 @@ class Plan {
     let elements = this.getEls()
     let $columns = elements.columns
 
-    if (DOM.hasClass($columns, CLS_VIEW_OPENED)) {
+    if (hasClass($columns, CLS_VIEW_OPENED)) {
       this.emptyViewPanel()
     }
 
-    if (DOM.hasClass($columns, CLS_ADD_OPENED)) {
+    if (hasClass($columns, CLS_ADD_OPENED)) {
       this.emptyAddPanel()
     }
 
-    if (DOM.hasClass($columns, CLS_EDIT_OPENED)) {
+    if (hasClass($columns, CLS_EDIT_OPENED)) {
       this.emptyEditPanel()
     }
 
-    if (DOM.hasClass($columns, CLS_TRASH_OPENED)) {
+    if (hasClass($columns, CLS_TRASH_OPENED)) {
       this.emptyTrashPanel()
     }
 
@@ -1166,8 +1192,8 @@ class Plan {
     let elements = this.getEls()
     let $columns = elements.columns
 
-    DOM.removeClass(elements.viewPanel, CLS_OPENED)
-    DOM.removeClass($columns, CLS_OPENED)
+    removeClass(elements.viewPanel, CLS_OPENED)
+    removeClass($columns, CLS_OPENED)
 
     this.emptyViewPanel()
 
@@ -1185,18 +1211,18 @@ class Plan {
         .closeTrashPanel()
         .updateViewPanel()
 
-    DOM.addClass($viewPanel, CLS_OPENED)
-    DOM.addClass($columns, CLS_OPENED)
+    addClass($viewPanel, CLS_OPENED)
+    addClass($columns, CLS_OPENED)
 
     return this
   }
 
   updateViewPanel () {
-    const createElement = DOM.createElement
     let elements = this.getEls()
     let plan = this.getEditPlan()
     let $viewPanel = elements.viewPanel
     let $title = $viewPanel.querySelector('#view-title')
+    let $create = $viewPanel.querySelector('#view-create')
     let $deadline = $viewPanel.querySelector('#view-deadline')
     let $consuming = $viewPanel.querySelector('#view-consuming')
     let $level = $viewPanel.querySelector('#view-level')
@@ -1204,6 +1230,7 @@ class Plan {
     let $icon
 
     $title.innerHTML = plan.title
+    $create.innerHTML = plan.create
     $deadline.innerHTML = plan.deadline
     $consuming.innerHTML = plan.consuming
     $desc.innerHTML = marked(plan.desc)
@@ -1217,6 +1244,7 @@ class Plan {
             'className': 'icon-spades'
           })
         ])
+        break
       case 1:
         $icon = createElement('div', {
           'className': 'field-level-icon field-level-checked'
@@ -1258,8 +1286,13 @@ class Plan {
     let $addPanel = elements.addPanel
     let $columns = elements.columns
 
-    DOM.removeClass($addPanel, CLS_OPENED)
-    DOM.removeClass($columns, CLS_OPENED)
+    removeClass($addPanel, CLS_OPENED)
+    removeClass($columns, CLS_OPENED)
+
+    if(this.$calendar) {
+      this.$calendar.destroy()
+      this.$calendar = null
+    }
 
     this.emptyAddPanel()
 
@@ -1271,13 +1304,30 @@ class Plan {
     let elements = this.getEls()
     let $addPanel = elements.addPanel
     let $columns = elements.columns
+    let $create = $addPanel.querySelector('#add-create')
+    let $deadline = $addPanel.querySelector('#add-deadline')
+    let $icon = $addPanel.querySelector('.panel-add-deadline')
 
     this.closeViewPanel()
         .closeEditPanel()
         .closeTrashPanel()
 
-    DOM.addClass($addPanel, CLS_OPENED)
-    DOM.addClass($columns, CLS_OPENED)
+    this.$calendar = new Calendar({
+      parent: 'add-calendar',
+      hasFooter: false,
+      onDatePick: (time) => {
+        $deadline.value = time
+        this.$calendar.hide()
+        removeClass($icon, 'panel-deadline-active')
+      }
+    })
+
+    $create.innerHTML = Calendar.getToday().text
+
+    this.$calendar.hide()
+
+    addClass($addPanel, CLS_OPENED)
+    addClass($columns, CLS_OPENED)
 
     return this
   }
@@ -1286,7 +1336,7 @@ class Plan {
     let elements = this.getEls()
     let $addPanel = elements.addPanel
 
-    if (DOM.hasClass($addPanel, 'panel-add-opened')) {
+    if (hasClass($addPanel, 'panel-add-opened')) {
       this.closeAddPanel()
     } else {
       this.openAddPanel()
@@ -1300,8 +1350,13 @@ class Plan {
     let elements = this.getEls()
     let $columns = elements.columns
 
-    DOM.removeClass(elements.editPanel, CLS_OPENED)
-    DOM.removeClass($columns, CLS_OPENED)
+    removeClass(elements.editPanel, CLS_OPENED)
+    removeClass($columns, CLS_OPENED)
+
+    if(this.$calendar) {
+      this.$calendar.destroy()
+      this.$calendar = null
+    }
 
     this.emptyEditPanel()
 
@@ -1313,14 +1368,29 @@ class Plan {
     let elements = this.getEls()
     let $editPanel = elements.editPanel
     let $columns = elements.columns
+    let $deadline = $editPanel.querySelector('#edit-deadline')
+    let $icon = $editPanel.querySelector('.panel-edit-deadline')
 
     this.closeViewPanel()
         .closeAddPanel()
         .closeTrashPanel()
         .updateEditPanel()
 
-    DOM.addClass($editPanel, CLS_OPENED)
-    DOM.addClass($columns, CLS_OPENED)
+    this.$calendar = new Calendar({
+      parent: 'edit-calendar',
+      time: this.getEditPlan().deadline,
+      hasFooter: false,
+      onDatePick: (time) => {
+        $deadline.value = time
+        this.$calendar.hide()
+        removeClass($icon, 'panel-deadline-active')
+      }
+    })
+
+    this.$calendar.hide()
+
+    addClass($editPanel, CLS_OPENED)
+    addClass($columns, CLS_OPENED)
 
     return this
   }
@@ -1330,6 +1400,7 @@ class Plan {
     let elements = this.getEls()
     let $editPanel = elements.editPanel
     let $title = $editPanel.querySelector('#edit-title')
+    let $create = $editPanel.querySelector('#edit-create')
     let $deadline = $editPanel.querySelector('#edit-deadline')
     let $consuming = $editPanel.querySelector('#edit-consuming')
     let $level = $editPanel.querySelector('#edit-level')
@@ -1337,13 +1408,14 @@ class Plan {
     let $checked = $editPanel.querySelector(`[data-level="${plan.level}"]`)
 
     $title.value = plan.title
+    $create.innerHTML = plan.create
     $deadline.value = plan.deadline
     $consuming.value = plan.consuming
     $level.value = plan.level
     $desc.value = plan.desc
 
     if ($checked) {
-      DOM.addClass($checked, 'field-level-checked')
+      addClass($checked, 'field-level-checked')
     }
 
     return this
@@ -1355,10 +1427,10 @@ class Plan {
     let $columns = elements.columns
     let $trashPanel = elements.trashPanel
     let $trashButton = elements.toolbar.querySelector('.toolbar-trash-button')
-
-    DOM.removeClass($trashButton, 'toolbar-active')
-    DOM.removeClass($trashPanel, CLS_OPENED)
-    DOM.removeClass($columns, CLS_OPENED)
+    
+    removeClass($trashButton, 'toolbar-active')
+    removeClass($trashPanel, CLS_OPENED)
+    removeClass($columns, CLS_OPENED)
 
     this.emptyTrashPanel()
 
@@ -1377,9 +1449,9 @@ class Plan {
         .closeEditPanel()
         .updateTrashPanel()
 
-    DOM.addClass($trashButton, 'toolbar-active')
-    DOM.addClass($trashPanel, CLS_OPENED)
-    DOM.addClass($columns, CLS_OPENED)
+    addClass($trashButton, 'toolbar-active')
+    addClass($trashPanel, CLS_OPENED)
+    addClass($columns, CLS_OPENED)
 
     return this
   }
@@ -1402,7 +1474,7 @@ class Plan {
     let elements = this.getEls()
     let $trashPanel = elements.trashPanel
 
-    if (DOM.hasClass($trashPanel, 'panel-trash-opened')) {
+    if (hasClass($trashPanel, 'panel-trash-opened')) {
       this.closeTrashPanel()
     } else {
       this.openTrashPanel()
@@ -1419,19 +1491,19 @@ class Plan {
     let elements = this.getEls()
     let $columns = elements.columns
 
-    if (DOM.hasClass($columns, CLS_VIEW_OPENED)) {
+    if (hasClass($columns, CLS_VIEW_OPENED)) {
       this.closeViewPanel()
     }
 
-    if (DOM.hasClass($columns, CLS_ADD_OPENED)) {
+    if (hasClass($columns, CLS_ADD_OPENED)) {
       this.closeAddPanel()
     }
 
-    if (DOM.hasClass($columns, CLS_EDIT_OPENED)) {
+    if (hasClass($columns, CLS_EDIT_OPENED)) {
       this.closeEditPanel()
     }
 
-    if (DOM.hasClass($columns, CLS_TRASH_OPENED)) {
+    if (hasClass($columns, CLS_TRASH_OPENED)) {
       this.closeTrashPanel()
     }
 
@@ -1532,6 +1604,21 @@ class Plan {
     return this
   }
 
+  _onAddDeadlineIconClick (evt) {
+    const CLS_CHECKED = 'panel-deadline-active'
+    let $icon = evt.delegateTarget
+
+    if(hasClass($icon, CLS_CHECKED)) {
+       removeClass($icon, CLS_CHECKED)
+    } else {
+      addClass($icon, CLS_CHECKED)
+    }
+
+    this.$calendar.toggle()
+
+    return this
+  }
+
   _onAddSaveButtonClick () {
     let elements = this.getEls()
     let $addPanel = elements.addPanel
@@ -1541,24 +1628,25 @@ class Plan {
     let $level = $addPanel.querySelector('#add-level')
     let $desc = $addPanel.querySelector('#add-desc')
     let plan = {}
-    let moments = Utils.getMoments()
+    let moments = getMoments()
 
     // TODO: 添加校验
 
     // 收集新任务的数据
-    plan.id = parseInt(Plan.guid(4, 10), 10)
-    plan.title = Utils.toSafeText($title.value)
+    plan.id = parseInt(guid(4, 10), 10)
+    plan.title = toSafeText($title.value)
     plan.deadline = $deadline.value
     plan.consuming = $consuming.value
     plan.level = parseInt($level.value, 10)
-    plan.desc = Utils.toSafeText($desc.value)
+    plan.desc = toSafeText($desc.value)
     plan.marked = false
     plan.deleted = false
     plan.status = 0
     plan.create = moments
     plan.update = moments
 
-    this.closeAddPanel().add(plan)
+    this.closeAddPanel()
+        .add(plan)
 
     return this
   }
@@ -1575,6 +1663,21 @@ class Plan {
     return this
   }
 
+  _onEditDeadlineIconClick (evt) {
+    const CLS_CHECKED = 'panel-deadline-active'
+    let $icon = evt.delegateTarget
+
+    if(hasClass($icon, CLS_CHECKED)) {
+      removeClass($icon, CLS_CHECKED)
+    } else {
+      addClass($icon, CLS_CHECKED)
+    }
+
+    this.$calendar.toggle()
+
+    return this
+  }
+
   _onEditSaveButtonClick () {
     let elements = this.getEls()
     let $editPanel = elements.editPanel
@@ -1584,7 +1687,7 @@ class Plan {
     let $level = $editPanel.querySelector('#edit-level')
     let $desc = $editPanel.querySelector('#edit-desc')
     let originPlan = this.getEditPlan()
-    let plan = Utils.clone(originPlan)
+    let plan = clone(originPlan)
 
     // TODO: 添加校验
 
@@ -1600,7 +1703,8 @@ class Plan {
     plan.status = originPlan.status
     plan.create = originPlan.create
 
-    this.closeEditPanel().update(plan)
+    this.closeEditPanel()
+        .update(plan)
 
     return this
   }
@@ -1672,7 +1776,6 @@ class Plan {
   }
 
   static createTaskElement (plan) {
-    const createElement = DOM.createElement
     let id = plan.id
     let $side = Plan.createTaskSideElement(plan)
     let $main = Plan.createTaskMainElement(plan)
@@ -1707,7 +1810,6 @@ class Plan {
   }
 
   static createTaskPrevElement (plan) {
-    const createElement = DOM.createElement
     let id = plan.id
 
     return createElement('div', {
@@ -1721,7 +1823,6 @@ class Plan {
   }
 
   static createTaskEditElement (plan) {
-    const createElement = DOM.createElement
     let id = plan.id
 
     return createElement('div', {
@@ -1735,7 +1836,6 @@ class Plan {
   }
 
   static createTaskMarkElement (plan) {
-    const createElement = DOM.createElement
     let id = plan.id
 
     return createElement('div', {
@@ -1749,7 +1849,6 @@ class Plan {
   }
 
   static createTasKDeleteElement (plan) {
-    const createElement = DOM.createElement
     let id = plan.id
 
     return createElement('div', {
@@ -1763,7 +1862,6 @@ class Plan {
   }
 
   static createTaskReplaceElement (plan) {
-    const createElement = DOM.createElement
     let id = plan.id
 
     return createElement('div', {
@@ -1777,7 +1875,6 @@ class Plan {
   }
 
   static createTaskNextElement (plan) {
-    const createElement = DOM.createElement
     let id = plan.id
 
     return createElement('div', {
@@ -1791,7 +1888,6 @@ class Plan {
   }
 
   static createTaskSideElement (plan) {
-    const createElement = DOM.createElement
     let $prev = Plan.createTaskPrevElement(plan)
     let $next = Plan.createTaskNextElement(plan)
     let $edit = Plan.createTaskEditElement(plan)
@@ -1812,7 +1908,6 @@ class Plan {
   }
 
   static createTaskLevelElement (plan) {
-    const createElement = DOM.createElement
     const LEVELS = [
       'spades',
       'heart',
@@ -1831,17 +1926,14 @@ class Plan {
   }
 
   static createTaskTitleTextElement (plan) {
-    const createElement = DOM.createElement
-
     return createElement('strong', {
       'className': 'task-title-text'
     }, [
-      Utils.toSafeText(plan.title)
+      toSafeText(plan.title)
     ])
   }
 
   static createTaskTitleElement (plan) {
-    const createElement = DOM.createElement
     let id = plan.id
     let $text = Plan.createTaskTitleTextElement(plan)
 
@@ -1855,7 +1947,6 @@ class Plan {
   }
 
   static createTaskHeaderElement (plan) {
-    const createElement = DOM.createElement
     let $level = Plan.createTaskLevelElement(plan)
     let $title = Plan.createTaskTitleElement(plan)
 
@@ -1868,17 +1959,14 @@ class Plan {
   }
 
   static createTaskDescElement (plan) {
-    const createElement = DOM.createElement
-
     return createElement('div', {
       'className': 'task-desc'
     }, [
-      marked(Utils.toSafeText(plan.desc))
+      marked(toSafeText(plan.desc))
     ])
   }
 
   static createTaskBodyElement (plan) {
-    const createElement = DOM.createElement
     let $desc = Plan.createTaskDescElement(plan)
 
     return createElement('div', {
@@ -1889,8 +1977,6 @@ class Plan {
   }
 
   static createTaskDeadlineElement (plan) {
-    const createElement = DOM.createElement
-
     return createElement('div', {
       'className': 'task-deadline'
     }, [
@@ -1910,8 +1996,6 @@ class Plan {
   }
 
   static createTaskConsumingElement (plan) {
-    const createElement = DOM.createElement
-
     return createElement('div', {
       'className': 'task-time-consuming'
     }, [
@@ -1931,7 +2015,6 @@ class Plan {
   }
 
   static createTaskFooterElement (plan) {
-    const createElement = DOM.createElement
     let $deadline = Plan.createTaskDeadlineElement(plan)
     let $consuming = Plan.createTaskConsumingElement(plan)
 
@@ -1944,7 +2027,6 @@ class Plan {
   }
 
   static createTaskMainElement (plan) {
-    const createElement = DOM.createElement
     let $header = Plan.createTaskHeaderElement(plan)
     let $body = Plan.createTaskBodyElement(plan)
     let $footer = Plan.createTaskFooterElement(plan)
@@ -1956,39 +2038,6 @@ class Plan {
       $body,
       $footer
     ])
-  }
-
-  static guid (len, radix) {
-    let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
-    let uuid = []
-    let i
-
-    radix = radix || chars.length
-
-    if (len) {
-      // Compact form
-      for (i = 0; i < len; i++) {
-        uuid[i] = chars[0 | Math.random() * radix]
-      }
-    } else {
-      // rfc4122, version 4 form
-      let r
-
-      // rfc4122 requires these characters
-      uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-'
-      uuid[14] = '4'
-
-      // Fill in random data.  At i==19 set the high bits of clock sequence as
-      // per rfc4122, sec. 4.1.5
-      for (i = 0; i < 36; i++) {
-        if (!uuid[i]) {
-          r = 0 | Math.random() * 16
-          uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r]
-        }
-      }
-    }
-
-    return uuid.join('')
   }
 
   static isDelayed (deadline) {

@@ -42,6 +42,9 @@
             <div class="field"><label class="field-label field-view-label">任务标题：</label>
               <p class="field-text" id="view-title"></p>
             </div>
+            <div class="field"><label class="field-label field-view-label">创建日期：</label>
+              <p class="field-text" id="view-create"></p>
+            </div>
             <div class="field"><label class="field-label field-view-label">截止日期：</label>
               <p class="field-text" id="view-deadline"></p>
             </div>
@@ -70,10 +73,16 @@
                 <div class="field-input"><input class="field-input-text" id="add-title" type="text" autocomplete="false" placeholder="请输入任务标题" /></div>
               </div>
             </div>
+            <div class="field"><label class="field-label">创建日期：</label>
+              <div class="field-content">
+                <div class="field-date-input field-view-text" id="add-create"></div>
+              </div>
+            </div>
             <div class="field"><label class="field-label">截止日期：</label>
               <div class="field-content">
-                <div class="field-date-input"><input class="field-date-input-text" id="add-deadline" type="text" autocomplete="false" placeholder="请输入选择截止日期" /></div>
-                <div class="field-date-input-icon penel-add-date-icon"><i class="icon-calendar"></i></div>
+                <div class="field-date-input"><input class="field-date-input-text" id="add-deadline" type="text" readonly="readonly" autocomplete="false" placeholder="请选择截止日期" /></div>
+                <div class="field-date-input-icon panel-add-deadline"><i class="icon-calendar"></i></div>
+                <div class="field-calendar" id="add-calendar"></div>
               </div>
             </div>
             <div class="field"><label class="field-label">预估工作量：</label>
@@ -125,10 +134,16 @@
                 <div class="field-input"><input class="field-input-text" id="edit-title" type="text" autocomplete="false" placeholder="请输入任务标题" /></div>
               </div>
             </div>
+            <div class="field"><label class="field-label">创建日期：</label>
+              <div class="field-content">
+                <div class="field-date-input field-view-text" id="edit-create"></div>
+              </div>
+            </div>
             <div class="field"><label class="field-label">截止日期：</label>
               <div class="field-content">
-                <div class="field-date-input"><input class="field-date-input-text" id="edit-deadline" type="text" autocomplete="false" placeholder="请输入选择截止日期" /></div>
-                <div class="field-date-input-icon penel-edit-date-icon"><i class="icon-calendar"></i></div>
+                <div class="field-date-input"><input class="field-date-input-text" id="edit-deadline" type="text" readonly="readonly" autocomplete="false" placeholder="请选择截止日期" /></div>
+                <div class="field-date-input-icon panel-edit-deadline"><i class="icon-calendar"></i></div>
+                <div class="field-calendar" id="edit-calendar"></div>
               </div>
             </div>
             <div class="field"><label class="field-label">预估工作量：</label>
