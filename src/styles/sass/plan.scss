@@ -157,6 +157,12 @@
       }
     }
   }
+  
+  .gu-mirror {
+    .task-desc {
+      max-height: 18px;
+    }
+  }
 }
 
 @media only screen and (max-width: 640px) {
