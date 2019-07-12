@@ -210,7 +210,6 @@ class Plan {
     off($wrap, 'click', this._onEditDeadlineIconClick)
     off($wrap, 'click', this._onTrashCancelButtonClick)
 
-
     // ---------- task ----------
     off($wrap, 'click', this._onTaskTitleClick)
     off($wrap, 'click', this._onPrevButtonClick)
@@ -252,22 +251,20 @@ class Plan {
 
   remove (plan) {
     let status = plan.status
+    let elements = this.getEls()
+    let $tasksTrash = elements.tasksTrash
     let $tasks = this.getStatusTasksEl(status)
     let $count = this.getStatusCountEl(status)
-    let $plan
-    let count
 
     plan.deleted = true
     plan.delayed = Plan.isDelayed(plan.deadline)
     plan.update = getMoments()
     this.setPlan(plan)
 
-    count = parseInt($count.innerHTML, 10)
-    count -= 1
+    Plan.updateStatusChangedCount($count, elements.trashCount)
 
-    $plan = $tasks.querySelector(`div.task[data-id="${plan.id}"]`)
-    $tasks.removeChild($plan)
-    $count.innerHTML = count
+    $tasks.removeChild($tasks.querySelector(`div.task[data-id="${plan.id}"]`))
+    $tasksTrash.appendChild(Plan.createTaskElement(plan))
 
     return this
   }
@@ -668,6 +665,10 @@ class Plan {
     let id = $title.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
 
+    if (plan.deleted) {
+      return this
+    }
+
     this.setEditPlan(plan)
         .openViewPanel()
 
@@ -854,6 +855,10 @@ class Plan {
     let $level
     let $sourceCount
     let $targetCount
+
+    if (parseInt(status, 10) === plan.status) {
+      return this
+    }
 
     // 移动到回收站
     if (status === 'deleted') {
@@ -1289,7 +1294,7 @@ class Plan {
     removeClass($addPanel, CLS_OPENED)
     removeClass($columns, CLS_OPENED)
 
-    if(this.$calendar) {
+    if (this.$calendar) {
       this.$calendar.destroy()
       this.$calendar = null
     }
@@ -1353,7 +1358,7 @@ class Plan {
     removeClass(elements.editPanel, CLS_OPENED)
     removeClass($columns, CLS_OPENED)
 
-    if(this.$calendar) {
+    if (this.$calendar) {
       this.$calendar.destroy()
       this.$calendar = null
     }
@@ -1427,7 +1432,7 @@ class Plan {
     let $columns = elements.columns
     let $trashPanel = elements.trashPanel
     let $trashButton = elements.toolbar.querySelector('.toolbar-trash-button')
-    
+
     removeClass($trashButton, 'toolbar-active')
     removeClass($trashPanel, CLS_OPENED)
     removeClass($columns, CLS_OPENED)
@@ -1608,8 +1613,8 @@ class Plan {
     const CLS_CHECKED = 'panel-deadline-active'
     let $icon = evt.delegateTarget
 
-    if(hasClass($icon, CLS_CHECKED)) {
-       removeClass($icon, CLS_CHECKED)
+    if (hasClass($icon, CLS_CHECKED)) {
+      removeClass($icon, CLS_CHECKED)
     } else {
       addClass($icon, CLS_CHECKED)
     }
@@ -1667,7 +1672,7 @@ class Plan {
     const CLS_CHECKED = 'panel-deadline-active'
     let $icon = evt.delegateTarget
 
-    if(hasClass($icon, CLS_CHECKED)) {
+    if (hasClass($icon, CLS_CHECKED)) {
       removeClass($icon, CLS_CHECKED)
     } else {
       addClass($icon, CLS_CHECKED)
