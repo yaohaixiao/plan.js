@@ -44,7 +44,7 @@
 }
 
 @media only screen and (max-width: 1200px) {
-  .columns {
+  .columns-inner {
     overflow: auto;
   }
 
@@ -157,7 +157,7 @@
       }
     }
   }
-  
+
   .gu-mirror {
     .task-desc {
       max-height: 18px;

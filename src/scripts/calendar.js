@@ -6,6 +6,20 @@ import {
 } from './utils'
 
 import {
+  getYear,
+  getMonth,
+  getDate,
+  getDay,
+  getToday,
+  getRanges,
+  getWeekRanges,
+  getYears,
+  isDatesEqual,
+  isToday,
+  isLeapYear
+} from './time'
+
+import {
   createElement,
   hasClass,
   addClass,
@@ -216,7 +230,7 @@ class Calendar {
    * @returns {Calendar}
    */
   initialize (options) {
-    let year = Calendar.getYear().value
+    let year = getYear().value
     let pickMode
     let time
     let month
@@ -231,7 +245,7 @@ class Calendar {
 
     time = this.get('time')
     pickMode = this.get('pickMode')
-    month = Calendar.getMonth(time)
+    month = getMonth(time)
     monthText = month.text
 
     // 初始化数据
@@ -258,7 +272,7 @@ class Calendar {
 
         break
       case 'week':
-        dateRanges = Calendar.getWeekRanges(time)
+        dateRanges = getWeekRanges(time)
         startDate = dateRanges[0]
         endDate = dateRanges[dateRanges.length - 1]
 
@@ -300,7 +314,7 @@ class Calendar {
     $header.appendChild(elements.title)
 
     // 配置了显示上下切换按钮
-    if(this.get('hasSwitcher')) {
+    if (this.get('hasSwitcher')) {
       $switcher.appendChild(elements.prev)
       $switcher.appendChild(elements.next)
       $header.appendChild($switcher)
@@ -323,13 +337,13 @@ class Calendar {
     $body.appendChild(elements.years)
 
     // 配置了显示页脚
-    if(this.get('hasFooter')) {
+    if (this.get('hasFooter')) {
       // 绘制页脚
       this._renderFooter()
       $footer.appendChild(elements.today)
 
       // 配置了显示当前时间
-      if(this.get('hasClock')) {
+      if (this.get('hasClock')) {
         $footer.appendChild(elements.time)
       }
     }
@@ -339,7 +353,7 @@ class Calendar {
     $wrap.appendChild($body)
 
     // 配置了显示页脚
-    if(this.get('hasFooter')) {
+    if (this.get('hasFooter')) {
       $wrap.appendChild($footer)
     }
 
@@ -373,7 +387,7 @@ class Calendar {
     // 绑定点击标题的事件处理器
     on($wrap, selectorTitle, CLICK, this._titleClick, this)
 
-    if(this.get('hasSwitcher')) {
+    if (this.get('hasSwitcher')) {
       // 绑定点击向上按钮的事件处理器
       on($wrap, selectorPrev, CLICK, this._prevClick, this)
       // 绑定点击向下按钮的事件处理器
@@ -387,7 +401,7 @@ class Calendar {
     // 绑定点击年份的事件处理器
     on($wrap, selectorYear, CLICK, this._yearClick, this)
 
-    if(this.get('hasClock')) {
+    if (this.get('hasClock')) {
       // 绑定点击今天的事件处理器
       on($wrap, selectorToday, CLICK, this._todayClick, this)
     }
@@ -444,7 +458,7 @@ class Calendar {
 
     off($wrap, CLICK, this._titleClick)
 
-    if(this.get('hasSwitcher')) {
+    if (this.get('hasSwitcher')) {
       off($wrap, CLICK, this._prevClick)
       off($wrap, CLICK, this._nextClick)
     }
@@ -453,7 +467,7 @@ class Calendar {
     off($wrap, CLICK, this._monthClick)
     off($wrap, CLICK, this._yearClick)
 
-    if(this.get('hasClock')) {
+    if (this.get('hasClock')) {
       off($wrap, CLICK, this._todayClick)
     }
 
@@ -587,7 +601,7 @@ class Calendar {
    * @returns {Calendar}
    */
   setYear (time) {
-    this.data.year = Calendar.getYear(time).value
+    this.data.year = getYear(time).value
 
     return this
   }
@@ -608,7 +622,7 @@ class Calendar {
    * @returns {Calendar}
    */
   setMonth (time) {
-    this.data.month = Calendar.getMonth(time).value
+    this.data.month = getMonth(time).value
 
     return this
   }
@@ -629,7 +643,7 @@ class Calendar {
    * @returns {Calendar}
    */
   setDate (time) {
-    this.data.date = Calendar.getDate(time)
+    this.data.date = getDate(time)
 
     return this
   }
@@ -1049,10 +1063,13 @@ class Calendar {
           break
         case 'week':
           // 获得当前选中日期的星期范围
-          let ranges = Calendar.getWeekRanges(time)
+          let ranges = getWeekRanges(time)
 
           // 清除之前的数据，保存现在的星期日期范围
-          this.data.picked = [ranges[0], ranges[ranges.length - 1]]
+          this.data.picked = [
+            ranges[0],
+            ranges[ranges.length - 1]
+          ]
 
           this.setDate(ranges[ranges.length - 1])
 
@@ -1167,7 +1184,7 @@ class Calendar {
    * @returns {Calendar}
    */
   pickToday () {
-    let time = Calendar.getToday().value
+    let time = getToday().value
     let callback = this.get('onTodayPick')
 
     this.setYear(time)
@@ -1238,7 +1255,7 @@ class Calendar {
    * @private
    */
   _setYears (time) {
-    this.data.years = Calendar.getYears(time)
+    this.data.years = getYears(time)
 
     return this
   }
@@ -1316,7 +1333,7 @@ class Calendar {
         break
     }
 
-    if(!hasFooter){
+    if (!hasFooter) {
       wrapClassName += SPACE + CLS_WRAP_WITHOUT_FOOTER
     }
 
@@ -1324,7 +1341,7 @@ class Calendar {
 
     // wrap
     elements.wrap = createElement('div', {
-      id: guid(4,10),
+      id: guid(4, 10),
       className: wrapClassName
     })
     // header
@@ -1340,7 +1357,7 @@ class Calendar {
     ])
 
     // 配置了显示上下切换按钮
-    if(this.get('hasSwitcher')) {
+    if (this.get('hasSwitcher')) {
       elements.switcher = createElement('div', {
         className: CLS_SWITCHER
       })
@@ -1386,7 +1403,7 @@ class Calendar {
     })
 
     // 配置了显示页脚
-    if(hasFooter) {
+    if (hasFooter) {
       // footer
       elements.footer = createElement('div', {
         className: CLS_FOOTER
@@ -1437,11 +1454,11 @@ class Calendar {
     switch (this.get('viewMode')) {
       case 0:
         // 显示完整的年月日式时间
-        value = Calendar.getMonth(year + '-' + this.getMonth()).fullText
+        value = getMonth(year + '-' + this.getMonth()).fullText
         break
       case 1:
         // 显示年份+月份格式时间
-        value = Calendar.getYear(year.toString()).text
+        value = getYear(year.toString()).text
         break
       case 2:
         // 显示年代范围格式时间
@@ -1497,14 +1514,13 @@ class Calendar {
    */
   _renderDates () {
     const DATES = this.get('DATES')
-    const isLeapYear = Calendar.isLeapYear
     // fragments
     let fragment = document.createDocumentFragment()
     // current month
     let year = this.getYear()
     let month = this.getMonth()
     let days = DATES[month - 1]
-    let firstDateDay = Calendar.getDay(year + '-' + month + '-' + 1).value
+    let firstDateDay = getDay(year + '-' + month + '-' + 1).value
     // prev month
     let prevYear = month - 2 < 0 ? year - 1 : year
     let prevMonth = month - 2 < 0 ? 12 : month - 1
@@ -1517,8 +1533,7 @@ class Calendar {
     // 如果当前是闰年，上个月是二月份，则闰年二月为29天
     if (isLeapYear(year) && prevMonth === 2) {
       prevDays += 1
-    }
-    else {
+    } else {
       // 如果当前是闰年，当前月份是二月，则本月有29天
       if (isLeapYear(year) && month === 2) {
         days += 1
@@ -1610,7 +1625,6 @@ class Calendar {
     const CLS_PICKED_RANGE = STYLES.PICKED_RANGE
     const CLS_WEEKEND = STYLES.WEEKEND
     const CLS_TEXT = STYLES.TEXT
-    const isDatesEqual = Calendar.isDatesEqual
     let fragment = document.createDocumentFragment()
     let elements = this.getEls()
     let date = start
@@ -1619,8 +1633,8 @@ class Calendar {
 
     for (; date <= end; date += 1) {
       let fullDate = year + '-' + month + '-' + date
-      let isCurrent = Calendar.isToday(fullDate)
-      let day = Calendar.getDay(fullDate)
+      let isCurrent = isToday(fullDate)
+      let day = getDay(fullDate)
       let $children = [
         createElement('span', {
           className: CLS_TEXT
@@ -1684,7 +1698,7 @@ class Calendar {
 
           // 只有选中了两个节点，才绘制选中日期区间的样式
           if (pickedDates.length === 2) {
-            dateRanges = Calendar.getRanges(pickedDates[0], pickedDates[1])
+            dateRanges = getRanges(pickedDates[0], pickedDates[1])
 
             dateRanges.forEach((picked, i) => {
               let isPicked = isDatesEqual(fullDate, picked)
@@ -1751,7 +1765,7 @@ class Calendar {
 
         break
       case 2:
-        let ranges = Calendar.getRanges(this.data.picked[0], this.data.picked[1])
+        let ranges = getRanges(this.data.picked[0], this.data.picked[1])
 
         ranges.forEach((picked, i) => {
           let $picked = $dates.querySelector('[data-date="' + picked + '"]')
@@ -1784,7 +1798,7 @@ class Calendar {
     let $dates = elements.dates
     let $pickedDates = $dates.querySelectorAll('.' + CLS_PICKED)
     let picked = this.getPicked()
-    let ranges = Calendar.getWeekRanges(picked[0])
+    let ranges = getWeekRanges(picked[0])
 
     // 移除之前选中区域的样式
     $pickedDates.forEach(($picked) => {
@@ -1830,7 +1844,7 @@ class Calendar {
     let fragment = document.createDocumentFragment()
     let elements = this.getEls()
     let year = this.getYear()
-    let today = Calendar.getToday()
+    let today = getToday()
 
     MONTHS.forEach((MONTH, i) => {
       let pickedDate = this.getDate()
@@ -2022,7 +2036,7 @@ class Calendar {
 
     for (; year <= end; year += 1) {
       let pickedDate = this.getDate()
-      let isCurrent = (year === Calendar.getToday().year)
+      let isCurrent = (year === getToday().year)
       let isPicked = (year === pickedDate.year)
       let className = CLS_YEAR
       let $year = createElement('div', {
@@ -2075,7 +2089,7 @@ class Calendar {
     const CLS_TEXT = STYLES.TEXT
     let elements = this.getEls()
     let $today = elements.today.querySelector('.' + CLS_TEXT)
-    let today = Calendar.getToday()
+    let today = getToday()
     let timer = null
 
     let renderTime = () => {
@@ -2109,7 +2123,7 @@ class Calendar {
     $today.innerHTML = '今天：' + today.text
     $today.setAttribute('data-date', today.value)
 
-    if(this.get('hasClock')) {
+    if (this.get('hasClock')) {
       renderTime()
     }
 
@@ -2206,7 +2220,7 @@ class Calendar {
    */
   _todayClick () {
     let elements = this.getEls()
-    let time = Calendar.getToday().text
+    let time = getToday().text
 
     this.pickToday()
 
@@ -2214,261 +2228,6 @@ class Calendar {
     this.pickDate(elements.dates.querySelector('[data-date="' + time + '"]'))
 
     return this
-  }
-
-  /**
-   * 获得年份信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示年份的字符串或者数字（默认值：今年）
-   * @returns {{value: (Number|{value, text, fullText}), text: string, fullText: string}}
-   */
-  static getYear (val) {
-    let time = !val ? new Date() : new Date(val)
-    let year = time.getFullYear()
-
-    return {
-      value: year,
-      text: year.toString(),
-      fullText: year + '年'
-    }
-  }
-
-  /**
-   * 获取月份信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示月份的字符串或者数字（默认值：本月）
-   * @returns {{value: number, text: string, fullText: string}}
-   */
-  static getMonth (val) {
-    let time = !val ? new Date() : new Date(val)
-    let year = Calendar.getYear(val)
-    let month = time.getMonth()
-
-    month += 1
-
-    return {
-      value: month,
-      text: year.text + '-' + month,
-      fullText: year.fullText + month + '月'
-    }
-  }
-
-  /**
-   * 获取日期信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示日期的字符串或者数字（默认值：今天）
-   * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
-   */
-  static getDate (val) {
-    let time = !val ? new Date() : new Date(val)
-    let year = Calendar.getYear(val)
-    let month = Calendar.getMonth(val)
-    let date = time.getDate()
-    let day = Calendar.getDay(val)
-    let fullDate = year.value + '-' + month.value + '-' + date
-    let text = month.fullText + date + '日'
-
-    return {
-      year: year.value,
-      month: month.value,
-      date: date,
-      day: day.value,
-      text: fullDate,
-      fullText: text + ' ' + day.fullText
-    }
-  }
-
-  /**
-   * 获取星期信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示日期的字符串或者数字（默认值：今天）
-   * @returns {{value: number, text: string, fullText: string}}
-   */
-  static getDay (val) {
-    let time = !val ? new Date() : new Date(val)
-    let day = time.getDay()
-    let text = Calendar.defaults.DAYS[day]
-
-    return {
-      value: day,
-      text: text,
-      fullText: '星期' + text
-    }
-  }
-
-  /**
-   * 获取今天的日期信息
-   * ========================================================================
-   * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
-   */
-  static getToday () {
-    return Calendar.getDate()
-  }
-
-  /**
-   * 获取年代信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示年份的字符串或者数字（默认值：今年）
-   * @returns {{start: (number|Number|{value, text}), end: (*|number)}}
-   */
-  static getYears (val) {
-    let year = Calendar.getYear(val).value
-    let numbers = year.toString().split('')
-    let lastNumber = parseInt(numbers[numbers.length - 1], 10)
-    let yearsStart = 0
-    let yearsEnd = 0
-
-    if (lastNumber === 0) {
-      yearsStart = year
-      yearsEnd = year + 9
-    } else {
-      if (lastNumber === 9) {
-        yearsStart = year - 9
-        yearsEnd = year
-      } else {
-        yearsStart = year - lastNumber
-        yearsEnd = year + (9 - lastNumber)
-      }
-    }
-
-    return {
-      start: yearsStart,
-      end: yearsEnd
-    }
-  }
-
-  /**
-   * 获取日期所属的整个星期的日期区间信息
-   * ========================================================================
-   * @param {String} time - 表示日期的字符串
-   * @returns {Array}
-   */
-  static getWeekRanges (time) {
-    const DATES = Calendar.defaults.DATES
-    const isLeapYear = Calendar.isLeapYear
-    let day = Calendar.getDay(time).value
-    let begins = time.split('-')
-    let year = parseInt(begins[0], 10)
-    let month = parseInt(begins[1], 10)
-    let date = parseInt(begins[2], 10)
-    let days = DATES[month - 1]
-    let startYear = year
-    let startMonth = month
-    let startDate = date - day
-    let endYear = year
-    let endMonth = month
-    let endDate = date + (6 - day)
-    let prevMonth = 0
-
-    // 闰年2月为29天，默认值为28天，所以需要+1天
-    if (isLeapYear(year) && month === 2) {
-      days += 1
-    }
-
-    if (startDate < 1) {
-      // 上一个月
-      prevMonth = month - 2
-      startMonth -= 1
-
-      if (prevMonth < 0) {
-        startYear -= 1
-        startMonth = 12
-        startDate = DATES[11] + startDate
-      } else {
-        // 开始日期
-        startDate = DATES[prevMonth] + startDate
-      }
-    }
-
-    if (endDate > days) {
-      endMonth += 1
-
-      // 结束日期
-      endDate = endDate - days
-
-      if (prevMonth > 11) {
-        endYear += 1
-        endMonth = 1
-      }
-    }
-
-    return Calendar.getRanges((startYear + '-' + startMonth + '-' + startDate), (endYear + '-' + endMonth + '-' + endDate))
-  }
-
-  /**
-   * 获取两个日期之间的所有日期信息
-   * ========================================================================
-   * @param {String} begin - 表示日期的字符串
-   * @param {String} end - 表示日期的字符串
-   * @returns {Array}
-   */
-  static getRanges (begin, end) {
-    const ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000
-    let ranges = []
-    let begins = begin.split('-')
-    let ends = end.split('-')
-    let beginTime = new Date()
-    let endTime = new Date()
-    let beginNumber
-    let endNumber
-    let timeNumber
-
-    beginTime.setUTCFullYear(parseInt(begins[0], 10), parseInt(begins[1], 10) - 1, parseInt(begins[2], 10))
-    endTime.setUTCFullYear(parseInt(ends[0], 10), parseInt(ends[1], 10) - 1, parseInt(ends[2], 10))
-
-    beginNumber = beginTime.getTime()
-    endNumber = endTime.getTime()
-    timeNumber = beginNumber
-
-    for (; timeNumber <= endNumber; timeNumber += ONE_DAY_TO_SECONDS) {
-      ranges.push(Calendar.getDate(timeNumber).text)
-    }
-
-    return ranges
-  }
-
-  /**
-   * 判断是否为闰年
-   * ========================================================================
-   * @param {Number} year - 年份数值
-   * @returns {boolean}
-   */
-  static isLeapYear (year) {
-    return ((year % 4 === 0) || (year % 400 === 0)) && (year % 100 !== 0)
-  }
-
-  /**
-   * 判断是否为今天
-   * ========================================================================
-   * @param {String|Number} time - 表示日期的字符串或者数字
-   * @returns {*}
-   */
-  static isToday (time) {
-    return Calendar.isDatesEqual(time)
-  }
-
-  /**
-   * 判断两个日期是否相等
-   * ========================================================================
-   * @param {String|Number} dateOne - 表示日期的字符串或者数字
-   * @param {String|Number} [dateTwo] - 表示日期的字符串或者数字（默认值：今天）
-   * @returns {boolean}
-   */
-  static isDatesEqual (dateOne, dateTwo) {
-    const getDate = Calendar.getDate
-
-    return Calendar.isEqual(getDate(dateOne).text, getDate(dateTwo).text)
-  }
-
-  /**
-   * 判断两个时间是否相等
-   * ========================================================================
-   * @param {String|Number} timeOne - 表示日期的字符串或者数字
-   * @param {String|Number} timeTwo - 表示日期的字符串或者数字
-   * @returns {boolean}
-   */
-  static isEqual (timeOne, timeTwo) {
-    return new Date(timeOne).getTime() === new Date(timeTwo).getTime()
   }
 }
 

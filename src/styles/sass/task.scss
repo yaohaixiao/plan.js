@@ -9,7 +9,7 @@
 .task-ft,
 .task-deadline,
 .task-deadline-text,
-.task-time-consuming-text,
+.task-estimate-text,
 .task-button {
   margin: 0;
   overflow: hidden;
@@ -18,8 +18,8 @@
 }
 
 .task-level,
-.task-time-consuming,
-.task-time-consuming-icon,
+.task-estimate,
+.task-estimate-icon,
 .task-deadline-icon,
 .task-side {
   overflow: hidden;
@@ -71,7 +71,6 @@
 }
 
 .task-title {
-  cursor: pointer;
   font-size: 14px;
   font-weight: normal;
   height: 40px;
@@ -83,6 +82,7 @@
 }
 
 .task-title-text {
+  cursor: pointer;
   color: $primary;
   font-weight: normal;
 
@@ -166,7 +166,7 @@
 }
 
 .task-deadline-icon,
-.task-time-consuming-icon {
+.task-estimate-icon {
   @include button(20px, 30px, 12px, $light-gray, $light-gray);
   left: 0;
   top: 0;
@@ -176,7 +176,7 @@
   margin: 0 0 0 20px;
 }
 
-.task-time-consuming {
+.task-estimate {
   height: 30px;
   margin: 0;
   right: 0;
@@ -184,7 +184,7 @@
   width: 50px;
 }
 
-.task-time-consuming-text {
+.task-estimate-text {
   margin: 0 0 0 20px;
 }
 

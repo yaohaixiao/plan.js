@@ -19,6 +19,14 @@
   z-index: 2;
 }
 
+.panel {
+  background-color: $white;
+  height: 100%;
+  top: 0;
+  transition: .3s;
+  width: 312px;
+}
+
 .panel-title,
 .panel-count {
   font-weight: normal;
@@ -45,12 +53,27 @@
   z-index: 1;
 }
 
-.panel {
-  background-color: $white;
-  height: 100%;
+.panel-button {
+  @include button(40px, 40px, 20px);
+  @include radius(10px);
+  cursor: pointer;
+  right: 0;
   top: 0;
-  transition: .3s;
-  width: 312px;
+}
+
+.panel-edit-button {
+  font-size: 18px;
+}
+
+.panel-calendar {
+  .cal-md {
+    height: 240px;
+    margin-top: 5px;
+  }
+
+  .cal-hd {
+    border-bottom: 0;
+  }
 }
 
 .panel-view,
@@ -76,17 +99,17 @@
   }
 }
 
-.panel-button {
-  @include button(40px, 40px, 20px);
-  @include radius(10px);
-  cursor: pointer;
-  right: 0;
-  top: 0;
-}
+.panel-trash {
+  .task-title {
+    cursor: move;
+  }
 
-.panel-deadline-active {
-  .icon-calendar {
-    color: $primary;
+  .task-title-text {
+    cursor: move;
+
+    &:hover {
+      text-decoration: none;
+    }
   }
 }
 

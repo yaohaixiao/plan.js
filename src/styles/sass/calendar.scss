@@ -60,7 +60,7 @@
 
 .cal-md {
   background-color: $white;
-  font-size: 14px;
+  font-size: 13px;
   user-select: none;
   width: 100%;
 }
@@ -130,29 +130,13 @@
   vertical-align: middle;
 }
 
-.cal-festival-text,
-.cal-lunar-text {
-  bottom: 0;
-  color: $light-gray;
-  font-size: 12px;
-  margin: 0;
-  padding: 5px;
-  position: absolute;
-  right: 0;
-  z-index: 2;
-}
-
-.cal-festival-text {
-  color: $green;
-}
-
 .cal-hd {
   border-bottom: 1px solid $border-color;
 }
 
 .cal-title {
   color: $gray;
-  font: normal 16px 'Arial', sans-serif;
+  font: normal 14px 'Arial', sans-serif;
   margin-right: 60px;
   padding-left: 10px;
 

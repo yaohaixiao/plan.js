@@ -1,10 +1,22 @@
 'use strict'
 
 import {
+  clone,
+  guid,
+  toSafeText
+} from './utils'
+
+import {
+  getToday,
+  getMoments
+} from './time'
+
+import {
   createElement,
+  hasClass,
   addClass,
   removeClass,
-  hasClass
+  replaceClass
 } from './dom'
 
 import {
@@ -13,11 +25,8 @@ import {
 } from './delegate'
 
 import {
-  clone,
-  getMoments,
-  guid,
-  toSafeText
-} from './utils'
+  createTaskElement
+} from './task'
 
 import Calendar from './calendar'
 import Confirm from './confirm'
@@ -126,20 +135,20 @@ class Plan {
     on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
 
     // ---------- panel ----------
-    on($wrap, '.panel-view-cancel', 'click', this._onViewCancelButtonClick, this)
-    on($wrap, '.panel-view-edit', 'click', this._onViewEditButtonClick, this)
+    on($wrap, '.view-cancel', 'click', this._onViewCancelButtonClick, this)
+    on($wrap, '.view-edit', 'click', this._onViewEditButtonClick, this)
     // 新建任务 Panel
-    on($wrap, '.panel-add-cancel', 'click', this._onAddCancelButtonClick, this)
-    on($wrap, '.panel-add-save', 'click', this._onAddSaveButtonClick, this)
-    on($wrap, '.panel-add-level', 'click', this._onAddLevelButtonClick, this)
-    on($wrap, '.panel-add-deadline', 'click', this._onAddDeadlineIconClick, this)
+    on($wrap, '.add-cancel', 'click', this._onAddCancelButtonClick, this)
+    on($wrap, '.add-save', 'click', this._onAddSaveButtonClick, this)
+    on($wrap, '.add-level', 'click', this._onAddLevelButtonClick, this)
+    on($wrap, '.add-deadline', 'click', this._onAddDeadlineIconClick, this)
     // 编辑任务 Panel
-    on($wrap, '.panel-edit-cancel', 'click', this._onEditCancelButtonClick, this)
-    on($wrap, '.panel-edit-save', 'click', this._onEditSaveButtonClick, this)
-    on($wrap, '.panel-edit-level', 'click', this._onEditLevelButtonClick, this)
-    on($wrap, '.panel-edit-deadline', 'click', this._onEditDeadlineIconClick, this)
+    on($wrap, '.edit-cancel', 'click', this._onEditCancelButtonClick, this)
+    on($wrap, '.edit-save', 'click', this._onEditSaveButtonClick, this)
+    on($wrap, '.edit-level', 'click', this._onEditLevelButtonClick, this)
+    on($wrap, '.edit-deadline', 'click', this._onEditDeadlineIconClick, this)
     // 回收站
-    on($wrap, '.panel-trash-cancel', 'click', this._onTrashCancelButtonClick, this)
+    on($wrap, '.trash-cancel', 'click', this._onTrashCancelButtonClick, this)
 
     // ---------- task ----------
     on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
@@ -161,8 +170,8 @@ class Plan {
     on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
 
     // 拖动完成，更新任务状态
-    this.$dragula.on('drop', ($plan, $target) => {
-      this.drop($plan, $target)
+    this.$dragula.on('drop', ($plan, $target, $source) => {
+      this.drop($plan, $target, $source)
     })
 
     return this
@@ -178,8 +187,10 @@ class Plan {
   destroy () {
     this.removeEventListeners()
         .reset()
+        .empty()
 
     this.$dragula.destroy()
+    this.$dragula = null
 
     return this
   }
@@ -228,23 +239,20 @@ class Plan {
   }
 
   add (plan) {
+    let elements = this.getEls()
+    let $tasks = elements.tasksTodo
+    let $count = elements.todoCount
     let plans = clone(this.getPlans())
-    let filter = this.getFilter()
-    let todoPlans
-    let doingPlans
-    let checkingPlans
-    let donePlans
+    let status = plan.status
 
     plan.delayed = Plan.isDelayed(plan.deadline)
     plans.push(plan)
     this.setPlans(plans)
 
-    todoPlans = this.filterPlans(filter, 0)
-    doingPlans = this.filterPlans(filter, 1)
-    checkingPlans = this.filterPlans(filter, 2)
-    donePlans = this.filterPlans(filter, 3)
-
-    this.updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
+    if (status !== 'marked' && Plan.isLevelSaveAsFilter(plan.level, this.getFilter())) {
+      $count.innerHTML = parseInt($count.innerHTML, 10) + 1
+      $tasks.appendChild(createTaskElement(plan))
+    }
 
     return this
   }
@@ -264,7 +272,7 @@ class Plan {
     Plan.updateStatusChangedCount($count, elements.trashCount)
 
     $tasks.removeChild($tasks.querySelector(`div.task[data-id="${plan.id}"]`))
-    $tasksTrash.appendChild(Plan.createTaskElement(plan))
+    $tasksTrash.appendChild(createTaskElement(plan))
 
     return this
   }
@@ -331,11 +339,6 @@ class Plan {
   }
 
   reset () {
-    this.emptyAddPanel()
-        .emptyEditPanel()
-        .emptyTrashPanel()
-        .emptyColumns()
-
     this.attributes = {
       plans: []
     }
@@ -366,6 +369,16 @@ class Plan {
       filter: 'inbox',
       editPlan: null
     }
+
+    return this
+  }
+
+  empty () {
+    this.emptyAddPanel()
+        .emptyEditPanel()
+        .emptyTrashPanel()
+        .emptyViewPanel()
+        .emptyColumns()
 
     return this
   }
@@ -521,17 +534,24 @@ class Plan {
     let $count
 
     switch (status) {
+      case '0':
       case 0:
         $count = elements.todoCount
         break
+      case '1':
       case 1:
         $count = elements.doingCount
         break
+      case '2':
       case 2:
         $count = elements.checkingCount
         break
+      case '3':
       case 3:
         $count = elements.doneCount
+        break
+      case 'deleted':
+        $count = elements.trashCount
         break
     }
 
@@ -543,17 +563,24 @@ class Plan {
     let $tasks
 
     switch (status) {
+      case '0':
       case 0:
         $tasks = elements.tasksTodo
         break
+      case '1':
       case 1:
         $tasks = elements.tasksDoing
         break
+      case '2':
       case 2:
         $tasks = elements.tasksChecking
         break
+      case '3':
       case 3:
         $tasks = elements.tasksDone
+        break
+      case 'deleted':
+        $tasks = elements.tasksTrash
         break
     }
 
@@ -594,7 +621,7 @@ class Plan {
   }
 
   checkFilter ($button) {
-    const CLS_ACTIVE = 'toolbar-active'
+    const CLS_ACTIVE = 'toolbar-button-active'
     let prop = $button.getAttribute('data-filter')
     let $toolbar = this.getEls().toolbar
     let $active
@@ -678,7 +705,7 @@ class Plan {
   checkChangeStatus ($button, direction) {
     let id = $button.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
-    let status = parseInt(plan.status, 10)
+    let status = plan.status
     let $sourceCount = this.getStatusCountEl(status)
     let $sourceTasks = this.getStatusTasksEl(status)
     let $plan = $sourceTasks.querySelector(`div.task[data-id="${id}"]`)
@@ -711,7 +738,7 @@ class Plan {
     Plan.updateStatusChangedCount($sourceCount, $targetCount)
 
     $sourceTasks.removeChild($plan)
-    $targetTasks.appendChild(Plan.createTaskElement(plan))
+    $targetTasks.appendChild(createTaskElement(plan))
 
     return this
   }
@@ -845,32 +872,25 @@ class Plan {
     return this
   }
 
-  drop ($plan, $column) {
+  drop ($plan, $target, $source) {
     let filter = this.getFilter()
     let id = $plan.getAttribute('data-id')
-    let status = $column.getAttribute('data-status')
     let plan = this.getPlan(parseInt(id, 10))
-    let elements = this.getEls()
-    let $header
-    let $level
-    let $sourceCount
-    let $targetCount
+    let sourceStatus = $source.getAttribute('data-status')
+    let targetStatus = $target.getAttribute('data-status')
+    let $sourceCount = this.getStatusCountEl(sourceStatus)
+    let $targetCount = this.getStatusCountEl(targetStatus)
 
-    if (parseInt(status, 10) === plan.status) {
+    if (targetStatus === sourceStatus) {
       return this
     }
 
     // 移动到回收站
-    if (status === 'deleted') {
-      $sourceCount = this.getStatusCountEl(plan.status)
-      $targetCount = elements.trashCount
-
-      Plan.updateStatusChangedCount($sourceCount, $targetCount)
-
+    if (targetStatus === 'deleted') {
       plan.deleted = true
     } else {
       // 从回收站移出来
-      if (plan.deleted) {
+      if (sourceStatus === 'deleted') {
         // 根据过滤器，更新相应的属性
         switch (filter) {
           case 'marked':
@@ -878,44 +898,22 @@ class Plan {
             break
           case 'spades':
             plan.level = 0
-            $level = $plan.querySelector('.task-level')
             break
           case 'heart':
             plan.level = 1
-            $level = $plan.querySelector('.task-level')
             break
           case 'clubs':
             plan.level = 2
-            $level = $plan.querySelector('.task-level')
             break
           case 'diamonds':
             plan.level = 3
-            $level = $plan.querySelector('.task-level')
             break
         }
 
-        if ($level) {
-          $header = $plan.querySelector('.task-hd')
-          $header.replaceChild(Plan.createTaskLevelElement(plan), $level)
-        }
-
-        $sourceCount = elements.trashCount
-        $targetCount = this.getStatusCountEl(parseInt(status, 10))
-
-        removeClass($plan, 'task-status-' + plan.status)
-        Plan.updateStatusChangedCount($sourceCount, $targetCount)
-
         plan.deleted = false
-        plan.status = parseInt(status, 10)
+        plan.status = parseInt(targetStatus, 10)
       } else {
-        $sourceCount = this.getStatusCountEl(plan.status)
-        $targetCount = this.getStatusCountEl(parseInt(status, 10))
-
-        removeClass($plan, 'task-status-' + plan.status)
-        Plan.updateStatusChangedCount($sourceCount, $targetCount)
-
-        // 普通状态之前的调整
-        plan.status = parseInt(status, 10)
+        plan.status = parseInt(targetStatus, 10)
       }
     }
 
@@ -923,32 +921,34 @@ class Plan {
     plan.delayed = Plan.isDelayed(plan.deadline)
     this.setPlan(plan)
 
+    Plan.updateStatusChangedCount($sourceCount, $targetCount)
+
     if (plan.deleted) {
-      $plan.setAttribute('data-deleted', '1')
       addClass($plan, 'task-deleted')
+      $plan.setAttribute('data-deleted', '1')
     } else {
-      $plan.setAttribute('data-deleted', '0')
       removeClass($plan, 'task-deleted')
+      $plan.setAttribute('data-deleted', '0')
+
+      replaceClass($plan, 'task-status-' + plan.status, 'task-status-' + sourceStatus)
+      $plan.setAttribute('data-status', plan.status)
     }
 
     if (plan.marked) {
-      $plan.setAttribute('data-marked', '1')
       addClass($plan, 'task-marked')
+      $plan.setAttribute('data-marked', '1')
     } else {
-      $plan.setAttribute('data-marked', '0')
       removeClass($plan, 'task-marked')
+      $plan.setAttribute('data-marked', '0')
     }
 
     if (plan.delayed) {
-      $plan.setAttribute('data-delayed', '1')
       addClass($plan, 'task-delayed')
+      $plan.setAttribute('data-delay', '1')
     } else {
-      $plan.setAttribute('data-delayed', '0')
       removeClass($plan, 'task-delayed')
+      $plan.setAttribute('data-delay', '0')
     }
-
-    $plan.setAttribute('data-status', plan.status.toString())
-    addClass($plan, 'task-status-' + plan.status)
 
     return this
   }
@@ -1311,7 +1311,7 @@ class Plan {
     let $columns = elements.columns
     let $create = $addPanel.querySelector('#add-create')
     let $deadline = $addPanel.querySelector('#add-deadline')
-    let $icon = $addPanel.querySelector('.panel-add-deadline')
+    let $icon = $addPanel.querySelector('.add-deadline')
 
     this.closeViewPanel()
         .closeEditPanel()
@@ -1323,11 +1323,11 @@ class Plan {
       onDatePick: (time) => {
         $deadline.value = time
         this.$calendar.hide()
-        removeClass($icon, 'panel-deadline-active')
+        removeClass($icon, 'field-icon-checked')
       }
     })
 
-    $create.innerHTML = Calendar.getToday().text
+    $create.innerHTML = getToday().text
 
     this.$calendar.hide()
 
@@ -1374,7 +1374,7 @@ class Plan {
     let $editPanel = elements.editPanel
     let $columns = elements.columns
     let $deadline = $editPanel.querySelector('#edit-deadline')
-    let $icon = $editPanel.querySelector('.panel-edit-deadline')
+    let $icon = $editPanel.querySelector('.edit-deadline')
 
     this.closeViewPanel()
         .closeAddPanel()
@@ -1388,7 +1388,7 @@ class Plan {
       onDatePick: (time) => {
         $deadline.value = time
         this.$calendar.hide()
-        removeClass($icon, 'panel-deadline-active')
+        removeClass($icon, 'field-icon-checked')
       }
     })
 
@@ -1433,7 +1433,7 @@ class Plan {
     let $trashPanel = elements.trashPanel
     let $trashButton = elements.toolbar.querySelector('.toolbar-trash-button')
 
-    removeClass($trashButton, 'toolbar-active')
+    removeClass($trashButton, 'toolbar-button-active')
     removeClass($trashPanel, CLS_OPENED)
     removeClass($columns, CLS_OPENED)
 
@@ -1454,7 +1454,7 @@ class Plan {
         .closeEditPanel()
         .updateTrashPanel()
 
-    addClass($trashButton, 'toolbar-active')
+    addClass($trashButton, 'toolbar-button-active')
     addClass($trashPanel, CLS_OPENED)
     addClass($columns, CLS_OPENED)
 
@@ -1523,7 +1523,7 @@ class Plan {
     }
 
     plans.forEach((plan) => {
-      let $plan = Plan.createTaskElement(plan)
+      let $plan = createTaskElement(plan)
 
       $fragment.appendChild($plan)
     })
@@ -1610,7 +1610,7 @@ class Plan {
   }
 
   _onAddDeadlineIconClick (evt) {
-    const CLS_CHECKED = 'panel-deadline-active'
+    const CLS_CHECKED = 'field-icon-checked'
     let $icon = evt.delegateTarget
 
     if (hasClass($icon, CLS_CHECKED)) {
@@ -1669,7 +1669,7 @@ class Plan {
   }
 
   _onEditDeadlineIconClick (evt) {
-    const CLS_CHECKED = 'panel-deadline-active'
+    const CLS_CHECKED = 'field-icon-checked'
     let $icon = evt.delegateTarget
 
     if (hasClass($icon, CLS_CHECKED)) {
@@ -1780,273 +1780,69 @@ class Plan {
     return this
   }
 
-  static createTaskElement (plan) {
-    let id = plan.id
-    let $side = Plan.createTaskSideElement(plan)
-    let $main = Plan.createTaskMainElement(plan)
-    let classTask = 'task'
+  static isDelayed (time) {
+    return new Date().getTime() > new Date(time).getTime() > 0
+  }
 
-    if (plan.marked) {
-      classTask += ' ' + 'task-marked'
+  static isEstimateTime(str){
+    let regEstimate = /^(([1-9]\d*)|[0]?)\.([0-9]\d*)([dhm]?)$/i
+
+    return regEstimate.test(str)
+  }
+
+  static isLevelSaveAsFilter (level, filter) {
+    return Plan.levelToFilter(level) === filter
+  }
+
+  static levelToFilter (level) {
+    let filter = ''
+
+    switch (level) {
+      case '0':
+      case 0:
+        filter = 'spades'
+        break
+      case '1':
+      case 1:
+        filter = 'heart'
+        break
+      case '2':
+      case 2:
+        filter = 'clubs'
+        break
+      case '3':
+      case 4:
+        filter = 'diamonds'
+        break
+
     }
 
-    if (plan.deleted) {
-      classTask += ' ' + 'task-deleted'
+    return filter
+  }
+
+  static filterToLevel(filter) {
+    let level = -1
+
+    switch (filter) {
+      case 'spades':
+        level = 0
+
+        break
+      case 'heart':
+        level = 1
+
+        break
+      case 'clubs':
+        level = 2
+
+        break
+      case 'diamonds':
+        level = 3
+
+        break
     }
 
-    if (plan.delayed) {
-      classTask += ' ' + 'task-delayed'
-    }
-
-    classTask += ' ' + 'task-status-' + plan.status
-
-    return createElement('div', {
-      'id': `task-${id}`,
-      'className': classTask,
-      'data-id': `${id}`,
-      'data-status': `${plan.status}`,
-      'data-deleted': `${plan.deleted ? 1 : 0}`,
-      'data-delayed': `${plan.delayed ? 1 : 0}`,
-      'data-marked': `${plan.marked ? 1 : 0}`
-    }, [
-      $main,
-      $side
-    ])
-  }
-
-  static createTaskPrevElement (plan) {
-    let id = plan.id
-
-    return createElement('div', {
-      'className': 'task-button task-prev-button',
-      'data-id': `${id}`
-    }, [
-      createElement('i', {
-        'className': 'icon-cheveron-up'
-      })
-    ])
-  }
-
-  static createTaskEditElement (plan) {
-    let id = plan.id
-
-    return createElement('div', {
-      'className': 'task-button task-edit-button',
-      'data-id': `${id}`
-    }, [
-      createElement('i', {
-        'className': 'icon-edit-pencil'
-      })
-    ])
-  }
-
-  static createTaskMarkElement (plan) {
-    let id = plan.id
-
-    return createElement('div', {
-      'className': 'task-button task-bookmark-button',
-      'data-id': `${id}`
-    }, [
-      createElement('i', {
-        'className': 'icon-bookmark'
-      })
-    ])
-  }
-
-  static createTasKDeleteElement (plan) {
-    let id = plan.id
-
-    return createElement('div', {
-      'className': 'task-button task-delete-button',
-      'data-id': `${id}`
-    }, [
-      createElement('i', {
-        'className': 'icon-trash'
-      })
-    ])
-  }
-
-  static createTaskReplaceElement (plan) {
-    let id = plan.id
-
-    return createElement('div', {
-      'className': 'task-button task-replace-button',
-      'data-id': `${id}`
-    }, [
-      createElement('i', {
-        'className': 'icon-reload'
-      })
-    ])
-  }
-
-  static createTaskNextElement (plan) {
-    let id = plan.id
-
-    return createElement('div', {
-      'className': 'task-button task-next-button',
-      'data-id': `${id}`
-    }, [
-      createElement('i', {
-        'className': 'icon-cheveron-down'
-      })
-    ])
-  }
-
-  static createTaskSideElement (plan) {
-    let $prev = Plan.createTaskPrevElement(plan)
-    let $next = Plan.createTaskNextElement(plan)
-    let $edit = Plan.createTaskEditElement(plan)
-    let $mark = Plan.createTaskMarkElement(plan)
-    let $delete = Plan.createTasKDeleteElement(plan)
-    let $replace = Plan.createTaskReplaceElement(plan)
-
-    return createElement('div', {
-      'className': 'task-side'
-    }, [
-      $prev,
-      $edit,
-      $mark,
-      $replace,
-      $delete,
-      $next
-    ])
-  }
-
-  static createTaskLevelElement (plan) {
-    const LEVELS = [
-      'spades',
-      'heart',
-      'clubs',
-      'diamonds'
-    ]
-    let level = plan.level
-
-    return createElement('div', {
-      'className': `task-level task-level-${level}`
-    }, [
-      createElement('i', {
-        'className': `icon-${LEVELS[level]}`
-      })
-    ])
-  }
-
-  static createTaskTitleTextElement (plan) {
-    return createElement('strong', {
-      'className': 'task-title-text'
-    }, [
-      toSafeText(plan.title)
-    ])
-  }
-
-  static createTaskTitleElement (plan) {
-    let id = plan.id
-    let $text = Plan.createTaskTitleTextElement(plan)
-
-    return createElement('h3', {
-      'className': 'task-title',
-      'data-id': `${id}`
-    }, [
-      '任务：',
-      $text
-    ])
-  }
-
-  static createTaskHeaderElement (plan) {
-    let $level = Plan.createTaskLevelElement(plan)
-    let $title = Plan.createTaskTitleElement(plan)
-
-    return createElement('div', {
-      'className': 'task-hd'
-    }, [
-      $title,
-      $level
-    ])
-  }
-
-  static createTaskDescElement (plan) {
-    return createElement('div', {
-      'className': 'task-desc'
-    }, [
-      marked(toSafeText(plan.desc))
-    ])
-  }
-
-  static createTaskBodyElement (plan) {
-    let $desc = Plan.createTaskDescElement(plan)
-
-    return createElement('div', {
-      'className': 'task-bd'
-    }, [
-      $desc
-    ])
-  }
-
-  static createTaskDeadlineElement (plan) {
-    return createElement('div', {
-      'className': 'task-deadline'
-    }, [
-      createElement('div', {
-        'className': 'task-deadline-icon'
-      }, [
-        createElement('i', {
-          'className': 'icon-calendar'
-        })
-      ]),
-      createElement('p', {
-        'className': 'task-deadline-text'
-      }, [
-        plan.deadline
-      ])
-    ])
-  }
-
-  static createTaskConsumingElement (plan) {
-    return createElement('div', {
-      'className': 'task-time-consuming'
-    }, [
-      createElement('div', {
-        'className': 'task-time-consuming-icon'
-      }, [
-        createElement('i', {
-          'className': 'icon-clock'
-        })
-      ]),
-      createElement('p', {
-        'className': 'task-time-consuming-text'
-      }, [
-        plan.consuming
-      ])
-    ])
-  }
-
-  static createTaskFooterElement (plan) {
-    let $deadline = Plan.createTaskDeadlineElement(plan)
-    let $consuming = Plan.createTaskConsumingElement(plan)
-
-    return createElement('div', {
-      'className': 'task-ft'
-    }, [
-      $deadline,
-      $consuming
-    ])
-  }
-
-  static createTaskMainElement (plan) {
-    let $header = Plan.createTaskHeaderElement(plan)
-    let $body = Plan.createTaskBodyElement(plan)
-    let $footer = Plan.createTaskFooterElement(plan)
-
-    return createElement('div', {
-      'className': 'task-main'
-    }, [
-      $header,
-      $body,
-      $footer
-    ])
-  }
-
-  static isDelayed (deadline) {
-    return new Date().getTime() > new Date(deadline).getTime() > 0
+    return level
   }
 
   static updateStatusChangedCount ($sourceCount, $targetCount) {

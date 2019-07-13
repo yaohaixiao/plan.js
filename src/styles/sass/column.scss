@@ -3,6 +3,7 @@
 @import './mixins/mixins';
 
 .columns,
+.columns-inner,
 .column,
 .column-hd {
   margin: 0;
@@ -11,15 +12,16 @@
   z-index: 1;
 }
 
-.column-button,
+.columns-overlay,
 .column-bd,
-.columns-overlay {
+.column-button {
   overflow: hidden;
   position: absolute;
   z-index: 2;
 }
 
 .columns,
+.columns-inner,
 .columns-overlay,
 .column,
 .column-bd {

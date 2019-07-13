@@ -13,8 +13,7 @@
 }
 
 .field-view-label,
-.field-date-input-icon,
-.field-time-input-icon {
+.field-input-icon {
   overflow: hidden;
   position: absolute;
   z-index: 2;
@@ -31,14 +30,7 @@
   line-height: 40px;
 }
 
-.field-desc-content {
-  color: $gray;
-  line-height: 150%;
-}
-
 .field-input,
-.field-date-input,
-.field-time-input,
 .field-textarea {
   display: inline-block;
   font-size: 14px;
@@ -47,8 +39,6 @@
 }
 
 .field-textarea-text,
-.field-time-input-text,
-.field-date-input-text,
 .field-input-text {
   @include radius(3px);
   appearance: none;
@@ -70,17 +60,32 @@
   }
 }
 
-.field-time-input-text,
-.field-date-input-text {
-  padding-right: 30px;
+.field-time-input,
+.field-date-input {
+  .field-input-text {
+    padding-right: 30px;
+  }
 }
 
-.field-time-input-icon,
-.field-date-input-icon {
+.field-textarea-text {
+  font-size: 13px;
+  line-height: 20px;
+  min-height: 80px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+.field-input-icon {
   @include button(30px, 40px, 14px);
   cursor: pointer;
   right: 0;
   top: 0;
+}
+
+.field-icon-checked {
+  .icon-calendar {
+    color: $primary;
+  }
 }
 
 .field-levels {
@@ -168,21 +173,13 @@
   overflow: hidden;
 }
 
-.field-textarea-text {
-  font-size: 13px;
-  line-height: 20px;
-  min-height: 80px;
-  padding-bottom: 5px;
-  padding-top: 5px;
-}
-
 .field-view-label {
   left: 0;
   top: 0;
   width: 80px;
 }
 
-.field-text {
+.field-view-text {
   color: $gray;
   line-height: 40px;
   margin: 0 0 0 80px;
@@ -191,13 +188,7 @@
   white-space: nowrap;
 }
 
-.field-view-text {
-  padding: 0 11px;
-}
-
-.field-calendar {
-  .cal-md {
-    height: 240px;
-    margin-top: 10px;
-  }
+.field-view-content {
+  color: $gray;
+  line-height: 150%;
 }

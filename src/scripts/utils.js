@@ -44,38 +44,6 @@ export const clone = (o) => {
   return JSON.parse(JSON.stringify(o))
 }
 
-export const getMoments = () => {
-  let time = new Date()
-  let year = time.getFullYear()
-  let month = time.getMonth() + 1
-  let date = time.getDate()
-  let hours = time.getHours()
-  let minutes = time.getMinutes()
-  let seconds = time.getSeconds()
-
-  if (month < 10) {
-    month = '0' + month
-  }
-
-  if (date < 10) {
-    date = '0' + date
-  }
-
-  if (hours < 10) {
-    hours = '0' + hours
-  }
-
-  if (minutes < 10) {
-    minutes = '0' + minutes
-  }
-
-  if (seconds < 10) {
-    seconds = '0' + seconds
-  }
-
-  return year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':' + seconds
-}
-
 export const guid = (len, radix) => {
   let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
   let uuid = []
@@ -120,6 +88,5 @@ export default {
   stripTags,
   toSafeText,
   clone,
-  getMoments,
   guid
 }
