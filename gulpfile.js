@@ -79,8 +79,20 @@ gulp.task('copy:fonts', (cb) => {
   )
 })
 
+// 复制图片
+gulp.task('copy:images', (cb) => {
+  pump(
+    [
+      gulp.src('src/images/**/*.*'),
+      gulp.dest('docs/images')
+    ],
+    cb
+  )
+})
+
 gulp.task('copy', gulp.parallel(
-  'copy:fonts'
+  'copy:fonts',
+  'copy:images'
 ))
 
 // 校验 .pug 文件语法规范
