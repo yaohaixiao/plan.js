@@ -25,7 +25,7 @@ Plan 是一个纯 JavaScript 开发的 Todo 类型的任务管理应用。开始
 
 ## API
 
-没有 API，用就好了，如果你是才开始学习 JavaScript 的朋友，看源码就是了，代码比较规范。
+没有 API，用就对了！
 
 ## License
 
