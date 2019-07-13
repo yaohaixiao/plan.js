@@ -1,5 +1,5 @@
 # plan
-----
+
 Plan 是一个纯 JavaScript 开发的 Todo 类型的任务管理应用。开始是为我的一个朋友教学生如何管理好自己时间用的一个教学演示模型。不过，我想应该也有很多朋友不想把什么都存在云上，只希望有个简单的工具管理最近的任务，所以选择开源了 Plan。 没有注册，没有号码绑定，你只要专注管理只属于你的任务就是了。
 
 ## 功能
@@ -11,11 +11,21 @@ Plan 是一个纯 JavaScript 开发的 Todo 类型的任务管理应用。开始
 
 ## 界面
 
-![plan](/home/picture/1.png)
+![plan](https://yaohaixiao.github.io/plan/images/plan-1.png)
+
+![plan](https://yaohaixiao.github.io/plan/images/plan-2.png)
+
+![plan](https://yaohaixiao.github.io/plan/images/plan-3.png)
+
+![plan](https://yaohaixiao.github.io/plan/images/plan-4.png)
+
+![plan](https://yaohaixiao.github.io/plan/images/plan-5.png)
+
+![plan](https://yaohaixiao.github.io/plan/images/plan-6.png)
 
 ## API
 
-没有 API，用就好了，如果你是才开始学习 JavaScript 的朋友，看源码就是了，代码比较规范了，ES6 模块化的。
+没有 API，用就好了，如果你是才开始学习 JavaScript 的朋友，看源码就是了，代码比较规范。
 
 ## License
 
