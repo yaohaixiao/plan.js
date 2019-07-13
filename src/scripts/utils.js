@@ -1,3 +1,5 @@
+'use strict'
+
 export const isString = (o) => {
   return typeof o === 'string'
 }

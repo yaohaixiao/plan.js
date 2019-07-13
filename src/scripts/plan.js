@@ -860,7 +860,6 @@ class Plan {
 
   checkColumnDown ($button) {
     const CLS_HIDDEN = 'hidden'
-    const removeClass = removeClass
     let status = parseInt($button.getAttribute('data-status'), 10)
     let $up = $button.parentNode.querySelector('.column-up-button')
     let $tasks = this.getStatusTasksEl(status)
