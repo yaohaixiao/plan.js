@@ -245,7 +245,7 @@ class Plan {
     let plans = clone(this.getPlans())
     let status = plan.status
 
-    plan.delayed = Plan.isDelayed(plan.deadline)
+    plan.delayed = Plan.isDelayed(plan)
     plans.push(plan)
     this.setPlans(plans)
 
@@ -265,7 +265,7 @@ class Plan {
     let $count = this.getStatusCountEl(status)
 
     plan.deleted = true
-    plan.delayed = Plan.isDelayed(plan.deadline)
+    plan.delayed = Plan.isDelayed(plan)
     plan.update = getMoments()
     this.setPlan(plan)
 
@@ -284,7 +284,7 @@ class Plan {
     let checkingPlans
     let donePlans
 
-    plan.delayed = Plan.isDelayed(plan.deadline)
+    plan.delayed = Plan.isDelayed(plan)
     plan.update = getMoments()
     this.setPlan(plan)
 
@@ -728,7 +728,7 @@ class Plan {
       }
     }
 
-    plan.delayed = Plan.isDelayed(plan.deadline)
+    plan.delayed = Plan.isDelayed(plan)
     plan.update = getMoments()
     this.setPlan(plan)
 
@@ -917,7 +917,7 @@ class Plan {
     }
 
     plan.update = getMoments()
-    plan.delayed = Plan.isDelayed(plan.deadline)
+    plan.delayed = Plan.isDelayed(plan)
     this.setPlan(plan)
 
     Plan.updateStatusChangedCount($sourceCount, $targetCount)
@@ -1779,8 +1779,8 @@ class Plan {
     return this
   }
 
-  static isDelayed (time) {
-    return new Date().getTime() > new Date(time).getTime() > 0
+  static isDelayed (plan) {
+    return new Date().getTime() > new Date(plan.deadline).getTime() > 0 && plan.status < 2
   }
 
   static isEstimateTime(str){

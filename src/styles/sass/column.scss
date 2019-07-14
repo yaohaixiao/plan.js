@@ -82,6 +82,14 @@
       &:hover {
         border-color: $blue;
       }
+
+      &.task-delayed {
+        border-left-color: $orange;
+
+        &:hover{
+          border-color: $orange;
+        }
+      }
     }
 
     .task-ft {

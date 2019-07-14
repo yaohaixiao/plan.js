@@ -82,8 +82,8 @@
 }
 
 .task-title-text {
-  cursor: pointer;
   color: $primary;
+  cursor: pointer;
   font-weight: normal;
 
   &:hover {
@@ -219,6 +219,14 @@
 
   .icon-bookmark {
     color: $primary;
+  }
+}
+
+.task-delayed {
+  border-left-color: $orange;
+
+  &:hover {
+    border-color: $orange;
   }
 }
 
