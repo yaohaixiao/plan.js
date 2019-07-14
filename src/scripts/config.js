@@ -1,7 +1,11 @@
-const Templates = [
+'use strict'
+
+export const TEMPLATES = [
   {
-    name: 'Plan 项目开发',
-    tasks: [
+    name: '演示模板',
+    image: 'images/t-plan.png',
+    value: 0,
+    plans: [
       {
         id: 1,
         title: '分析 Plan 项目的用户需求',
@@ -115,7 +119,45 @@ const Templates = [
         deleted: false
       }
     ]
+  },
+  {
+    name: '空白模板',
+    image: 'images/t-empty.png',
+    value: 1,
+    plans: []
   }
 ]
 
-export default Templates
+export const THEMES = [
+  {
+    name: '蓝',
+    theme: 'plan-blue',
+    value: 0
+  },
+  {
+    name: '绿',
+    theme: 'plan-green',
+    value: 1
+  },
+  {
+    name: '紫',
+    theme: 'plan-purple',
+    value: 2
+  },
+  {
+    name: '红',
+    theme: 'plan-red',
+    value: 3
+  }
+]
+
+export const STORAGE = [
+  {
+    name: '关闭',
+    value: 0
+  },
+  {
+    name: '启用',
+    value: 1
+  }
+]

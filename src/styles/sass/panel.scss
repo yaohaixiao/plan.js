@@ -79,7 +79,8 @@
 .panel-view,
 .panel-add,
 .panel-edit,
-.panel-trash {
+.panel-trash,
+.panel-setting{
   border-right: 1px solid $dark-border-color;
   left: -312px;
 
@@ -94,7 +95,8 @@
   &.panel-view-opened,
   &.panel-add-opened,
   &.panel-edit-opened,
-  &.panel-trash-opened {
+  &.panel-trash-opened,
+  &.panel-setting-opened{
     left: 0;
   }
 }
@@ -137,6 +139,87 @@
 
     .icon-diamonds {
       color: $green;
+    }
+  }
+}
+
+.panel-option{
+  cursor:pointer;
+  float:left;
+  margin:0;
+  overflow:hidden;
+}
+
+.panel-option-checked{
+  .panel-sample {
+    border-color: $primary;
+  }
+}
+
+.setting-template{
+  width:50%;
+
+  .field-radio{
+    float:none;
+    width:100px;
+    margin:0 auto;
+  }
+
+  .setting-template-sample,
+  .setting-image{
+    margin:0 auto;
+    width:130px;
+    height:51px;
+    overflow:hidden;
+  }
+
+  .setting-template-sample {
+    padding: 1px;
+    border: 1px solid $border-color;
+  }
+
+  &.panel-option-checked{
+    .setting-template-sample {
+      border-color: $primary;
+    }
+  }
+}
+
+.setting-theme{
+  width:25%;
+
+  .field-radio{
+    float:none;
+    width:50px;
+    margin:0 auto;
+  }
+
+  .setting-theme-sample{
+    margin:0 auto;
+    width:50px;
+    height:50px;
+    overflow:hidden;
+
+    &.plan-blue{
+      background-color:$primary;
+    }
+
+    &.plan-green{
+      background-color:$green;
+    }
+
+    &.plan-purple{
+      background-color:$purple;
+    }
+
+    &.plan-red{
+      background-color:$red;
+    }
+  }
+
+  &.panel-option-checked{
+    .setting-theme-sample {
+      border-color: $primary;
     }
   }
 }

@@ -12,6 +12,7 @@
   z-index: 1;
 }
 
+.toolbar-setting-button,
 .toolbar-trash-button,
 .toolbar-plus-button {
   overflow: hidden;
@@ -19,6 +20,7 @@
   z-index: 2;
 }
 
+.toolbar-setting-button,
 .toolbar-plus-button,
 .toolbar-trash-button {
   left: 0;
@@ -27,7 +29,7 @@
 
 .toolbar {
   box-sizing: border-box;
-  padding: 48px 0;
+  padding: 48px 0 96px;
 }
 
 .toolbar-filters {
@@ -46,6 +48,10 @@
 }
 
 .toolbar-trash-button {
+  bottom: 48px;
+}
+
+.toolbar-setting-button {
   bottom: 0;
 }
 

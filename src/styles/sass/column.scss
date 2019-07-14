@@ -35,13 +35,15 @@
   &.panel-view-opened,
   &.panel-add-opened,
   &.panel-edit-opened,
-  &.panel-trash-opened {
+  &.panel-trash-opened,
+  &.panel-setting-opened {
     margin-left: 313px;
   }
 
   &.panel-view-opened,
   &.panel-add-opened,
-  &.panel-edit-opened {
+  &.panel-edit-opened,
+  &.panel-setting-opened {
     .columns-overlay {
       display: block;
     }
@@ -86,7 +88,7 @@
       &.task-delayed {
         border-left-color: $orange;
 
-        &:hover{
+        &:hover {
           border-color: $orange;
         }
       }

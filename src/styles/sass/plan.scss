@@ -170,7 +170,8 @@
     &.panel-view-opened,
     &.panel-add-opened,
     &.panel-edit-opened,
-    &.panel-trash-opened {
+    &.panel-trash-opened,
+    &.panel-setting-opened {
       margin-left: calc(100% + 1px);
     }
   }
@@ -182,7 +183,8 @@
   .panel-view,
   .panel-add,
   .panel-edit,
-  .panel-trash {
+  .panel-trash,
+  .panel-setting {
     border-right: 0;
     left: calc((100% + 1px) * -1);
   }

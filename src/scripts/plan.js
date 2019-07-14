@@ -36,6 +36,14 @@ import marked from 'marked'
 class Plan {
   constructor (options) {
     this.attributes = {
+      options: {
+        templates: [],
+        themes: [],
+        storage: [],
+        template: 0,
+        theme: 0,
+        cache: 0
+      },
       plans: []
     }
 
@@ -46,6 +54,7 @@ class Plan {
       addPanel: null,
       editPanel: null,
       trashPanel: null,
+      settingPanel: null,
       todoCount: null,
       tasksTodo: null,
       doingCount: null,
@@ -112,7 +121,8 @@ class Plan {
     let checkingPlans = this.getCheckingPlans()
     let donePlans = this.getDonePlans()
 
-    this.updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
+    this.updateSettingPanel()
+        .updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
 
     return this
   }
@@ -133,6 +143,8 @@ class Plan {
     on($wrap, '.toolbar-bookmark-button', 'click', this._onBookmarkFilterButtonClick, this)
     // 回收站
     on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
+    // 设置
+    on($wrap, '.toolbar-setting-button', 'click', this._onSettingButtonClick, this)
 
     // ---------- panel ----------
     on($wrap, '.view-cancel', 'click', this._onViewCancelButtonClick, this)
@@ -149,6 +161,8 @@ class Plan {
     on($wrap, '.edit-deadline', 'click', this._onEditDeadlineIconClick, this)
     // 回收站
     on($wrap, '.trash-cancel', 'click', this._onTrashCancelButtonClick, this)
+    // 设置
+    on($wrap, '.setting-cancel', 'click', this._onSettingCancelButtonClick, this)
 
     // ---------- task ----------
     on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
@@ -207,6 +221,7 @@ class Plan {
     off($wrap, 'click', this._onDiamondsFilterButtonClick)
     off($wrap, 'click', this._onBookmarkFilterButtonClick)
     off($wrap, 'click', this._onTrashButtonClick)
+    off($wrap, 'click', this._onSettingButtonClick)
 
     // ---------- panel ----------
     off($wrap, 'click', this._onViewCancelButtonClick)
@@ -220,6 +235,7 @@ class Plan {
     off($wrap, 'click', this._onEditLevelButtonClick)
     off($wrap, 'click', this._onEditDeadlineIconClick)
     off($wrap, 'click', this._onTrashCancelButtonClick)
+    off($wrap, 'click', this._onSettingCancelButtonClick)
 
     // ---------- task ----------
     off($wrap, 'click', this._onTaskTitleClick)
@@ -340,6 +356,14 @@ class Plan {
 
   reset () {
     this.attributes = {
+      options: {
+        templates: [],
+        themes: [],
+        storage: [],
+        template: 0,
+        theme: 0,
+        cache: 0
+      },
       plans: []
     }
 
@@ -350,6 +374,7 @@ class Plan {
       addPanel: null,
       editPanel: null,
       trashPanel: null,
+      settingPanel: null,
       todoCount: null,
       tasksTodo: null,
       doingCount: null,
@@ -598,6 +623,7 @@ class Plan {
     elements.addPanel = document.querySelector('#add-panel')
     elements.editPanel = document.querySelector('#edit-panel')
     elements.trashPanel = document.querySelector('#trash-panel')
+    elements.settingPanel = document.querySelector('#setting-panel')
 
     elements.todoCount = document.querySelector('#todo-count')
     elements.tasksTodo = document.querySelector('#tasks-todo')
@@ -1191,6 +1217,218 @@ class Plan {
     return this
   }
 
+  closeSettingPanel () {
+    const CLS_OPENED = 'panel-setting-opened'
+    let elements = this.getEls()
+    let $columns = elements.columns
+    let $settingButton = elements.toolbar.querySelector('.toolbar-setting-button')
+
+    removeClass($settingButton, 'toolbar-button-active')
+    removeClass(elements.settingPanel, CLS_OPENED)
+    removeClass($columns, CLS_OPENED)
+
+    return this
+  }
+
+  updateSettingPanel () {
+    const SPACE = ' '
+    const CLS_RADIOS_GROUP = 'field-radios-group'
+    const CLS_RADIO = 'field-radio'
+    const CLS_RADIO_CHECKED = 'field-radio-checked'
+    const CLS_RADIO_ICON = 'field-radio-icon'
+    const CLS_RADIO_LABEL = 'field-radio-label'
+    const CLS_OPTION = 'panel-option'
+    const CLS_OPTION_CHECKED = 'panel-option-checked'
+    const CLS_SAMPLE = 'panel-sample'
+    const CLS_TEMPLATE = 'setting-template'
+    const CLS_THEME = 'setting-theme'
+    const CLS_CACHE = 'setting-cache'
+    let options = this.get('options')
+    let templates = options.templates
+    let themes = options.themes
+    let storage = options.storage
+    let template = options.template
+    let theme = options.theme
+    let cache = options.cache
+    let $settingPanel = this.getEls().settingPanel
+    let $templates = $settingPanel.querySelector('#setting-templates')
+    let $themes = $settingPanel.querySelector('#setting-themes')
+    let $storage = $settingPanel.querySelector('#setting-storage')
+    let $theme = $settingPanel.querySelector('#setting-theme')
+    let $template = $settingPanel.querySelector('#setting-template')
+    let $cache = $settingPanel.querySelector('#setting-cache')
+    let $templatesGroup = createElement('div', {
+      'className': CLS_RADIOS_GROUP
+    })
+    let $themesGroup = createElement('div', {
+      'className': CLS_RADIOS_GROUP
+    })
+    let $storageGroup = createElement('div', {
+      'className': CLS_RADIOS_GROUP
+    })
+
+    templates.forEach((option) => {
+      let clsOption = option.value === template ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_TEMPLATE : CLS_OPTION + SPACE + CLS_TEMPLATE
+      let clsRadio = option.value === template ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
+      let $image = createElement('div', {
+        'className': CLS_SAMPLE + SPACE + 'setting-template-sample',
+        'data-template': option.value
+      }, [
+        createElement('img', {
+          'className': 'setting-image',
+          'alt': option.name,
+          'src': option.image,
+          'width': '130',
+          'height': '51'
+        })
+      ])
+      let $radio = createElement('div', {
+        'className': clsRadio,
+        'data-template': option.value
+      }, [
+        createElement('div', {
+          'className': CLS_RADIO_ICON
+        }, [
+          createElement('i', {
+            'className': 'icon-radio-unchecked'
+          }),
+          createElement('i', {
+            'className': 'icon-radio-checked2'
+          })
+        ]),
+        createElement('label', {
+          'className': CLS_RADIO_LABEL
+        }, [
+          option.name
+        ])
+      ])
+      let $template = createElement('div', {
+        'className': clsOption,
+        'data-template': option.value
+      }, [
+        $image,
+        $radio
+      ])
+
+      $templatesGroup.appendChild($template)
+    })
+
+    themes.forEach((option) => {
+      let clsOption = option.value === template ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_THEME : CLS_OPTION + SPACE + CLS_THEME
+      let clsRadio = option.value === template ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
+      let $image = createElement('div', {
+        'className': CLS_SAMPLE + SPACE + option.theme + SPACE + 'setting-theme-sample',
+        'data-theme': option.theme,
+        'data-value': option.value
+      })
+      let $radio = createElement('div', {
+        'className': clsRadio,
+        'data-theme': option.theme,
+        'data-value': option.value
+      }, [
+        createElement('div', {
+          'className': CLS_RADIO_ICON
+        }, [
+          createElement('i', {
+            'className': 'icon-radio-unchecked'
+          }),
+          createElement('i', {
+            'className': 'icon-radio-checked2'
+          })
+        ]),
+        createElement('label', {
+          'className': CLS_RADIO_LABEL
+        }, [
+          option.name
+        ])
+      ])
+      let $theme = createElement('div', {
+        'className': clsOption,
+        'data-theme': option.theme,
+        'data-value': option.value
+      }, [
+        $image,
+        $radio
+      ])
+
+      $themesGroup.appendChild($theme)
+    })
+
+    storage.forEach((option) => {
+      let clsOption = option.value === template ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_CACHE : CLS_OPTION + SPACE + CLS_CACHE
+      let clsRadio = option.value === template ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
+      let $radio = createElement('div', {
+        'className': clsRadio,
+        'data-cache': option.value
+      }, [
+        createElement('div', {
+          'className': CLS_RADIO_ICON
+        }, [
+          createElement('i', {
+            'className': 'icon-radio-unchecked'
+          }),
+          createElement('i', {
+            'className': 'icon-radio-checked2'
+          })
+        ]),
+        createElement('label', {
+          'className': CLS_RADIO_LABEL
+        }, [
+          option.name
+        ])
+      ])
+      let $cache = createElement('div', {
+        'className': clsOption,
+        'data-cache': option.value
+      }, [
+        $radio
+      ])
+
+      $storageGroup.appendChild($cache)
+    })
+
+    $templates.append($templatesGroup)
+    $themes.append($themesGroup)
+    $storage.append($storageGroup)
+
+    $template.value = template
+    $theme.value = theme
+    $cache.value = cache
+
+    return this
+  }
+
+  openSettingPanel () {
+    const CLS_OPENED = 'panel-setting-opened'
+    let elements = this.getEls()
+    let $columns = elements.columns
+    let $settingButton = elements.toolbar.querySelector('.toolbar-setting-button')
+
+    this.closeViewPanel()
+        .closeAddPanel()
+        .closeEditPanel()
+        .closeTrashPanel()
+
+    addClass($settingButton, 'toolbar-button-active')
+    addClass(elements.settingPanel, CLS_OPENED)
+    addClass($columns, CLS_OPENED)
+
+    return this
+  }
+
+  toggleSettingPanel () {
+    let elements = this.getEls()
+    let $columns = elements.columns
+
+    if (hasClass($columns, 'panel-setting-opened')) {
+      this.closeSettingPanel()
+    } else {
+      this.openSettingPanel()
+    }
+
+    return this
+  }
+
   closeViewPanel () {
     const CLS_OPENED = 'panel-view-opened'
     let elements = this.getEls()
@@ -1210,7 +1448,8 @@ class Plan {
     let $viewPanel = elements.viewPanel
     let $columns = elements.columns
 
-    this.closeAddPanel()
+    this.closeSettingPanel()
+        .closeAddPanel()
         .closeEditPanel()
         .closeTrashPanel()
         .updateViewPanel()
@@ -1312,7 +1551,8 @@ class Plan {
     let $deadline = $addPanel.querySelector('#add-deadline')
     let $icon = $addPanel.querySelector('.add-deadline')
 
-    this.closeViewPanel()
+    this.closeSettingPanel()
+        .closeViewPanel()
         .closeEditPanel()
         .closeTrashPanel()
 
@@ -1375,7 +1615,8 @@ class Plan {
     let $deadline = $editPanel.querySelector('#edit-deadline')
     let $icon = $editPanel.querySelector('.edit-deadline')
 
-    this.closeViewPanel()
+    this.closeSettingPanel()
+        .closeViewPanel()
         .closeAddPanel()
         .closeTrashPanel()
         .updateEditPanel()
@@ -1448,7 +1689,8 @@ class Plan {
     let $trashPanel = elements.trashPanel
     let $trashButton = elements.toolbar.querySelector('.toolbar-trash-button')
 
-    this.closeViewPanel()
+    this.closeSettingPanel()
+        .closeViewPanel()
         .closeAddPanel()
         .closeEditPanel()
         .updateTrashPanel()
@@ -1492,6 +1734,7 @@ class Plan {
     const CLS_ADD_OPENED = 'panel-add-opened'
     const CLS_EDIT_OPENED = 'panel-edit-opened'
     const CLS_TRASH_OPENED = 'panel-trash-opened'
+    const CLS_SETTING_OPENED = 'panel-setting-opened'
     let elements = this.getEls()
     let $columns = elements.columns
 
@@ -1509,6 +1752,10 @@ class Plan {
 
     if (hasClass($columns, CLS_TRASH_OPENED)) {
       this.closeTrashPanel()
+    }
+
+    if (hasClass($columns, CLS_SETTING_OPENED)) {
+      this.closeSettingPanel()
     }
 
     return this
@@ -1582,6 +1829,10 @@ class Plan {
     this.toggleTrashPanel()
 
     return this
+  }
+
+  _onSettingButtonClick () {
+    this.toggleSettingPanel()
   }
 
   _onViewCancelButtonClick () {
@@ -1719,6 +1970,12 @@ class Plan {
     return this
   }
 
+  _onSettingCancelButtonClick () {
+    this.closeSettingPanel()
+
+    return this
+  }
+
   _onTaskTitleClick (evt) {
     this.checkTitle(evt.delegateTarget)
 
@@ -1783,7 +2040,7 @@ class Plan {
     return new Date().getTime() > new Date(plan.deadline).getTime() > 0 && plan.status < 2
   }
 
-  static isEstimateTime(str){
+  static isEstimateTime (str) {
     let regEstimate = /^(([1-9]\d*)|[0]?)\.([0-9]\d*)([dhm]?)$/i
 
     return regEstimate.test(str)
@@ -1819,7 +2076,7 @@ class Plan {
     return filter
   }
 
-  static filterToLevel(filter) {
+  static filterToLevel (filter) {
     let level = -1
 
     switch (filter) {

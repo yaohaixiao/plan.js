@@ -27,7 +27,8 @@
             <div class="toolbar-button toolbar-bookmark-button" data-filter="marked"><i class="icon-bookmark"></i></div>
           </div>
         </div>
-        <div class="toolbar-button toolbar-trash-button" data-filter="deleted"><i class="icon-trash"></i></div>
+        <div class="toolbar-button toolbar-trash-button" data-filter="deleted"><i class="icon-bin"></i></div>
+        <div class="toolbar-button toolbar-setting-button"><i class="icon-cog"></i></div>
       </div>
     </div>
     <div class="main">
@@ -185,6 +186,26 @@
         </div>
         <div class="panel-bd">
           <div class="tasks" id="tasks-trash" data-status="deleted"></div>
+        </div>
+      </div>
+      <div class="panel panel-setting" id="setting-panel">
+        <div class="panel-hd">
+          <div class="panel-button panel-cancel-button setting-cancel" id="setting-cancel"><i class="icon-cheveron-left"></i></div>
+          <h2 class="panel-title">设置</h2>
+        </div>
+        <div class="panel-bd">
+          <div class="tasks">
+            <div class="field"><label class="field-label">任务模板：</label>
+              <div class="field-content" id="setting-templates"></div>
+            </div>
+            <div class="field"><label class="field-label">主题皮肤：</label>
+              <div class="field-content" id="setting-themes"></div>
+            </div>
+            <div class="field"><label class="field-label">本地存储：</label>
+              <div class="field-content" id="setting-storage"></div>
+            </div>
+            <div class="field hidden"><input type="hidden" name="template" id="setting-template" /><input type="hidden" name="theme" id="setting-theme" /><input type="hidden" name="cache" id="setting-cache" /></div>
+          </div>
         </div>
       </div>
       <div class="columns" id="columns">

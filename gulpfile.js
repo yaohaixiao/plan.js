@@ -233,6 +233,13 @@ gulp.task('watch:fonts', () => {
   ], gulp.series('copy:fonts', 'compile:styles'))
 })
 
+// 监视 src/styles/icons 目录下图标相关文件变化
+gulp.task('watch:images', () => {
+  gulp.watch([
+    'src/styles/images/**/*.*'
+  ], gulp.series('copy:images'))
+})
+
 // 监视 src/pug 目录下 .pug 文件变化
 gulp.task('watch:html', () => {
   gulp.watch([
@@ -257,6 +264,7 @@ gulp.task('watch:scripts', () => {
 // 监视所有源文件的变化
 gulp.task('watch', gulp.parallel(
   'watch:fonts',
+  'watch:images',
   'watch:html',
   'watch:styles',
   'watch:scripts'
