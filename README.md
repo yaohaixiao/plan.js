@@ -27,6 +27,12 @@ Plan 是一个纯 JavaScript 开发的 Todo 类型的任务管理应用。开始
 
 没有 API，用就对了！
 
+## Dependencies
+
+- [dragula](https://github.com/bevacqua/dragula): 用来实现拖拽的框架
+- [marked](https://github.com/markedjs/marked): markdown 的解析引擎
+- [normalize.css](https://github.com/necolas/normalize.css): 最好用的 reset 框架了
+
 ## License
 
 软件采用 MIT 授权
