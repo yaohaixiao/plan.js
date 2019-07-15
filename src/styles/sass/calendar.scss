@@ -193,10 +193,10 @@
 }
 
 .cal-weekend {
-  color: $pomegranate;
+  color: $theme-red;
 
   &:hover {
-    color: $pomegranate;
+    color: $theme-red;
   }
 }
 
@@ -216,10 +216,10 @@
   }
 
   &.cal-current {
-    background-color: $green-sea;
+    background-color: $theme-green;
 
     &:hover {
-      background-color: $green-sea;
+      background-color: $theme-green;
     }
 
     .cal-festival-text,
@@ -230,22 +230,22 @@
 }
 
 .cal-picked-range {
-  background-color: $light-blue;
+  background-color: $theme-blue-background;
   color: $primary;
   font-weight: normal;
 
   &:hover {
-    background-color: $light-blue;
+    background-color: $theme-blue-background;
     color: $primary;
   }
 }
 
 .cal-current {
-  background-color: $nephritis;
+  background-color: $theme-green;
   color: $white;
 
   &:hover {
-    background-color: $nephritis;
+    background-color: $theme-green;
     color: $white;
   }
 

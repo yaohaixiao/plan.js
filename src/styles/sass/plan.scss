@@ -29,7 +29,7 @@
 }
 
 .logo {
-  @include button(48px, 48px, 18px, $light-blue, $white);
+  @include button(48px, 48px, 18px, $white, $white);
   color: $white;
   font-size: 26px;
   left: 0;
@@ -47,19 +47,11 @@
   }
 
   .toolbar-button {
-    @include button(48px, 48px, 18px, $light-blue, $white);
+    @include button(48px, 48px, 18px, $theme-blue-border, $white);
     cursor: pointer;
 
     &:hover {
       color: $white;
-    }
-  }
-
-  .toolbar-button-active {
-    color: $primary;
-
-    &:hover {
-      color: $primary;
     }
   }
 }
@@ -70,19 +62,11 @@
   }
 
   .toolbar-button {
-    @include button(48px, 48px, 18px, $light-red, $white);
+    @include button(48px, 48px, 18px, $theme-purple-border, $white);
     cursor: pointer;
 
     &:hover {
       color: $white;
-    }
-  }
-
-  .toolbar-button-active {
-    color: $light-red;
-
-    &:hover {
-      color: $light-red;
     }
   }
 }
@@ -93,7 +77,7 @@
   }
 
   .toolbar-button {
-    @include button(48px, 48px, 18px, $light-red, $white);
+    @include button(48px, 48px, 18px, $theme-red-border, $white);
     cursor: pointer;
 
     &:hover {
@@ -101,11 +85,9 @@
     }
   }
 
-  .toolbar-button-active {
-    color: $light-red;
-
-    &:hover {
-      color: $light-red;
+  .column {
+    &:first-child{
+      background-color: $theme-red-background;
     }
   }
 }
@@ -116,19 +98,24 @@
   }
 
   .toolbar-button {
-    @include button(48px, 48px, 18px, $emerald, $white);
+    @include button(48px, 48px, 18px, $theme-green-border, $white);
     cursor: pointer;
 
     &:hover {
       color: $white;
     }
   }
+}
 
+.plan-blue,
+.plan-green,
+.plan-purple,
+.plan-red {
   .toolbar-button-active {
-    color: $light-green;
+    color: $white;
 
     &:hover {
-      color: $light-green;
+      color: $white;
     }
   }
 }

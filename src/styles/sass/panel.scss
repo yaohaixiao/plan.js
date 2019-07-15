@@ -2,15 +2,6 @@
 @import './mixins/mixins';
 @import './buttons';
 
-.panel-hd {
-  border-bottom: 1px solid $border-color;
-  height: 40px;
-  margin: 0 10px;
-  overflow: hidden;
-  position: relative;
-  z-index: 2;
-}
-
 .panel,
 .panel-bd,
 .panel-button {
@@ -22,9 +13,23 @@
 .panel {
   background-color: $white;
   height: 100%;
+  left: -312px;
   top: 0;
   transition: .3s;
   width: 312px;
+
+  &.panel-opened {
+    left: 0;
+  }
+}
+
+.panel-hd {
+  border-bottom: 1px solid $border-color;
+  height: 40px;
+  margin: 0 10px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 .panel-title,
@@ -57,12 +62,17 @@
   @include button(40px, 40px, 20px);
   @include radius(10px);
   cursor: pointer;
-  right: 0;
   top: 0;
 }
 
-.panel-edit-button {
+.panel-cancel {
+  left: 0;
+}
+
+.panel-save,
+.panel-edit {
   font-size: 18px;
+  right: 0;
 }
 
 .panel-calendar {
@@ -76,29 +86,8 @@
   }
 }
 
-.panel-view,
-.panel-add,
-.panel-edit,
-.panel-trash,
-.panel-setting {
-  border-right: 1px solid $theme-blue-border;
-  left: -312px;
-
-  .panel-cancel-button {
-    left: 0;
-  }
-
-  .panel-save-button {
-    right: 0;
-  }
-
-  &.panel-view-opened,
-  &.panel-add-opened,
-  &.panel-edit-opened,
-  &.panel-trash-opened,
-  &.panel-setting-opened {
-    left: 0;
-  }
+.panel-view-edit {
+  @include button(40px, 40px, 16px);
 }
 
 .panel-trash {
@@ -113,10 +102,6 @@
       text-decoration: none;
     }
   }
-}
-
-.panel-view-edit {
-  @include button(40px, 40px, 16px);
 }
 
 .panel-view {
@@ -195,8 +180,8 @@
 
   .field-radio-label {
     margin: 0 auto;
-    width: 50px;
     text-align: center;
+    width: 50px;
   }
 
   .setting-theme-sample {

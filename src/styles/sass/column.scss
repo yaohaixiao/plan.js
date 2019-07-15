@@ -65,40 +65,6 @@
   float: left;
   width: 25%;
 
-  &:first-child {
-    background-color: $theme-blue-background;
-    border-color: $theme-blue-border;
-
-    .column-hd {
-      border-color: $theme-blue-border;
-    }
-
-    .task {
-      background-color: $theme-blue-background;
-      border-color: $theme-blue-border;
-
-      &.task-marked {
-        border-left-color: $primary;
-      }
-
-      &:hover {
-        border-color: $blue;
-      }
-
-      &.task-delayed {
-        border-left-color: $orange;
-
-        &:hover {
-          border-color: $orange;
-        }
-      }
-    }
-
-    .task-ft {
-      border-color: $theme-blue-border;
-    }
-  }
-
   &:last-child {
     border-right: 0;
   }
