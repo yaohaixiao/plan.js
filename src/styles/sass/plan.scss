@@ -22,10 +22,8 @@
 }
 
 .side {
-  background-color: $dark-blue;
   height: 100%;
   left: 0;
-
   top: 0;
   width: 48px;
 }
@@ -41,6 +39,98 @@
 
 .main {
   margin: 0 0 0 48px;
+}
+
+.plan-blue {
+  .side {
+    background-color: $theme-blue;
+  }
+
+  .toolbar-button {
+    @include button(48px, 48px, 18px, $light-blue, $white);
+    cursor: pointer;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .toolbar-button-active {
+    color: $primary;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}
+
+.plan-purple {
+  .side {
+    background-color: $theme-purple;
+  }
+
+  .toolbar-button {
+    @include button(48px, 48px, 18px, $light-red, $white);
+    cursor: pointer;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .toolbar-button-active {
+    color: $light-red;
+
+    &:hover {
+      color: $light-red;
+    }
+  }
+}
+
+.plan-red {
+  .side {
+    background-color: $theme-red;
+  }
+
+  .toolbar-button {
+    @include button(48px, 48px, 18px, $light-red, $white);
+    cursor: pointer;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .toolbar-button-active {
+    color: $light-red;
+
+    &:hover {
+      color: $light-red;
+    }
+  }
+}
+
+.plan-green {
+  .side {
+    background-color: $theme-green;
+  }
+
+  .toolbar-button {
+    @include button(48px, 48px, 18px, $emerald, $white);
+    cursor: pointer;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .toolbar-button-active {
+    color: $light-green;
+
+    &:hover {
+      color: $light-green;
+    }
+  }
 }
 
 @media only screen and (max-width: 1200px) {

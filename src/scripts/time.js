@@ -232,6 +232,11 @@ export const getRanges = (begin, end) => {
   return ranges
 }
 
+/**
+ * 获取当前时间，格式：2019-07-18 09:12:22
+ * ========================================================================
+ * @returns {string}
+ */
 export const getMoments = () => {
   let time = new Date()
   let year = time.getFullYear()

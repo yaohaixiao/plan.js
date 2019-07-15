@@ -66,16 +66,16 @@
   width: 25%;
 
   &:first-child {
-    background-color: $dark-background-color;
-    border-color: $dark-border-color;
+    background-color: $theme-blue-background;
+    border-color: $theme-blue-border;
 
     .column-hd {
-      border-color: $dark-border-color;
+      border-color: $theme-blue-border;
     }
 
     .task {
-      background-color: $dark-background-color;
-      border-color: $dark-background-color;
+      background-color: $theme-blue-background;
+      border-color: $theme-blue-border;
 
       &.task-marked {
         border-left-color: $primary;
@@ -95,7 +95,7 @@
     }
 
     .task-ft {
-      border-color: $dark-border-color;
+      border-color: $theme-blue-border;
     }
   }
 

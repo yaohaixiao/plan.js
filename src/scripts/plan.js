@@ -28,6 +28,12 @@ import {
   createTaskElement
 } from './task'
 
+import {
+  TEMPLATES,
+  THEMES,
+  STORAGE
+} from './config'
+
 import Calendar from './calendar'
 import Confirm from './confirm'
 import dragula from 'dragula'
@@ -36,14 +42,9 @@ import marked from 'marked'
 class Plan {
   constructor (options) {
     this.attributes = {
-      options: {
-        templates: [],
-        themes: [],
-        storage: [],
-        template: 0,
-        theme: 0,
-        cache: 0
-      },
+      template: 0,
+      theme: 0,
+      cache: 0,
       plans: []
     }
 
@@ -120,6 +121,9 @@ class Plan {
     let doingPlans = this.getDoingPlans()
     let checkingPlans = this.getCheckingPlans()
     let donePlans = this.getDonePlans()
+    let $wrap = this.getEls().wrap
+
+    addClass($wrap, THEMES[this.get('theme')].theme)
 
     this.updateSettingPanel()
         .updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
@@ -163,6 +167,9 @@ class Plan {
     on($wrap, '.trash-cancel', 'click', this._onTrashCancelButtonClick, this)
     // 设置
     on($wrap, '.setting-cancel', 'click', this._onSettingCancelButtonClick, this)
+    on($wrap, '.setting-template', 'click', this._onSettingTemplateClick, this)
+    on($wrap, '.setting-theme', 'click', this._onSettingThemeClick, this)
+    on($wrap, '.setting-cache', 'click', this._onSettingCacheClick, this)
 
     // ---------- task ----------
     on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
@@ -236,6 +243,9 @@ class Plan {
     off($wrap, 'click', this._onEditDeadlineIconClick)
     off($wrap, 'click', this._onTrashCancelButtonClick)
     off($wrap, 'click', this._onSettingCancelButtonClick)
+    off($wrap, 'click', this._onSettingTemplateClick)
+    off($wrap, 'click', this._onSettingThemeClick)
+    off($wrap, 'click', this._onSettingCacheClick)
 
     // ---------- task ----------
     off($wrap, 'click', this._onTaskTitleClick)
@@ -260,12 +270,13 @@ class Plan {
     let $count = elements.todoCount
     let plans = clone(this.getPlans())
     let status = plan.status
+    let filter = this.getFilter()
 
     plan.delayed = Plan.isDelayed(plan)
     plans.push(plan)
     this.setPlans(plans)
 
-    if (status !== 'marked' && Plan.isLevelSaveAsFilter(plan.level, this.getFilter())) {
+    if ((status !== 'marked' && Plan.isLevelSaveAsFilter(plan.level, filter)) || filter === 'inbox') {
       $count.innerHTML = parseInt($count.innerHTML, 10) + 1
       $tasks.appendChild(createTaskElement(plan))
     }
@@ -356,14 +367,9 @@ class Plan {
 
   reset () {
     this.attributes = {
-      options: {
-        templates: [],
-        themes: [],
-        storage: [],
-        template: 0,
-        theme: 0,
-        cache: 0
-      },
+      template: 0,
+      theme: 0,
+      cache: 0,
       plans: []
     }
 
@@ -460,6 +466,12 @@ class Plan {
 
   setPlans (plans) {
     this.data.plans = plans
+
+    if (this.get('cache') === 1) {
+      localStorage.setItem('plan.plans', JSON.stringify(this.data.plans))
+    } else {
+      localStorage.removeItem('plan.plans')
+    }
 
     return this
   }
@@ -709,6 +721,116 @@ class Plan {
 
     if ($input) {
       $input.value = id
+    }
+
+    return this
+  }
+
+  checkTemplate ($button) {
+    const CLS_OPTION_CHECKED = 'panel-option-checked'
+    const CLS_RADIO_CHECKED = 'field-radio-checked'
+    let value = $button.getAttribute('data-template')
+    let elements = this.getEls()
+    let $templates = elements.settingPanel.querySelector('#setting-templates')
+    let $checkedOption = $templates.querySelector('.' + CLS_OPTION_CHECKED)
+    let $radio = $button.querySelector('.field-radio')
+    let $checkedRadio = $templates.querySelector('.' + CLS_RADIO_CHECKED)
+    let $input = $templates.querySelector('#setting-template')
+
+    if (hasClass($button, CLS_OPTION_CHECKED)) {
+      return this
+    }
+
+    $input.value = value
+    if ($checkedOption) {
+      removeClass($checkedOption, CLS_OPTION_CHECKED)
+    }
+    addClass($button, CLS_OPTION_CHECKED)
+    if ($checkedRadio) {
+      removeClass($checkedRadio, CLS_RADIO_CHECKED)
+    }
+    addClass($radio, CLS_RADIO_CHECKED)
+
+    this.set({
+      template: parseInt(value, 10)
+    })
+
+    localStorage.setItem('plan.template', value)
+
+    return this
+  }
+
+  checkTheme ($button) {
+    const CLS_OPTION_CHECKED = 'panel-option-checked'
+    const CLS_RADIO_CHECKED = 'field-radio-checked'
+    let value = $button.getAttribute('data-value')
+    let elements = this.getEls()
+    let $wrap = elements.wrap
+    let $themes = elements.settingPanel.querySelector('#setting-themes')
+    let $checkedOption = $themes.querySelector('.' + CLS_OPTION_CHECKED)
+    let $radio = $button.querySelector('.field-radio')
+    let $checkedRadio = $themes.querySelector('.' + CLS_RADIO_CHECKED)
+    let $input = $themes.querySelector('#setting-theme')
+
+    if (hasClass($button, CLS_RADIO_CHECKED)) {
+      return this
+    }
+
+    $input.value = value
+    if ($checkedOption) {
+      removeClass($checkedOption, CLS_OPTION_CHECKED)
+    }
+    addClass($button, CLS_OPTION_CHECKED)
+    if ($checkedRadio) {
+      removeClass($checkedRadio, CLS_RADIO_CHECKED)
+    }
+    addClass($radio, CLS_RADIO_CHECKED)
+
+    removeClass($wrap, THEMES[this.get('theme')].theme)
+    addClass($wrap, THEMES[parseInt(value, 10)].theme)
+
+    this.set({
+      theme: parseInt(value, 10)
+    })
+
+    localStorage.setItem('plan.theme', value)
+
+    return this
+  }
+
+  checkCache ($button) {
+    const CLS_OPTION_CHECKED = 'panel-option-checked'
+    const CLS_RADIO_CHECKED = 'field-radio-checked'
+    let value = $button.getAttribute('data-cache')
+    let elements = this.getEls()
+    let $storage = elements.settingPanel.querySelector('#setting-storage')
+    let $checkedOption = $storage.querySelector('.' + CLS_OPTION_CHECKED)
+    let $radio = $button.querySelector('.field-radio')
+    let $checkedRadio = $storage.querySelector('.' + CLS_RADIO_CHECKED)
+    let $input = $storage.querySelector('#setting-cache')
+
+    if (hasClass($button, CLS_OPTION_CHECKED)) {
+      return this
+    }
+
+    $input.value = value
+    if ($checkedOption) {
+      removeClass($checkedOption, CLS_OPTION_CHECKED)
+    }
+    addClass($button, CLS_OPTION_CHECKED)
+    if ($checkedRadio) {
+      removeClass($checkedRadio, CLS_RADIO_CHECKED)
+    }
+    addClass($radio, CLS_RADIO_CHECKED)
+
+    this.set({
+      cache: parseInt(value, 10)
+    })
+
+    localStorage.setItem('plan.cache', value)
+
+    if(parseInt(value, 10)===0){
+      localStorage.removeItem('plan.plans')
     }
 
     return this
@@ -1243,20 +1365,31 @@ class Plan {
     const CLS_TEMPLATE = 'setting-template'
     const CLS_THEME = 'setting-theme'
     const CLS_CACHE = 'setting-cache'
-    let options = this.get('options')
-    let templates = options.templates
-    let themes = options.themes
-    let storage = options.storage
-    let template = options.template
-    let theme = options.theme
-    let cache = options.cache
+    let template = this.get('template')
+    let theme = this.get('theme')
+    let cache = this.get('cache')
     let $settingPanel = this.getEls().settingPanel
     let $templates = $settingPanel.querySelector('#setting-templates')
     let $themes = $settingPanel.querySelector('#setting-themes')
     let $storage = $settingPanel.querySelector('#setting-storage')
-    let $theme = $settingPanel.querySelector('#setting-theme')
-    let $template = $settingPanel.querySelector('#setting-template')
-    let $cache = $settingPanel.querySelector('#setting-cache')
+    let $template = createElement('input', {
+      'type': 'hidden',
+      'name': 'template',
+      'id': 'setting-template',
+      'value': this.get('template')
+    })
+    let $theme = createElement('input', {
+      'type': 'hidden',
+      'name': 'theme',
+      'id': 'setting-theme',
+      'value': this.get('theme')
+    })
+    let $cache = createElement('input', {
+      'type': 'hidden',
+      'name': 'cache',
+      'id': 'setting-cache',
+      'value': this.get('cache')
+    })
     let $templatesGroup = createElement('div', {
       'className': CLS_RADIOS_GROUP
     })
@@ -1267,7 +1400,7 @@ class Plan {
       'className': CLS_RADIOS_GROUP
     })
 
-    templates.forEach((option) => {
+    TEMPLATES.forEach((option) => {
       let clsOption = option.value === template ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_TEMPLATE : CLS_OPTION + SPACE + CLS_TEMPLATE
       let clsRadio = option.value === template ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
       let $image = createElement('div', {
@@ -1313,9 +1446,9 @@ class Plan {
       $templatesGroup.appendChild($template)
     })
 
-    themes.forEach((option) => {
-      let clsOption = option.value === template ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_THEME : CLS_OPTION + SPACE + CLS_THEME
-      let clsRadio = option.value === template ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
+    THEMES.forEach((option) => {
+      let clsOption = option.value === theme ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_THEME : CLS_OPTION + SPACE + CLS_THEME
+      let clsRadio = option.value === theme ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
       let $image = createElement('div', {
         'className': CLS_SAMPLE + SPACE + option.theme + SPACE + 'setting-theme-sample',
         'data-theme': option.theme,
@@ -1326,16 +1459,6 @@ class Plan {
         'data-theme': option.theme,
         'data-value': option.value
       }, [
-        createElement('div', {
-          'className': CLS_RADIO_ICON
-        }, [
-          createElement('i', {
-            'className': 'icon-radio-unchecked'
-          }),
-          createElement('i', {
-            'className': 'icon-radio-checked2'
-          })
-        ]),
         createElement('label', {
           'className': CLS_RADIO_LABEL
         }, [
@@ -1354,9 +1477,9 @@ class Plan {
       $themesGroup.appendChild($theme)
     })
 
-    storage.forEach((option) => {
-      let clsOption = option.value === template ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_CACHE : CLS_OPTION + SPACE + CLS_CACHE
-      let clsRadio = option.value === template ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
+    STORAGE.forEach((option) => {
+      let clsOption = option.value === cache ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_CACHE : CLS_OPTION + SPACE + CLS_CACHE
+      let clsRadio = option.value === cache ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
       let $radio = createElement('div', {
         'className': clsRadio,
         'data-cache': option.value
@@ -1387,13 +1510,12 @@ class Plan {
       $storageGroup.appendChild($cache)
     })
 
-    $templates.append($templatesGroup)
-    $themes.append($themesGroup)
-    $storage.append($storageGroup)
-
-    $template.value = template
-    $theme.value = theme
-    $cache.value = cache
+    $templates.appendChild($templatesGroup)
+    $templates.appendChild($template)
+    $themes.appendChild($themesGroup)
+    $themes.appendChild($theme)
+    $storage.appendChild($storageGroup)
+    $storage.appendChild($cache)
 
     return this
   }
@@ -1972,6 +2094,24 @@ class Plan {
 
   _onSettingCancelButtonClick () {
     this.closeSettingPanel()
+
+    return this
+  }
+
+  _onSettingTemplateClick (evt) {
+    this.checkTemplate(evt.delegateTarget)
+
+    return this
+  }
+
+  _onSettingThemeClick (evt) {
+    this.checkTheme(evt.delegateTarget)
+
+    return this
+  }
+
+  _onSettingCacheClick (evt) {
+    this.checkCache(evt.delegateTarget)
 
     return this
   }

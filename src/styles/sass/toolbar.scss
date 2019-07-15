@@ -54,20 +54,3 @@
 .toolbar-setting-button {
   bottom: 0;
 }
-
-.toolbar-button {
-  @include button(48px, 48px, 18px, $light-blue, $white);
-  cursor: pointer;
-
-  &:hover {
-    color: $white;
-  }
-}
-
-.toolbar-button-active {
-  color: $primary;
-
-  &:hover {
-    color: $primary;
-  }
-}

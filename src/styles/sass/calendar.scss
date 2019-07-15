@@ -169,7 +169,7 @@
 .cal-year,
 .cal-month,
 .cal-date {
-  color: $light-black;
+  color: $black;
 
   &:hover {
     background-color: $background-color-hover;
@@ -193,14 +193,10 @@
 }
 
 .cal-weekend {
-  color: $dark-red;
-
-  .cal-lunar-text {
-    color: $dark-red;
-  }
+  color: $pomegranate;
 
   &:hover {
-    color: $dark-red;
+    color: $pomegranate;
   }
 }
 
@@ -220,10 +216,10 @@
   }
 
   &.cal-current {
-    background-color: $light-grass;
+    background-color: $green-sea;
 
     &:hover {
-      background-color: $light-grass;
+      background-color: $green-sea;
     }
 
     .cal-festival-text,
@@ -245,11 +241,11 @@
 }
 
 .cal-current {
-  background-color: $green;
+  background-color: $nephritis;
   color: $white;
 
   &:hover {
-    background-color: $green;
+    background-color: $nephritis;
     color: $white;
   }
 

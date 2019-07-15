@@ -8,7 +8,7 @@
 .field-input,
 .field-radios-group,
 .field-radio,
-.field-radio-label{
+.field-radio-label {
   margin: 0;
   overflow: hidden;
   position: relative;
@@ -17,7 +17,7 @@
 
 .field-view-label,
 .field-input-icon,
-.field-radio-icon{
+.field-radio-icon {
   overflow: hidden;
   position: absolute;
   z-index: 2;
@@ -177,43 +177,47 @@
   overflow: hidden;
 }
 
-.field-radios-group{
-  min-height:40px;
-  margin:0;
-  overflow:hidden;
-  position:relative;
-  z-index:1;
+.field-radios-group {
+  margin: 0;
+  min-height: 40px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
-.field-radio{
+.field-radio {
   cursor: pointer;
-  float:left;
-  height:40px;
-  margin:0 10px 0 0;
+  float: left;
+  height: 40px;
+  margin: 0 10px 0 0;
 
-  i.icon-radio-checked2{
-    display:none;
+  i {
+    &.icon-radio-checked2 {
+      display: none;
+    }
   }
 }
 
-.field-radio-icon{
-  cursor: pointer;
+.field-radio-icon {
   @include button(30px, 40px, 20px, $light-gray, $primary);
-  left:0;
-  top:0;
+  cursor: pointer;
+  left: 0;
+  top: 0;
 }
 
-.field-radio-checked{
+.field-radio-checked {
   .field-radio-icon {
     @include button(30px, 40px, 20px, $primary, $primary);
   }
 
-  i.icon-radio-unchecked{
-    display:none;
-  }
+  i {
+    &.icon-radio-unchecked {
+      display: none;
+    }
 
-  i.icon-radio-checked2{
-    display:block;
+    &.icon-radio-checked2 {
+      display: block;
+    }
   }
 
   .field-radio-label {
@@ -221,12 +225,12 @@
   }
 }
 
-.field-radio-label{
+.field-radio-label {
+  color: $light-gray;
   cursor: pointer;
-  display:block;
-  margin-left:30px;
-  line-height:40px;
-  color:$light-gray;
+  display: block;
+  line-height: 40px;
+  margin-left: 30px;
 }
 
 .field-view-label {

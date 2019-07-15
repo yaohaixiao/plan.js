@@ -32,7 +32,7 @@
 }
 
 .confirm-hd {
-  @include gradient($primary, $dark-blue);
+  @include gradient($primary, $belize-hole);
   height: 6px;
   margin: 0 auto;
   overflow: hidden;
@@ -110,7 +110,7 @@
   color: $white;
 
   &:hover {
-    @include gradient($primary, $dark-blue);
+    @include gradient($primary, $belize-hole);
     color: $white;
   }
 }

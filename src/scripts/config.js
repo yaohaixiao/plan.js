@@ -132,21 +132,25 @@ export const THEMES = [
   {
     name: '蓝',
     theme: 'plan-blue',
+    color: 'blue',
     value: 0
   },
   {
     name: '绿',
     theme: 'plan-green',
+    color: 'green',
     value: 1
   },
   {
     name: '紫',
     theme: 'plan-purple',
+    color: 'purple',
     value: 2
   },
   {
     name: '红',
     theme: 'plan-red',
+    color: 'red',
     value: 3
   }
 ]

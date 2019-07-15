@@ -1,13 +1,31 @@
 'use strict'
 
+/**
+ * 判断是否为 String 类型
+ * ========================================================================
+ * @param {*} o - 要测试的数据
+ * @returns {boolean}
+ */
 export const isString = (o) => {
   return typeof o === 'string'
 }
 
+/**
+ * 判断是否为 Number 类型
+ * ========================================================================
+ * @param {*} o - 要测试的数据
+ * @returns {boolean}
+ */
 export const isNumber = (o) => {
   return typeof o === 'number'
 }
 
+/**
+ * 判断是否为 Array 类型
+ * ========================================================================
+ * @param {*} o - 要测试的数据
+ * @returns {boolean}
+ */
 export const isArray = (o) => {
   if (Array.isArray) {
     return Array.isArray(o)
@@ -16,36 +34,85 @@ export const isArray = (o) => {
   }
 }
 
+/**
+ * 判断是否为 Function 类型
+ * ========================================================================
+ * @param {*} o - 要测试的数据
+ * @returns {boolean}
+ */
 export const isFunction = (o) => {
   return (typeof o === 'function') || Object.prototype.toString.apply(o) === '[object Function]'
 }
 
+/**
+ * 检测是否为 HTMLElement 元素节点
+ * ========================================================================
+ * @param {*} o - 要测试的数据
+ * @returns {boolean}
+ */
 export const isElement = (o) => {
   return o && o.nodeName && o.tagName && o.nodeType === 1
 }
 
+/**
+ * 移除字符串两端的空白
+ * ========================================================================
+ * @param {String} str - 要处理的字符串
+ * @returns {string}
+ */
 export const trim = (str) => {
   return str.replace(/^\s+/g, '').replace(/\s+$/g, '')
 }
 
+/**
+ * 移除字符串中的 HTML 代码
+ * ========================================================================
+ * @param {String} str - 要处理的字符串
+ * @returns {*|void|string}
+ */
 export const stripTags = (str) => {
   return str.replace(/<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?(\/)?>|<\/\w+>/gi, '')
 }
 
+/**
+ * 移除字符串中的 script 代码片段
+ * ========================================================================
+ * @param {String} str - 要处理的字符串
+ * @returns {*|void|string}
+ */
 export const stripScripts = (str) => {
   let scriptFragment = '<script[^>]*>([\\S\\s]*?)<\/script\\s*>'
 
   return str.replace(new RegExp(scriptFragment, 'img'), '')
 }
 
+/**
+ * 过滤字符串中的危险字符
+ * ========================================================================
+ * @param {String} str - 要处理的字符串
+ * @returns {string}
+ */
 export const toSafeText = (str) => {
   return trim(stripTags(stripScripts(str)))
 }
 
+/**
+ * 简单粗暴的数据拷贝
+ * ========================================================================
+ * @param {Object|Array} o - 要拷贝的数据（对象）
+ * @returns {any}
+ */
 export const clone = (o) => {
   return JSON.parse(JSON.stringify(o))
 }
 
+/**
+ * 生成 GUID 编号
+ * ========================================================================
+ * @param {Number} len - 生成的编号长度
+ * @param {Number} [radix] - 编码类型的数值
+ * @returns {string}
+ */
 export const guid = (len, radix) => {
   let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
   let uuid = []
