@@ -1,0 +1,123 @@
+@import './colors';
+@import './buttons';
+
+@media only screen and (max-width: 1200px) {
+  .columns-inner {
+    overflow: auto;
+  }
+
+  .column {
+    border-bottom: 1px solid $border-color;
+    border-right: 0;
+    box-sizing: border-box;
+    float: none;
+    height: auto;
+    width: 100%;
+
+    .column-button {
+      display: block;
+
+      &.hidden {
+        display: none;
+      }
+    }
+
+    .column-bd {
+      padding-top: 0;
+    }
+
+    .column-bd,
+    .tasks {
+      height: auto;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tasks {
+      min-height: 92px;
+      transition: .3s;
+
+      &.tasks-min {
+        height: 0;
+        min-height: 0;
+        overflow: hidden;
+        padding: 0;
+      }
+    }
+
+    .task-desc {
+      max-height: 18px;
+    }
+
+    .task-bd,
+    .task-desc {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .task-button {
+      @include button(30px, 20px, 13px);
+    }
+
+    &:last-child {
+      border: 0;
+    }
+  }
+}
+
+@media only screen and (max-width: 760px) {
+  .column {
+    .task-prev {
+      display: block;
+    }
+
+    .task-next {
+      display: block;
+    }
+
+    .task-prev,
+    .task-next {
+      font-size: 16px;
+    }
+
+    .task-status-0 {
+      .task-prev {
+        display: none;
+      }
+    }
+
+    .task-status-3 {
+      .task-next {
+        display: none;
+      }
+    }
+  }
+
+  .gu-mirror {
+    .task-desc {
+      max-height: 18px;
+    }
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  .columns {
+    &.panel-opened {
+      margin-left: calc(100% + 1px);
+    }
+  }
+
+  .panel {
+    width: calc(100% - 1px);
+  }
+
+  .panel-view,
+  .panel-add,
+  .panel-edit,
+  .panel-trash,
+  .panel-setting {
+    border-right: 0;
+    left: calc((100% + 1px) * -1);
+  }
+}

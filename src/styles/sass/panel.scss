@@ -11,7 +11,9 @@
 }
 
 .panel {
-  background-color: $white;
+  background-color: $background-color;
+  border-right: 1px solid $border-color;
+  font-size: 13px;
   height: 100%;
   left: -312px;
   top: 0;
@@ -29,7 +31,7 @@
   margin: 0 10px;
   overflow: hidden;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .panel-title,
@@ -70,23 +72,12 @@
 }
 
 .panel-save,
-.panel-edit {
+.panel-modify {
   font-size: 18px;
   right: 0;
 }
 
-.panel-calendar {
-  .cal-md {
-    height: 240px;
-    margin-top: 5px;
-  }
-
-  .cal-hd {
-    border-bottom: 0;
-  }
-}
-
-.panel-view-edit {
+.panel-modify {
   @include button(40px, 40px, 16px);
 }
 
@@ -100,120 +91,6 @@
 
     &:hover {
       text-decoration: none;
-    }
-  }
-}
-
-.panel-view {
-  .field-level-icon {
-    @include button(20px, 40px, 18px);
-  }
-
-  .field-level-checked {
-    .icon-spades {
-      color: $red;
-    }
-
-    .icon-heart {
-      color: $orange;
-    }
-
-    .icon-clubs {
-      color: $primary;
-    }
-
-    .icon-diamonds {
-      color: $green;
-    }
-  }
-}
-
-.panel-option {
-  cursor: pointer;
-  float: left;
-  margin: 0;
-  overflow: hidden;
-}
-
-.panel-option-checked {
-  .panel-sample {
-    border-color: $primary;
-  }
-}
-
-.setting-template {
-  width: 50%;
-
-  .field-radio {
-    float: none;
-    margin: 0 auto;
-    width: 100px;
-  }
-
-  .setting-template-sample,
-  .setting-image {
-    height: 51px;
-    margin: 0 auto;
-    overflow: hidden;
-    width: 130px;
-  }
-
-  .setting-template-sample {
-    border: 1px solid $border-color;
-    padding: 1px;
-  }
-
-  &.panel-option-checked {
-    .setting-template-sample {
-      border-color: $primary;
-    }
-  }
-}
-
-.setting-theme {
-  width: 25%;
-
-  .field-radio {
-    float: none;
-    margin: 0 auto;
-  }
-
-  .field-radio-label {
-    margin: 0 auto;
-    text-align: center;
-    width: 50px;
-  }
-
-  .setting-theme-sample {
-    height: 50px;
-    margin: 0 auto;
-    overflow: hidden;
-    width: 50px;
-
-    &.plan-blue {
-      background-color: $theme-blue;
-    }
-
-    &.plan-green {
-      background-color: $theme-green;
-    }
-
-    &.plan-purple {
-      background-color: $theme-purple;
-    }
-
-    &.plan-red {
-      background-color: $theme-red;
-    }
-  }
-
-  &.panel-option-checked {
-    .setting-theme-sample {
-      border-color: $primary;
-    }
-
-    .field-radio-label {
-      color: $primary;
     }
   }
 }

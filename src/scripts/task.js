@@ -42,7 +42,7 @@ export const createTaskPrevElement = (plan) => {
   let id = plan.id
 
   return createElement('div', {
-    'className': 'task-button task-prev-button',
+    'className': 'task-button task-prev',
     'data-id': `${id}`
   }, [
     createElement('i', {
@@ -55,7 +55,7 @@ export const createTaskEditElement = (plan) => {
   let id = plan.id
 
   return createElement('div', {
-    'className': 'task-button task-edit-button',
+    'className': 'task-button task-edit',
     'data-id': `${id}`
   }, [
     createElement('i', {
@@ -68,7 +68,7 @@ export const createTaskMarkElement = (plan) => {
   let id = plan.id
 
   return createElement('div', {
-    'className': 'task-button task-bookmark-button',
+    'className': 'task-button task-bookmark',
     'data-id': `${id}`
   }, [
     createElement('i', {
@@ -81,7 +81,7 @@ export const createTasKDeleteElement = (plan) => {
   let id = plan.id
 
   return createElement('div', {
-    'className': 'task-button task-delete-button',
+    'className': 'task-button task-delete',
     'data-id': `${id}`
   }, [
     createElement('i', {
@@ -94,7 +94,7 @@ export const createTaskReplaceElement = (plan) => {
   let id = plan.id
 
   return createElement('div', {
-    'className': 'task-button task-replace-button',
+    'className': 'task-button task-replace',
     'data-id': `${id}`
   }, [
     createElement('i', {
@@ -107,7 +107,7 @@ export const createTaskNextElement = (plan) => {
   let id = plan.id
 
   return createElement('div', {
-    'className': 'task-button task-next-button',
+    'className': 'task-button task-next',
     'data-id': `${id}`
   }, [
     createElement('i', {

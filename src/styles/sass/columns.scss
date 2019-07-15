@@ -32,18 +32,9 @@
   margin: 0;
   transition: .3s;
 
-  &.panel-view-opened,
-  &.panel-add-opened,
-  &.panel-edit-opened,
-  &.panel-trash-opened,
-  &.panel-setting-opened {
+  &.panel-opened {
     margin-left: 313px;
-  }
 
-  &.panel-view-opened,
-  &.panel-add-opened,
-  &.panel-edit-opened,
-  &.panel-setting-opened {
     .columns-overlay {
       display: block;
     }

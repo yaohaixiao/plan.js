@@ -121,9 +121,8 @@ class Plan {
     let doingPlans = this.getDoingPlans()
     let checkingPlans = this.getCheckingPlans()
     let donePlans = this.getDonePlans()
-    let $wrap = this.getEls().wrap
 
-    addClass($wrap, THEMES[this.get('theme')].theme)
+    addClass(document.body, THEMES[this.get('theme')].theme)
 
     this.updateSettingPanel()
         .updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
@@ -137,18 +136,18 @@ class Plan {
 
     // ---------- toolbar ----------
     // 添加
-    on($wrap, '.toolbar-plus-button', 'click', this._onPlusButtonClick, this)
+    on($wrap, '.toolbar-plus', 'click', this._onPlusButtonClick, this)
     // 过滤任务
-    on($wrap, '.toolbar-inbox-button', 'click', this._onInBoxFilterButtonClick, this)
-    on($wrap, '.toolbar-spades-button', 'click', this._onSpadesFilterButtonClick, this)
-    on($wrap, '.toolbar-heart-button', 'click', this._onHeartFilterButtonClick, this)
-    on($wrap, '.toolbar-clubs-button', 'click', this._onClubsFilterButtonClick, this)
-    on($wrap, '.toolbar-diamonds-button', 'click', this._onDiamondsFilterButtonClick, this)
-    on($wrap, '.toolbar-bookmark-button', 'click', this._onBookmarkFilterButtonClick, this)
+    on($wrap, '.toolbar-inbox', 'click', this._onInBoxFilterButtonClick, this)
+    on($wrap, '.toolbar-spades', 'click', this._onSpadesFilterButtonClick, this)
+    on($wrap, '.toolbar-heart', 'click', this._onHeartFilterButtonClick, this)
+    on($wrap, '.toolbar-clubs', 'click', this._onClubsFilterButtonClick, this)
+    on($wrap, '.toolbar-diamonds', 'click', this._onDiamondsFilterButtonClick, this)
+    on($wrap, '.toolbar-bookmark', 'click', this._onBookmarkFilterButtonClick, this)
     // 回收站
-    on($wrap, '.toolbar-trash-button', 'click', this._onTrashButtonClick, this)
+    on($wrap, '.toolbar-trash', 'click', this._onTrashButtonClick, this)
     // 设置
-    on($wrap, '.toolbar-setting-button', 'click', this._onSettingButtonClick, this)
+    on($wrap, '.toolbar-setting', 'click', this._onSettingButtonClick, this)
 
     // ---------- panel ----------
     on($wrap, '.view-cancel', 'click', this._onViewCancelButtonClick, this)
@@ -174,20 +173,20 @@ class Plan {
     // ---------- task ----------
     on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
     // 切换状态
-    on($wrap, '.task-prev-button', 'click', this._onPrevButtonClick, this)
-    on($wrap, '.task-next-button', 'click', this._onNextButtonClick, this)
+    on($wrap, '.task-prev', 'click', this._onPrevButtonClick, this)
+    on($wrap, '.task-next', 'click', this._onNextButtonClick, this)
     // 编辑
-    on($wrap, '.task-edit-button', 'click', this._onEditButtonClick, this)
+    on($wrap, '.task-edit', 'click', this._onEditButtonClick, this)
     // 标记重要
-    on($wrap, '.task-bookmark-button', 'click', this._onMarkedButtonClick, this)
+    on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
     // 删除
-    on($wrap, '.task-delete-button', 'click', this._onDeleteButtonClick, this)
+    on($wrap, '.task-delete', 'click', this._onDeleteButtonClick, this)
     // 恢复
-    on($wrap, '.task-replace-button', 'click', this._onReplaceButtonClick, this)
+    on($wrap, '.task-replace', 'click', this._onReplaceButtonClick, this)
 
     // ---------- column ----------
-    on($wrap, '.column-up-button', 'click', this._onColumnUpButtonClick, this)
-    on($wrap, '.column-down-button', 'click', this._onColumnDownButtonClick, this)
+    on($wrap, '.column-up', 'click', this._onColumnUpButtonClick, this)
+    on($wrap, '.column-down', 'click', this._onColumnDownButtonClick, this)
     on($wrap, '.columns-overlay', 'click', this._onColumnsOverlayClick, this)
 
     // 拖动完成，更新任务状态
@@ -659,7 +658,7 @@ class Plan {
   }
 
   checkFilter ($button) {
-    const CLS_ACTIVE = 'toolbar-button-active'
+    const CLS_ACTIVE = 'toolbar-active'
     let prop = $button.getAttribute('data-filter')
     let $toolbar = this.getEls().toolbar
     let $active
@@ -727,14 +726,11 @@ class Plan {
   }
 
   checkTemplate ($button) {
-    const CLS_OPTION_CHECKED = 'panel-option-checked'
-    const CLS_RADIO_CHECKED = 'field-radio-checked'
+    const CLS_OPTION_CHECKED = 'field-option-checked'
     let value = $button.getAttribute('data-template')
     let elements = this.getEls()
     let $templates = elements.settingPanel.querySelector('#setting-templates')
-    let $checkedOption = $templates.querySelector('.' + CLS_OPTION_CHECKED)
-    let $radio = $button.querySelector('.field-radio')
-    let $checkedRadio = $templates.querySelector('.' + CLS_RADIO_CHECKED)
+    let $checked = $templates.querySelector('.' + CLS_OPTION_CHECKED)
     let $input = $templates.querySelector('#setting-template')
 
     if (hasClass($button, CLS_OPTION_CHECKED)) {
@@ -742,14 +738,10 @@ class Plan {
     }
 
     $input.value = value
-    if ($checkedOption) {
-      removeClass($checkedOption, CLS_OPTION_CHECKED)
+    if ($checked) {
+      removeClass($checked, CLS_OPTION_CHECKED)
     }
     addClass($button, CLS_OPTION_CHECKED)
-    if ($checkedRadio) {
-      removeClass($checkedRadio, CLS_RADIO_CHECKED)
-    }
-    addClass($radio, CLS_RADIO_CHECKED)
 
     this.set({
       template: parseInt(value, 10)
@@ -761,33 +753,26 @@ class Plan {
   }
 
   checkTheme ($button) {
-    const CLS_OPTION_CHECKED = 'panel-option-checked'
-    const CLS_RADIO_CHECKED = 'field-radio-checked'
+    const CLS_OPTION_CHECKED = 'field-option-checked'
     let value = $button.getAttribute('data-value')
     let elements = this.getEls()
-    let $wrap = elements.wrap
+    let $body = document.body
     let $themes = elements.settingPanel.querySelector('#setting-themes')
-    let $checkedOption = $themes.querySelector('.' + CLS_OPTION_CHECKED)
-    let $radio = $button.querySelector('.field-radio')
-    let $checkedRadio = $themes.querySelector('.' + CLS_RADIO_CHECKED)
+    let $checked = $themes.querySelector('.' + CLS_OPTION_CHECKED)
     let $input = $themes.querySelector('#setting-theme')
 
-    if (hasClass($button, CLS_RADIO_CHECKED)) {
+    if (hasClass($button, CLS_OPTION_CHECKED)) {
       return this
     }
 
     $input.value = value
-    if ($checkedOption) {
-      removeClass($checkedOption, CLS_OPTION_CHECKED)
+    if ($checked) {
+      removeClass($checked, CLS_OPTION_CHECKED)
     }
     addClass($button, CLS_OPTION_CHECKED)
-    if ($checkedRadio) {
-      removeClass($checkedRadio, CLS_RADIO_CHECKED)
-    }
-    addClass($radio, CLS_RADIO_CHECKED)
 
-    removeClass($wrap, THEMES[this.get('theme')].theme)
-    addClass($wrap, THEMES[parseInt(value, 10)].theme)
+    removeClass($body, THEMES[this.get('theme')].theme)
+    addClass($body, THEMES[parseInt(value, 10)].theme)
 
     this.set({
       theme: parseInt(value, 10)
@@ -996,7 +981,7 @@ class Plan {
   checkColumnUp ($button) {
     const CLS_HIDDEN = 'hidden'
     let status = parseInt($button.getAttribute('data-status'), 10)
-    let $down = $button.parentNode.querySelector('.column-down-button')
+    let $down = $button.parentNode.querySelector('.column-down')
     let $tasks = this.getStatusTasksEl(status)
 
     addClass($button, CLS_HIDDEN)
@@ -1009,7 +994,7 @@ class Plan {
   checkColumnDown ($button) {
     const CLS_HIDDEN = 'hidden'
     let status = parseInt($button.getAttribute('data-status'), 10)
-    let $up = $button.parentNode.querySelector('.column-up-button')
+    let $up = $button.parentNode.querySelector('.column-up')
     let $tasks = this.getStatusTasksEl(status)
 
     addClass($button, CLS_HIDDEN)
@@ -1340,12 +1325,12 @@ class Plan {
   }
 
   closeSettingPanel () {
-    const CLS_OPENED = 'panel-setting-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $columns = elements.columns
-    let $settingButton = elements.toolbar.querySelector('.toolbar-setting-button')
+    let $settingButton = elements.toolbar.querySelector('.toolbar-setting')
 
-    removeClass($settingButton, 'toolbar-button-active')
+    removeClass($settingButton, 'toolbar-active')
     removeClass(elements.settingPanel, CLS_OPENED)
     removeClass($columns, CLS_OPENED)
 
@@ -1359,12 +1344,13 @@ class Plan {
     const CLS_RADIO_CHECKED = 'field-radio-checked'
     const CLS_RADIO_ICON = 'field-radio-icon'
     const CLS_RADIO_LABEL = 'field-radio-label'
-    const CLS_OPTION = 'panel-option'
-    const CLS_OPTION_CHECKED = 'panel-option-checked'
-    const CLS_SAMPLE = 'panel-sample'
-    const CLS_TEMPLATE = 'setting-template'
-    const CLS_THEME = 'setting-theme'
-    const CLS_CACHE = 'setting-cache'
+    const CLS_OPTION = 'field-option'
+    const CLS_OPTION_CHECKED = 'field-option-checked'
+    const CLS_FIELD_TEMPLATE = 'field-template'
+    const CLS_FIELD_THEME = 'field-theme'
+    const CLS_SETTING_TEMPLATE = 'setting-template'
+    const CLS_SETTING_THEME = 'setting-theme'
+    const CLS_SETTING_CACHE = 'setting-cache'
     let template = this.get('template')
     let theme = this.get('theme')
     let cache = this.get('cache')
@@ -1391,94 +1377,71 @@ class Plan {
       'value': this.get('cache')
     })
     let $templatesGroup = createElement('div', {
-      'className': CLS_RADIOS_GROUP
+      'className': 'field-templates'
     })
     let $themesGroup = createElement('div', {
-      'className': CLS_RADIOS_GROUP
+      'className': 'field-themes'
     })
     let $storageGroup = createElement('div', {
       'className': CLS_RADIOS_GROUP
     })
 
     TEMPLATES.forEach((option) => {
-      let clsOption = option.value === template ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_TEMPLATE : CLS_OPTION + SPACE + CLS_TEMPLATE
-      let clsRadio = option.value === template ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
-      let $image = createElement('div', {
-        'className': CLS_SAMPLE + SPACE + 'setting-template-sample',
+      let clsTemplate = option.value === template ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_FIELD_TEMPLATE + SPACE + CLS_SETTING_TEMPLATE : CLS_OPTION + SPACE + CLS_FIELD_TEMPLATE + SPACE + CLS_SETTING_TEMPLATE
+      let $image = createElement('p', {
+        'className': 'field-template-image',
         'data-template': option.value
       }, [
         createElement('img', {
-          'className': 'setting-image',
           'alt': option.name,
           'src': option.image,
           'width': '130',
           'height': '51'
         })
       ])
-      let $radio = createElement('div', {
-        'className': clsRadio,
+      let $text = createElement('p', {
+        'className': 'field-template-text',
         'data-template': option.value
       }, [
-        createElement('div', {
-          'className': CLS_RADIO_ICON
-        }, [
-          createElement('i', {
-            'className': 'icon-radio-unchecked'
-          }),
-          createElement('i', {
-            'className': 'icon-radio-checked2'
-          })
-        ]),
-        createElement('label', {
-          'className': CLS_RADIO_LABEL
-        }, [
-          option.name
-        ])
+        option.name
       ])
-      let $template = createElement('div', {
-        'className': clsOption,
+
+      $templatesGroup.appendChild(createElement('div', {
+        'className': clsTemplate,
         'data-template': option.value
       }, [
         $image,
-        $radio
-      ])
-
-      $templatesGroup.appendChild($template)
+        $text
+      ]))
     })
 
     THEMES.forEach((option) => {
-      let clsOption = option.value === theme ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_THEME : CLS_OPTION + SPACE + CLS_THEME
-      let clsRadio = option.value === theme ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
-      let $image = createElement('div', {
-        'className': CLS_SAMPLE + SPACE + option.theme + SPACE + 'setting-theme-sample',
+      let clsTheme = option.value === theme ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_FIELD_THEME + SPACE + CLS_SETTING_THEME : CLS_OPTION + SPACE + CLS_FIELD_THEME + SPACE + CLS_SETTING_THEME
+      let $color = createElement('div', {
+        'className': 'field-theme-color' + SPACE + option.theme,
         'data-theme': option.theme,
         'data-value': option.value
       })
-      let $radio = createElement('div', {
-        'className': clsRadio,
+      let $text = createElement('p', {
+        'className': 'field-theme-text',
         'data-theme': option.theme,
         'data-value': option.value
       }, [
-        createElement('label', {
-          'className': CLS_RADIO_LABEL
-        }, [
-          option.name
-        ])
-      ])
-      let $theme = createElement('div', {
-        'className': clsOption,
-        'data-theme': option.theme,
-        'data-value': option.value
-      }, [
-        $image,
-        $radio
+        option.name
       ])
 
-      $themesGroup.appendChild($theme)
+      $themesGroup.appendChild(createElement('div', {
+        'className': clsTheme,
+        'data-theme': option.theme,
+        'data-value': option.value
+      }, [
+        $color,
+        $text
+      ]))
     })
 
     STORAGE.forEach((option) => {
-      let clsOption = option.value === cache ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_CACHE : CLS_OPTION + SPACE + CLS_CACHE
+      let clsOption = option.value === cache ? CLS_OPTION + SPACE + CLS_OPTION_CHECKED + SPACE + CLS_SETTING_CACHE : CLS_OPTION + SPACE + CLS_SETTING_CACHE
       let clsRadio = option.value === cache ? CLS_RADIO + SPACE + CLS_RADIO_CHECKED : CLS_RADIO
       let $radio = createElement('div', {
         'className': clsRadio,
@@ -1521,17 +1484,17 @@ class Plan {
   }
 
   openSettingPanel () {
-    const CLS_OPENED = 'panel-setting-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $columns = elements.columns
-    let $settingButton = elements.toolbar.querySelector('.toolbar-setting-button')
+    let $settingButton = elements.toolbar.querySelector('.toolbar-setting')
 
     this.closeViewPanel()
         .closeAddPanel()
         .closeEditPanel()
         .closeTrashPanel()
 
-    addClass($settingButton, 'toolbar-button-active')
+    addClass($settingButton, 'toolbar-active')
     addClass(elements.settingPanel, CLS_OPENED)
     addClass($columns, CLS_OPENED)
 
@@ -1540,9 +1503,9 @@ class Plan {
 
   toggleSettingPanel () {
     let elements = this.getEls()
-    let $columns = elements.columns
+    let $settingPanel = elements.settingPanel
 
-    if (hasClass($columns, 'panel-setting-opened')) {
+    if (hasClass($settingPanel, 'panel-opened')) {
       this.closeSettingPanel()
     } else {
       this.openSettingPanel()
@@ -1552,7 +1515,7 @@ class Plan {
   }
 
   closeViewPanel () {
-    const CLS_OPENED = 'panel-view-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $columns = elements.columns
 
@@ -1565,7 +1528,7 @@ class Plan {
   }
 
   openViewPanel () {
-    const CLS_OPENED = 'panel-view-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $viewPanel = elements.viewPanel
     let $columns = elements.columns
@@ -1583,6 +1546,7 @@ class Plan {
   }
 
   updateViewPanel () {
+    const CLS_LEVEL = 'field-view-level field-level-icon field-level-checked'
     let elements = this.getEls()
     let plan = this.getEditPlan()
     let $viewPanel = elements.viewPanel
@@ -1603,7 +1567,7 @@ class Plan {
     switch (plan.level) {
       case 0:
         $icon = createElement('div', {
-          'className': 'field-level-icon field-level-checked'
+          'className': CLS_LEVEL
         }, [
           createElement('i', {
             'className': 'icon-spades'
@@ -1612,7 +1576,7 @@ class Plan {
         break
       case 1:
         $icon = createElement('div', {
-          'className': 'field-level-icon field-level-checked'
+          'className': CLS_LEVEL
         }, [
           createElement('i', {
             'className': 'icon-heart'
@@ -1621,7 +1585,7 @@ class Plan {
         break
       case 2:
         $icon = createElement('div', {
-          'className': 'field-level-icon field-level-checked'
+          'className': CLS_LEVEL
         }, [
           createElement('i', {
             'className': 'icon-clubs'
@@ -1630,7 +1594,7 @@ class Plan {
         break
       case 3:
         $icon = createElement('div', {
-          'className': 'field-level-icon field-level-checked'
+          'className': CLS_LEVEL
         }, [
           createElement('i', {
             'className': 'icon-diamonds'
@@ -1646,7 +1610,7 @@ class Plan {
   }
 
   closeAddPanel () {
-    const CLS_OPENED = 'panel-add-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $addPanel = elements.addPanel
     let $columns = elements.columns
@@ -1665,7 +1629,7 @@ class Plan {
   }
 
   openAddPanel () {
-    const CLS_OPENED = 'panel-add-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $addPanel = elements.addPanel
     let $columns = elements.columns
@@ -1702,7 +1666,7 @@ class Plan {
     let elements = this.getEls()
     let $addPanel = elements.addPanel
 
-    if (hasClass($addPanel, 'panel-add-opened')) {
+    if (hasClass($addPanel, 'panel-opened')) {
       this.closeAddPanel()
     } else {
       this.openAddPanel()
@@ -1712,7 +1676,7 @@ class Plan {
   }
 
   closeEditPanel () {
-    const CLS_OPENED = 'panel-edit-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $columns = elements.columns
 
@@ -1730,7 +1694,7 @@ class Plan {
   }
 
   openEditPanel () {
-    const CLS_OPENED = 'panel-edit-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $editPanel = elements.editPanel
     let $columns = elements.columns
@@ -1789,13 +1753,13 @@ class Plan {
   }
 
   closeTrashPanel () {
-    const CLS_OPENED = 'panel-trash-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $columns = elements.columns
     let $trashPanel = elements.trashPanel
-    let $trashButton = elements.toolbar.querySelector('.toolbar-trash-button')
+    let $trashButton = elements.toolbar.querySelector('.toolbar-trash')
 
-    removeClass($trashButton, 'toolbar-button-active')
+    removeClass($trashButton, 'toolbar-active')
     removeClass($trashPanel, CLS_OPENED)
     removeClass($columns, CLS_OPENED)
 
@@ -1805,11 +1769,11 @@ class Plan {
   }
 
   openTrashPanel () {
-    const CLS_OPENED = 'panel-trash-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $columns = elements.columns
     let $trashPanel = elements.trashPanel
-    let $trashButton = elements.toolbar.querySelector('.toolbar-trash-button')
+    let $trashButton = elements.toolbar.querySelector('.toolbar-trash')
 
     this.closeSettingPanel()
         .closeViewPanel()
@@ -1817,7 +1781,7 @@ class Plan {
         .closeEditPanel()
         .updateTrashPanel()
 
-    addClass($trashButton, 'toolbar-button-active')
+    addClass($trashButton, 'toolbar-active')
     addClass($trashPanel, CLS_OPENED)
     addClass($columns, CLS_OPENED)
 
@@ -1842,7 +1806,7 @@ class Plan {
     let elements = this.getEls()
     let $trashPanel = elements.trashPanel
 
-    if (hasClass($trashPanel, 'panel-trash-opened')) {
+    if (hasClass($trashPanel, 'panel-opened')) {
       this.closeTrashPanel()
     } else {
       this.openTrashPanel()
@@ -1852,32 +1816,16 @@ class Plan {
   }
 
   closePanel () {
-    const CLS_VIEW_OPENED = 'panel-view-opened'
-    const CLS_ADD_OPENED = 'panel-add-opened'
-    const CLS_EDIT_OPENED = 'panel-edit-opened'
-    const CLS_TRASH_OPENED = 'panel-trash-opened'
-    const CLS_SETTING_OPENED = 'panel-setting-opened'
+    const CLS_OPENED = 'panel-opened'
     let elements = this.getEls()
     let $columns = elements.columns
 
-    if (hasClass($columns, CLS_VIEW_OPENED)) {
+    if (hasClass($columns, CLS_OPENED)) {
       this.closeViewPanel()
-    }
-
-    if (hasClass($columns, CLS_ADD_OPENED)) {
-      this.closeAddPanel()
-    }
-
-    if (hasClass($columns, CLS_EDIT_OPENED)) {
-      this.closeEditPanel()
-    }
-
-    if (hasClass($columns, CLS_TRASH_OPENED)) {
-      this.closeTrashPanel()
-    }
-
-    if (hasClass($columns, CLS_SETTING_OPENED)) {
-      this.closeSettingPanel()
+          .closeAddPanel()
+          .closeEditPanel()
+          .closeTrashPanel()
+          .closeSettingPanel()
     }
 
     return this

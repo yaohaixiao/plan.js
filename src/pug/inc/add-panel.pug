@@ -1,9 +1,9 @@
 div#add-panel.panel.panel-add
   div.panel-hd
-    div#add-cancel.panel-button.panel-cancel-button.add-cancel
+    div#add-cancel.panel-button.panel-cancel.add-cancel
       i.icon-cheveron-left
     h2.panel-title 创建任务
-    div#add-save.panel-button.panel-save-button.add-save
+    div#add-save.panel-button.panel-save.add-save
       i.icon-save-disk
   div.panel-bd
     div.tasks
@@ -22,7 +22,7 @@ div#add-panel.panel.panel-add
             input#add-deadline.field-input-text(type="text" readonly="readonly" autocomplete="false" placeholder="请选择截止日期")
           div.field-input-icon.add-deadline
             i.icon-calendar
-          div#add-calendar.panel-calendar
+          div#add-calendar.field-calendar
       div.field
         label.field-label 预估工作量：
         div.field-content
@@ -34,19 +34,19 @@ div#add-panel.panel.panel-add
         label.field-label 任务等级：
         div.field-content
           div#add-levels.field-levels
-            div.field-level-option.field-level-spades.add-level(data-level='0' data-type='add')
+            div.field-option.field-level.field-level-spades.add-level(data-level='0' data-type='add')
               div.field-level-icon
                 i.icon-spades
               p.field-level-text 紧急
-            div.field-level-option.field-level-heart.add-level(data-level='1' data-type='add')
+            div.field-option.field-level.field-level-heart.add-level(data-level='1' data-type='add')
               div.field-level-icon
                 i.icon-heart
               p.field-level-text 高
-            div.field-level-option.field-level-clubs.add-level(data-level='2' data-type='add')
+            div.field-option.field-level.field-level-clubs.add-level(data-level='2' data-type='add')
               div.field-level-icon
                 i.icon-clubs
               p.field-level-text 中
-            div.field-level-option.field-level-diamonds.add-level(data-level='3' data-type='add')
+            div.field-option.field-level.field-level-diamonds.add-level(data-level='3' data-type='add')
               div.field-level-icon
                 i.icon-diamonds
               p.field-level-text 低

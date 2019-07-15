@@ -92,91 +92,6 @@
   }
 }
 
-.field-levels {
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-.field-level-option {
-  color: $light-gray;
-  cursor: pointer;
-  float: left;
-  margin: 0;
-  overflow: hidden;
-  text-align: center;
-  width: 25%;
-}
-
-.field-level-spades {
-  &:hover {
-    color: $red;
-  }
-}
-
-.field-level-heart {
-  &:hover {
-    color: $orange;
-  }
-}
-
-.field-level-clubs {
-  &:hover {
-    color: $primary;
-  }
-}
-
-.field-level-diamonds {
-  &:hover {
-    color: $green;
-  }
-}
-
-.field-level-checked {
-  &.field-level-spades {
-    color: $red;
-
-    &:hover {
-      color: $red;
-    }
-  }
-
-  &.field-level-heart {
-    color: $orange;
-
-    &:hover {
-      color: $orange;
-    }
-  }
-
-  &.field-level-clubs {
-    color: $primary;
-
-    &:hover {
-      color: $primary;
-    }
-  }
-
-  &.field-level-diamonds {
-    color: $green;
-
-    &:hover {
-      color: $green;
-    }
-  }
-}
-
-.field-level-icon {
-  font-size: 16px;
-}
-
-.field-level-text {
-  font-size: 13px;
-  height: 16px;
-  line-height: 16px;
-  margin: 7px auto 0;
-  overflow: hidden;
-}
-
 .field-radios-group {
   margin: 0;
   min-height: 40px;
@@ -233,6 +148,13 @@
   margin-left: 30px;
 }
 
+.field-option {
+  cursor: pointer;
+  float: left;
+  margin: 0;
+  overflow: hidden;
+}
+
 .field-view-label {
   left: 0;
   top: 0;
@@ -251,4 +173,190 @@
 .field-view-content {
   color: $gray;
   line-height: 150%;
+}
+
+.field-calendar {
+  .cal-md {
+    height: 240px;
+    margin-top: 5px;
+  }
+
+  .cal-hd {
+    border-bottom: 0;
+  }
+}
+
+.field-levels,
+.field-templates,
+.field-template-image,
+.field-template-text,
+.field-theme-color,
+.field-theme-text{
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.field-level {
+  color: $light-gray;
+  text-align: center;
+  width: 25%;
+}
+
+.field-view-level{
+  @include button(20px, 40px, 16px);
+  display:inline-block;
+}
+
+.field-level-spades {
+  &:hover {
+    color: $red;
+  }
+}
+
+.field-level-heart {
+  &:hover {
+    color: $pink;
+  }
+}
+
+.field-level-clubs {
+  &:hover {
+    color: $primary;
+  }
+}
+
+.field-level-diamonds {
+  &:hover {
+    color: $green;
+  }
+}
+
+.field-level-checked {
+  &.field-level-spades {
+    color: $red;
+
+    &:hover {
+      color: $red;
+    }
+  }
+
+  &.field-level-heart {
+    color: $pink;
+
+    &:hover {
+      color: $pink;
+    }
+  }
+
+  &.field-level-clubs {
+    color: $primary;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  &.field-level-diamonds {
+    color: $green;
+
+    &:hover {
+      color: $green;
+    }
+  }
+
+  .icon-spades {
+    color: $red;
+  }
+
+  .icon-heart {
+    color: $pink;
+  }
+
+  .icon-clubs {
+    color: $primary;
+  }
+
+  .icon-diamonds {
+    color: $green;
+  }
+}
+
+.field-level-icon {
+  font-size: 16px;
+}
+
+.field-level-text {
+  font-size: 13px;
+  height: 16px;
+  line-height: 16px;
+  margin: 7px auto 0;
+  overflow: hidden;
+}
+
+.field-themes,
+.field-templates{
+  .field-option-checked{
+    .field-template-image{
+      border-color: $primary;
+    }
+
+    .field-theme-text,
+    .field-template-text{
+      color: $primary;
+    }
+  }
+}
+
+.field-template {
+  width: 50%;
+}
+
+.field-template-image,
+.field-template-text{
+  margin:0 auto;
+  overflow:hidden;
+}
+
+.field-template-image {
+  border:1px solid $border-color;
+  height: 51px;
+  width: 130px;
+}
+
+.field-template-text,
+.field-theme-text{
+  height:40px;
+  line-height:40px;
+  text-align:center;
+  color: $light-gray;
+}
+
+.field-themes{
+  .field-option-checked{
+  }
+}
+
+.field-theme {
+  width: 25%;
+}
+
+.field-theme-color{
+  width:50px;
+  height:50px;
+
+  &.theme-blue{
+    background-color: $theme-blue;
+  }
+
+  &.theme-green{
+    background-color: $theme-green;
+  }
+
+  &.theme-purple{
+    background-color: $theme-purple;
+  }
+
+  &.theme-red{
+    background-color: $theme-red;
+  }
 }

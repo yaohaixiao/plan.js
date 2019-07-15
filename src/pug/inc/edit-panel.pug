@@ -1,9 +1,9 @@
 div#edit-panel.panel.panel-edit
   div.panel-hd
-    div#edit-cancel.panel-button.panel-cancel-button.edit-cancel
+    div#edit-cancel.panel-button.panel-cancel.edit-cancel
       i.icon-cheveron-left
     h2.panel-title 编辑任务
-    div#edit-save.panel-button.panel-save-button.edit-save
+    div#edit-save.panel-button.panel-save.edit-save
       i.icon-save-disk
   div.panel-bd
     div.tasks
@@ -22,7 +22,7 @@ div#edit-panel.panel.panel-edit
             input#edit-deadline.field-input-text(type="text" readonly="readonly" autocomplete="false" placeholder="请选择截止日期")
           div.field-input-icon.edit-deadline
             i.icon-calendar
-          div#edit-calendar.panel-calendar
+          div#edit-calendar.field-calendar
       div.field
         label.field-label 预估工作量：
         div.field-content
@@ -34,19 +34,19 @@ div#edit-panel.panel.panel-edit
         label.field-label 任务等级：
         div.field-content
           div#edit-levels.field-levels
-            div.field-level-option.field-level-spades.edit-level(data-level='0' data-type='edit')
+            div.field-option.field-level.field-level-spades.edit-level(data-level='0' data-type='edit')
               div.field-level-icon
                 i.icon-spades
               p.field-level-text 紧急
-            div.field-level-option.field-level-heart.edit-level(data-level='1' data-type='edit')
+            div.field-option.field-level.field-level-heart.edit-level(data-level='1' data-type='edit')
               div.field-level-icon
                 i.icon-heart
               p.field-level-text 高
-            div.field-level-option.field-level-clubs.edit-level(data-level='2' data-type='edit')
+            div.field-option.field-level.field-level-clubs.edit-level(data-level='2' data-type='edit')
               div.field-level-icon
                 i.icon-clubs
               p.field-level-text 中
-            div.field-level-option.field-level-diamonds.edit-level(data-level='3' data-type='edit')
+            div.field-option.field-level.field-level-diamonds.edit-level(data-level='3' data-type='edit')
               div.field-level-icon
                 i.icon-diamonds
               p.field-level-text 低

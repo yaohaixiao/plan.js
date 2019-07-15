@@ -29,9 +29,9 @@
   width: 68px;
 }
 
-.toolbar-plus-button,
-.toolbar-trash-button,
-.toolbar-setting-button {
+.toolbar-plus,
+.toolbar-trash,
+.toolbar-setting {
   left: 0;
   overflow: hidden;
   position: absolute;
@@ -39,14 +39,31 @@
   z-index: 2;
 }
 
-.toolbar-plus-button {
+.toolbar-plus {
   top: 48px;
 }
 
-.toolbar-trash-button {
+.toolbar-trash {
   bottom: 48px;
 }
 
-.toolbar-setting-button {
+.toolbar-setting {
   bottom: 0;
+}
+
+.toolbar-button {
+  @include button(48px, 48px, 18px);
+  cursor: pointer;
+
+  &:hover {
+    color: $gray;
+  }
+}
+
+.toolbar-active {
+  color: $gray;
+
+  &:hover {
+    color: $gray;
+  }
 }

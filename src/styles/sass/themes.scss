@@ -1,0 +1,186 @@
+@import './colors';
+@import './buttons';
+
+.theme-blue {
+  .side {
+    background-color: $theme-blue;
+  }
+
+  .toolbar-button {
+    @include button(48px, 48px, 18px, $theme-blue-background, $white);
+    cursor: pointer;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .task-marked {
+    border-left-color: $theme-blue;
+
+    .task-title {
+      color: $theme-blue;
+    }
+
+    &:hover {
+      border-color: $theme-blue;
+    }
+
+    .icon-bookmark {
+      color: $theme-blue;
+    }
+  }
+
+  .task-title-text {
+    color: $theme-blue;
+  }
+}
+
+.theme-purple {
+  .side {
+    background-color: $theme-purple;
+  }
+
+  .toolbar-button {
+    @include button(48px, 48px, 18px, $theme-purple-background, $white);
+    cursor: pointer;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .task {
+    &:hover {
+      border-color: $theme-purple;
+    }
+  }
+
+  .task-marked {
+    border-left-color: $theme-purple;
+
+    .task-title {
+      color: $theme-purple;
+    }
+
+    &:hover {
+      border-color: $theme-purple;
+    }
+
+    .icon-bookmark {
+      color: $theme-purple;
+    }
+  }
+
+  .task-title-text {
+    color: $theme-purple;
+  }
+}
+
+.theme-red {
+  .side {
+    background-color: $theme-red;
+  }
+
+  .toolbar-button {
+    @include button(48px, 48px, 18px, $theme-red-background, $white);
+    cursor: pointer;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .task {
+    &:hover {
+      border-color: $theme-red;
+    }
+  }
+
+  .task-marked {
+    border-left-color: $theme-red;
+
+    .task-title {
+      color: $theme-red;
+    }
+
+    &:hover {
+      border-color: $theme-red;
+    }
+
+    .icon-bookmark {
+      color: $theme-red;
+    }
+  }
+
+  .task-title-text {
+    color: $theme-red;
+  }
+}
+
+.theme-green {
+  .side {
+    background-color: $theme-green;
+  }
+
+  .toolbar-button {
+    @include button(48px, 48px, 18px, $theme-green-background, $white);
+    cursor: pointer;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .task {
+    &:hover {
+      border-color: $theme-green;
+    }
+  }
+
+  .task-marked {
+    border-left-color: $theme-green;
+
+    .task-title {
+      color: $theme-green;
+    }
+
+    &:hover {
+      border-color: $theme-green;
+    }
+
+    .icon-bookmark {
+      color: $theme-green;
+    }
+  }
+
+  .task-title-text {
+    color: $theme-green;
+  }
+}
+
+.theme-blue,
+.theme-green,
+.theme-purple,
+.theme-red {
+  .logo {
+    @include button(48px, 48px, 24px, $white, $white);
+    color: $white;
+  }
+
+  .toolbar-active {
+    color: $white;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .task-delayed {
+    border-left-color: $orange;
+
+    &:hover {
+      border-color: $orange;
+    }
+  }
+}

@@ -16,27 +16,27 @@
     <div class="side">
       <h1 class="logo"><i class="icon-clipboard"></i></h1>
       <div class="toolbar" id="toolbar">
-        <div class="toolbar-button toolbar-plus-button"><i class="icon-plus"></i></div>
+        <div class="toolbar-button toolbar-plus"><i class="icon-plus"></i></div>
         <div class="toolbar-filters">
           <div class="toolbar-inner">
-            <div class="toolbar-button toolbar-inbox-button toolbar-button-active" data-filter="inbox"><i class="icon-inbox-full"></i></div>
-            <div class="toolbar-button toolbar-spades-button" data-filter="spades"><i class="icon-spades"></i></div>
-            <div class="toolbar-button toolbar-heart-button" data-filter="heart"><i class="icon-heart"></i></div>
-            <div class="toolbar-button toolbar-clubs-button" data-filter="clubs"><i class="icon-clubs"></i></div>
-            <div class="toolbar-button toolbar-diamonds-button" data-filter="diamonds"><i class="icon-diamonds"></i></div>
-            <div class="toolbar-button toolbar-bookmark-button" data-filter="marked"><i class="icon-bookmark"></i></div>
+            <div class="toolbar-button toolbar-inbox toolbar-active" data-filter="inbox"><i class="icon-inbox-full"></i></div>
+            <div class="toolbar-button toolbar-spades" data-filter="spades"><i class="icon-spades"></i></div>
+            <div class="toolbar-button toolbar-heart" data-filter="heart"><i class="icon-heart"></i></div>
+            <div class="toolbar-button toolbar-clubs" data-filter="clubs"><i class="icon-clubs"></i></div>
+            <div class="toolbar-button toolbar-diamonds" data-filter="diamonds"><i class="icon-diamonds"></i></div>
+            <div class="toolbar-button toolbar-bookmark" data-filter="marked"><i class="icon-bookmark"></i></div>
           </div>
         </div>
-        <div class="toolbar-button toolbar-trash-button" data-filter="deleted"><i class="icon-bin"></i></div>
-        <div class="toolbar-button toolbar-setting-button"><i class="icon-cog"></i></div>
+        <div class="toolbar-button toolbar-trash" data-filter="deleted"><i class="icon-bin"></i></div>
+        <div class="toolbar-button toolbar-setting"><i class="icon-cog"></i></div>
       </div>
     </div>
     <div class="main">
       <div class="panel panel-view" id="view-panel">
         <div class="panel-hd">
-          <div class="panel-button panel-cancel-button view-cancel" id="view-cancel"><i class="icon-cheveron-left"></i></div>
+          <div class="panel-button panel-cancel view-cancel" id="view-cancel"><i class="icon-cheveron-left"></i></div>
           <h2 class="panel-title">任务详情</h2>
-          <div class="panel-button panel-edit-button view-edit" id="view-save"><i class="icon-edit-pencil"></i></div>
+          <div class="panel-button panel-modify view-edit" id="view-save"><i class="icon-edit-pencil"></i></div>
         </div>
         <div class="panel-bd">
           <div class="tasks">
@@ -63,9 +63,9 @@
       </div>
       <div class="panel panel-add" id="add-panel">
         <div class="panel-hd">
-          <div class="panel-button panel-cancel-button add-cancel" id="add-cancel"><i class="icon-cheveron-left"></i></div>
+          <div class="panel-button panel-cancel add-cancel" id="add-cancel"><i class="icon-cheveron-left"></i></div>
           <h2 class="panel-title">创建任务</h2>
-          <div class="panel-button panel-save-button add-save" id="add-save"><i class="icon-save-disk"></i></div>
+          <div class="panel-button panel-save add-save" id="add-save"><i class="icon-save-disk"></i></div>
         </div>
         <div class="panel-bd">
           <div class="tasks">
@@ -81,7 +81,7 @@
               <div class="field-content">
                 <div class="field-input field-date-input"><input class="field-input-text" id="add-deadline" type="text" readonly="readonly" autocomplete="false" placeholder="请选择截止日期" /></div>
                 <div class="field-input-icon add-deadline"><i class="icon-calendar"></i></div>
-                <div class="panel-calendar" id="add-calendar"></div>
+                <div class="field-calendar" id="add-calendar"></div>
               </div>
             </div>
             <div class="field"><label class="field-label">预估工作量：</label>
@@ -93,19 +93,19 @@
             <div class="field"><label class="field-label">任务等级：</label>
               <div class="field-content">
                 <div class="field-levels" id="add-levels">
-                  <div class="field-level-option field-level-spades add-level" data-level="0" data-type="add">
+                  <div class="field-option field-level field-level-spades add-level" data-level="0" data-type="add">
                     <div class="field-level-icon"><i class="icon-spades"></i></div>
                     <p class="field-level-text">紧急</p>
                   </div>
-                  <div class="field-level-option field-level-heart add-level" data-level="1" data-type="add">
+                  <div class="field-option field-level field-level-heart add-level" data-level="1" data-type="add">
                     <div class="field-level-icon"><i class="icon-heart"></i></div>
                     <p class="field-level-text">高</p>
                   </div>
-                  <div class="field-level-option field-level-clubs add-level" data-level="2" data-type="add">
+                  <div class="field-option field-level field-level-clubs add-level" data-level="2" data-type="add">
                     <div class="field-level-icon"><i class="icon-clubs"></i></div>
                     <p class="field-level-text">中</p>
                   </div>
-                  <div class="field-level-option field-level-diamonds add-level" data-level="3" data-type="add">
+                  <div class="field-option field-level field-level-diamonds add-level" data-level="3" data-type="add">
                     <div class="field-level-icon"><i class="icon-diamonds"></i></div>
                     <p class="field-level-text">低</p>
                   </div><input id="add-level" type="hidden" value="" />
@@ -122,9 +122,9 @@
       </div>
       <div class="panel panel-edit" id="edit-panel">
         <div class="panel-hd">
-          <div class="panel-button panel-cancel-button edit-cancel" id="edit-cancel"><i class="icon-cheveron-left"></i></div>
+          <div class="panel-button panel-cancel edit-cancel" id="edit-cancel"><i class="icon-cheveron-left"></i></div>
           <h2 class="panel-title">编辑任务</h2>
-          <div class="panel-button panel-save-button edit-save" id="edit-save"><i class="icon-save-disk"></i></div>
+          <div class="panel-button panel-save edit-save" id="edit-save"><i class="icon-save-disk"></i></div>
         </div>
         <div class="panel-bd">
           <div class="tasks">
@@ -140,7 +140,7 @@
               <div class="field-content">
                 <div class="field-input field-date-input"><input class="field-input-text" id="edit-deadline" type="text" readonly="readonly" autocomplete="false" placeholder="请选择截止日期" /></div>
                 <div class="field-input-icon edit-deadline"><i class="icon-calendar"></i></div>
-                <div class="panel-calendar" id="edit-calendar"></div>
+                <div class="field-calendar" id="edit-calendar"></div>
               </div>
             </div>
             <div class="field"><label class="field-label">预估工作量：</label>
@@ -152,19 +152,19 @@
             <div class="field"><label class="field-label">任务等级：</label>
               <div class="field-content">
                 <div class="field-levels" id="edit-levels">
-                  <div class="field-level-option field-level-spades edit-level" data-level="0" data-type="edit">
+                  <div class="field-option field-level field-level-spades edit-level" data-level="0" data-type="edit">
                     <div class="field-level-icon"><i class="icon-spades"></i></div>
                     <p class="field-level-text">紧急</p>
                   </div>
-                  <div class="field-level-option field-level-heart edit-level" data-level="1" data-type="edit">
+                  <div class="field-option field-level field-level-heart edit-level" data-level="1" data-type="edit">
                     <div class="field-level-icon"><i class="icon-heart"></i></div>
                     <p class="field-level-text">高</p>
                   </div>
-                  <div class="field-level-option field-level-clubs edit-level" data-level="2" data-type="edit">
+                  <div class="field-option field-level field-level-clubs edit-level" data-level="2" data-type="edit">
                     <div class="field-level-icon"><i class="icon-clubs"></i></div>
                     <p class="field-level-text">中</p>
                   </div>
-                  <div class="field-level-option field-level-diamonds edit-level" data-level="3" data-type="edit">
+                  <div class="field-option field-level field-level-diamonds edit-level" data-level="3" data-type="edit">
                     <div class="field-level-icon"><i class="icon-diamonds"></i></div>
                     <p class="field-level-text">低</p>
                   </div><input id="edit-level" type="hidden" value="" />
@@ -181,7 +181,7 @@
       </div>
       <div class="panel panel-trash" id="trash-panel">
         <div class="panel-hd">
-          <div class="panel-button panel-cancel-button trash-cancel" id="trash-cancel"><i class="icon-cheveron-left"></i></div>
+          <div class="panel-button panel-cancel trash-cancel" id="trash-cancel"><i class="icon-cheveron-left"></i></div>
           <h2 class="panel-title">回收站（<strong class="panel-count" id="trash-count">0</strong>）</h2>
         </div>
         <div class="panel-bd">
@@ -190,7 +190,7 @@
       </div>
       <div class="panel panel-setting" id="setting-panel">
         <div class="panel-hd">
-          <div class="panel-button panel-cancel-button setting-cancel" id="setting-cancel"><i class="icon-cheveron-left"></i></div>
+          <div class="panel-button panel-cancel setting-cancel" id="setting-cancel"><i class="icon-cheveron-left"></i></div>
           <h2 class="panel-title">设置</h2>
         </div>
         <div class="panel-bd">
@@ -213,8 +213,8 @@
           <div class="column">
             <div class="column-hd">
               <h2 class="column-title">待处理（<strong class="column-count" id="todo-count">0</strong>）</h2>
-              <div class="column-button column-up-button" data-status="0"><i class="icon-cheveron-up"></i></div>
-              <div class="column-button column-down-button hidden" data-status="0"><i class="icon-cheveron-down"></i></div>
+              <div class="column-button column-up" data-status="0"><i class="icon-cheveron-up"></i></div>
+              <div class="column-button column-down hidden" data-status="0"><i class="icon-cheveron-down"></i></div>
             </div>
             <div class="column-bd">
               <div class="tasks" id="tasks-todo" data-status="0"></div>
@@ -223,8 +223,8 @@
           <div class="column">
             <div class="column-hd">
               <h2 class="column-title">处理中（<strong class="column-count" id="doing-count">0</strong>）</h2>
-              <div class="column-button column-up-button" data-status="1"><i class="icon-cheveron-up"></i></div>
-              <div class="column-button column-down-button hidden" data-status="1"><i class="icon-cheveron-down"></i></div>
+              <div class="column-button column-up" data-status="1"><i class="icon-cheveron-up"></i></div>
+              <div class="column-button column-down hidden" data-status="1"><i class="icon-cheveron-down"></i></div>
             </div>
             <div class="column-bd">
               <div class="tasks" id="tasks-doing" data-status="1"></div>
@@ -233,8 +233,8 @@
           <div class="column">
             <div class="column-hd">
               <h2 class="column-title">待验收（<strong class="column-count" id="checking-count">0</strong>）</h2>
-              <div class="column-button column-up-button" data-status="2"><i class="icon-cheveron-up"></i></div>
-              <div class="column-button column-down-button hidden" data-status="2"><i class="icon-cheveron-down"></i></div>
+              <div class="column-button column-up" data-status="2"><i class="icon-cheveron-up"></i></div>
+              <div class="column-button column-down hidden" data-status="2"><i class="icon-cheveron-down"></i></div>
             </div>
             <div class="column-bd">
               <div class="tasks" id="tasks-checking" data-status="2"></div>
@@ -243,8 +243,8 @@
           <div class="column">
             <div class="column-hd">
               <h2 class="column-title">已完成（<strong class="column-count" id="done-count">0</strong>）</h2>
-              <div class="column-button column-up-button" data-status="3"><i class="icon-cheveron-up"></i></div>
-              <div class="column-button column-down-button hidden" data-status="3"><i class="icon-cheveron-down"></i></div>
+              <div class="column-button column-up" data-status="3"><i class="icon-cheveron-up"></i></div>
+              <div class="column-button column-down hidden" data-status="3"><i class="icon-cheveron-down"></i></div>
             </div>
             <div class="column-bd">
               <div class="tasks" id="tasks-done" data-status="3"></div>

@@ -43,7 +43,6 @@
   user-select: none;
 
   &:hover {
-    border-color: $primary;
     cursor: move;
     z-index: 2;
 
@@ -82,7 +81,6 @@
 }
 
 .task-title-text {
-  color: $primary;
   cursor: pointer;
   font-weight: normal;
 
@@ -102,7 +100,7 @@
 }
 
 .task-level-1 {
-  @include button(40px, 40px, 16px, $warning, $warning);
+  @include button(40px, 40px, 16px, $pink, $pink);
 }
 
 .task-level-2 {
@@ -172,6 +170,7 @@
   top: 0;
 }
 
+.task-estimate-text,
 .task-deadline-text {
   margin: 0 0 0 20px;
 }
@@ -182,10 +181,6 @@
   right: 0;
   top: 0;
   width: 50px;
-}
-
-.task-estimate-text {
-  margin: 0 0 0 20px;
 }
 
 .task-side {
@@ -201,25 +196,36 @@
   cursor: pointer;
 }
 
-.task-prev-button {
+.task-prev {
   display: none;
 }
 
-.task-replace-button {
+.task-replace {
   display: none;
 }
 
-.task-next-button {
+.task-next {
   display: none;
 }
 
 .task-marked {
-  background-color: $background-color;
   border-left-color: $primary;
+
+  &:hover {
+    border-color: $primary;
+  }
+
+  .task-title {
+    color: $primary;
+  }
 
   .icon-bookmark {
     color: $primary;
   }
+}
+
+.task-title-text {
+  color: $primary;
 }
 
 .task-delayed {
@@ -231,35 +237,35 @@
 }
 
 .task-deleted {
-  .task-prev-button {
+  .task-prev {
     display: none;
   }
 
-  .task-edit-button {
+  .task-edit {
     display: none;
   }
 
-  .task-bookmark-button {
+  .task-bookmark {
     display: none;
   }
 
-  .task-replace-button {
+  .task-replace {
     display: block;
   }
 
-  .task-next-button {
+  .task-next {
     display: none;
   }
 }
 
 .task-status-0 {
-  .task-prev-button {
+  .task-prev {
     display: none;
   }
 }
 
 .task-status-3 {
-  .task-next-button {
+  .task-next {
     display: none;
   }
 }
