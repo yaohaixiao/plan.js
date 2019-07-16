@@ -811,7 +811,7 @@ class Calendar {
           }
         }
 
-        time = year + '-' + month
+        time = year + '-' + month + '-1'
 
         this.setYear(time)
             .setMonth(time)
@@ -825,7 +825,9 @@ class Calendar {
           year = minYear
         }
 
-        this.setYear(year.toString())
+        time = year + '-1-1'
+
+        this.setYear(time)
 
         break
       case 2:
@@ -877,7 +879,7 @@ class Calendar {
           }
         }
 
-        time = year + '-' + month
+        time = year + '-' + month + '-1'
 
         this.setYear(time)
             .setMonth(time)
@@ -890,7 +892,9 @@ class Calendar {
           year = maxYear
         }
 
-        this.setYear(year.toString())
+        time = year + '-1-1'
+
+        this.setYear(time)
 
         break
       case 2:
@@ -1102,7 +1106,7 @@ class Calendar {
     const CLS_PICKED = this.get('STYLES').PICKED
     let elements = this.getEls()
     let $picked = elements.month
-    let time = $month.getAttribute('data-month')
+    let time = $month.getAttribute('data-month') + '-1'
     let callback = this.get('onMonthPick')
 
     // 点击已经选中的年份
@@ -1146,7 +1150,7 @@ class Calendar {
     const CLS_PICKED = this.get('STYLES').PICKED
     let elements = this.getEls()
     let $picked = elements.year
-    let time = $year.getAttribute('data-year')
+    let time = $year.getAttribute('data-year') + '-1-1'
     let callback = this.get('onYearPick')
 
     // 点击已经选中的月份
@@ -1454,7 +1458,7 @@ class Calendar {
     switch (this.get('viewMode')) {
       case 0:
         // 显示完整的年月日式时间
-        value = getMonth(year + '-' + this.getMonth()).fullText
+        value = year + '年' + this.getMonth() + '月'
         break
       case 1:
         // 显示年份+月份格式时间

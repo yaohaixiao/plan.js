@@ -1,5 +1,10 @@
 'use strict'
 
+import {
+  isNumber,
+  isString
+} from './utils'
+
 /**
  * 获得年份信息
  * ========================================================================
@@ -7,7 +12,7 @@
  * @returns {{value: (Number|{value, text, fullText}), text: string, fullText: string}}
  */
 export const getYear = (val) => {
-  let time = !val ? new Date() : new Date(val)
+  let time = !val ? new Date() : new Date(toFormatted(val))
   let year = time.getFullYear()
 
   return {
@@ -24,7 +29,7 @@ export const getYear = (val) => {
  * @returns {{value: number, text: string, fullText: string}}
  */
 export const getMonth = (val) => {
-  let time = !val ? new Date() : new Date(val)
+  let time = !val ? new Date() : new Date(toFormatted(val))
   let year = getYear(val)
   let month = time.getMonth()
 
@@ -44,7 +49,7 @@ export const getMonth = (val) => {
  * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
  */
 export const getDate = (val) => {
-  let time = !val ? new Date() : new Date(val)
+  let time = !val ? new Date() : new Date(toFormatted(val))
   let year = getYear(val)
   let month = getMonth(val)
   let date = time.getDate()
@@ -78,7 +83,7 @@ export const getDay = (val) => {
     '五',
     '六'
   ]
-  let time = !val ? new Date() : new Date(val)
+  let time = !val ? new Date() : new Date(toFormatted(val))
   let day = time.getDay()
   let text = DAYS[day]
 
@@ -308,7 +313,20 @@ export const isDatesEqual = (dateOne, dateTwo) => {
  * @returns {boolean}
  */
 export const isEqual = (timeOne, timeTwo) => {
-  return new Date(timeOne).getTime() === new Date(timeTwo).getTime()
+  return new Date(toFormatted(timeOne)).getTime() === new Date(toFormatted(timeTwo)).getTime()
+}
+
+/**
+ *
+ */
+export const toFormatted = (time) => {
+  if(isNumber(time)){
+    return time
+  } else {
+    if(isString(time)){
+      return time.replace(/-/g, '/')
+    }
+  }
 }
 
 export default {
@@ -323,5 +341,6 @@ export default {
   isLeapYear,
   isToday,
   isDatesEqual,
-  isEqual
+  isEqual,
+  toFormatted
 }
