@@ -1636,6 +1636,7 @@ class Plan {
     let $create = $addPanel.querySelector('#add-create')
     let $deadline = $addPanel.querySelector('#add-deadline')
     let $icon = $addPanel.querySelector('.add-deadline')
+    let today = getToday().text
 
     this.closeSettingPanel()
         .closeViewPanel()
@@ -1644,6 +1645,7 @@ class Plan {
 
     this.$calendar = new Calendar({
       parent: 'add-calendar',
+      time: today,
       hasFooter: false,
       onDatePick: (time) => {
         $deadline.value = time
@@ -1652,7 +1654,7 @@ class Plan {
       }
     })
 
-    $create.innerHTML = getToday().text
+    $create.innerHTML = today
 
     this.$calendar.hide()
 
