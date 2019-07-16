@@ -2237,7 +2237,7 @@ class Calendar {
  */
 Calendar.defaults = {
   parent: 'calendar',
-  time: '',
+  time: getDate().text,
   // 0 - 日期显示模式（默认值）
   // 1 - 月份显示模式
   // 2 - 年代显示模式
