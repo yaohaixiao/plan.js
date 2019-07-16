@@ -130,28 +130,52 @@ export const TEMPLATES = [
 
 export const THEMES = [
   {
-    name: '靛蓝',
+    name: '蓝色',
     theme: 'theme-blue',
     color: 'blue',
     value: 0
   },
   {
-    name: '绿',
+    name: '绿色',
     theme: 'theme-green',
     color: 'green',
     value: 1
   },
   {
-    name: '紫',
+    name: '紫色',
     theme: 'theme-purple',
     color: 'purple',
     value: 2
   },
   {
-    name: '红',
+    name: '红色',
     theme: 'theme-red',
     color: 'red',
     value: 3
+  },
+  {
+    name: '靛蓝色',
+    theme: 'theme-indigo',
+    color: 'indigo',
+    value: 4
+  },
+  {
+    name: '墨绿色',
+    theme: 'theme-teal',
+    color: 'teal',
+    value: 5
+  },
+  {
+    name: '暗紫色',
+    theme: 'theme-dark-purple',
+    color: 'dark-purple',
+    value: 6
+  },
+  {
+    name: '粉色',
+    theme: 'theme-pink',
+    color: 'pink',
+    value: 7
   }
 ]
 

@@ -5,6 +5,11 @@ import {
 } from './dom'
 
 /**
+ * @description delegate 模块是在 Nicolas Gallagher 的 delegate.js 修改而来的
+ * @see https://github.com/necolas/delegate.js
+ */
+
+/**
  * 绑定代理事件
  * ========================================================================
  * @param {HTMLElement} el - 绑定代理事件的 DOM 节点

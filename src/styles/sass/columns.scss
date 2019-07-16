@@ -35,6 +35,12 @@
   &.panel-opened {
     margin-left: 313px;
 
+    .column {
+      &:first-child {
+        background-color: $white;
+      }
+    }
+
     .columns-overlay {
       display: block;
     }
@@ -55,6 +61,10 @@
   box-sizing: border-box;
   float: left;
   width: 25%;
+
+  &:first-child {
+    background-color: $background-color;
+  }
 
   &:last-child {
     border-right: 0;

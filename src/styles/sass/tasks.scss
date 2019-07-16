@@ -81,6 +81,7 @@
 }
 
 .task-title-text {
+  color: $primary;
   cursor: pointer;
   font-weight: normal;
 
@@ -117,7 +118,7 @@
 }
 
 .task-desc {
-  color: $light-gray;
+  color: $theme-secondary-text;
   font-size: 12px;
   font-weight: normal;
   line-height: 18px;
@@ -148,7 +149,7 @@
 
 .task-ft {
   border-top: 1px solid $border-color;
-  color: $light-gray;
+  color: $theme-secondary-text;
   font-size: 12px;
   height: 30px;
   line-height: 30px;
@@ -165,7 +166,7 @@
 
 .task-deadline-icon,
 .task-estimate-icon {
-  @include button(20px, 30px, 12px, $light-gray, $light-gray);
+  @include button(20px, 30px, 12px, $theme-secondary-text, $theme-secondary-text);
   left: 0;
   top: 0;
 }
@@ -222,10 +223,6 @@
   .icon-bookmark {
     color: $primary;
   }
-}
-
-.task-title-text {
-  color: $primary;
 }
 
 .task-delayed {
