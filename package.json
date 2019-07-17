@@ -1,7 +1,7 @@
 {
   "name": "plan",
   "version": "0.0.1",
-  "description": "A todo application",
+  "description": "Plan 是一个纯 JavaScript 开发的 Todo 类型的任务管理应用。",
   "main": "plan.js",
   "scripts": {
     "dev": "gulp dev",
@@ -20,7 +20,8 @@
     "dragula": "^3.7.2",
     "marked": "^0.7.0",
     "mitt": "^1.1.3",
-    "normalize.css": "^8.0.1"
+    "normalize.css": "^8.0.1",
+    "trianglify": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
