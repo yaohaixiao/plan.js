@@ -37,6 +37,10 @@ Plan 是一个纯 JavaScript 开发的 Todo 类型的任务管理应用。我想
 
 ![plan](https://yaohaixiao.github.io/plan/images/plan-6.png)
 
+![plan](https://yaohaixiao.github.io/plan/images/plan-7.png)
+
+![plan](https://yaohaixiao.github.io/plan/images/plan-8.png)
+
 ## API
 
 没有 API，用就对了！
