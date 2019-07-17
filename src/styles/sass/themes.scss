@@ -1,4 +1,5 @@
 @import './colors';
+@import './mixins/mixins';
 @import './buttons';
 
 .theme-indigo {
@@ -33,6 +34,20 @@
 
   .task-title-text {
     color: $theme-indigo;
+  }
+
+  .confirm-hd {
+    @include gradient($theme-indigo, $theme-blue);
+  }
+
+  .confirm-enter {
+    background-color: $theme-indigo;
+    color: $white;
+
+    &:hover {
+      @include gradient($theme-indigo, $theme-blue);
+      color: $white;
+    }
   }
 }
 
@@ -75,6 +90,20 @@
   .task-title-text {
     color: $theme-purple;
   }
+
+  .confirm-hd {
+    @include gradient($theme-purple, $theme-dark-purple);
+  }
+
+  .confirm-enter {
+    background-color: $theme-purple;
+    color: $white;
+
+    &:hover {
+      @include gradient($theme-purple, $theme-dark-purple);
+      color: $white;
+    }
+  }
 }
 
 .theme-red {
@@ -115,6 +144,20 @@
 
   .task-title-text {
     color: $theme-red;
+  }
+
+  .confirm-hd {
+    @include gradient($theme-red, $theme-pink);
+  }
+
+  .confirm-enter {
+    background-color: $theme-red;
+    color: $white;
+
+    &:hover {
+      @include gradient($theme-red, $theme-pink);
+      color: $white;
+    }
   }
 }
 
@@ -157,6 +200,20 @@
   .task-title-text {
     color: $theme-green;
   }
+
+  .confirm-hd {
+    @include gradient($theme-green, $theme-teal);
+  }
+
+  .confirm-enter {
+    background-color: $theme-green;
+    color: $white;
+
+    &:hover {
+      @include gradient($theme-green, $theme-teal);
+      color: $white;
+    }
+  }
 }
 
 .theme-dark-purple {
@@ -191,6 +248,20 @@
 
   .task-title-text {
     color: $theme-dark-purple;
+  }
+
+  .confirm-hd {
+    @include gradient($theme-dark-purple, $theme-purple);
+  }
+
+  .confirm-enter {
+    background-color: $theme-dark-purple;
+    color: $white;
+
+    &:hover {
+      @include gradient($theme-dark-purple, $theme-purple);
+      color: $white;
+    }
   }
 }
 
@@ -227,6 +298,20 @@
   .task-title-text {
     color: $theme-blue;
   }
+
+  .confirm-hd {
+    @include gradient($theme-blue, $theme-indigo);
+  }
+
+  .confirm-enter {
+    background-color: $theme-blue;
+    color: $white;
+
+    &:hover {
+      @include gradient($theme-blue, $theme-indigo);
+      color: $white;
+    }
+  }
 }
 
 .theme-pink {
@@ -262,6 +347,20 @@
   .task-title-text {
     color: $theme-pink;
   }
+
+  .confirm-hd {
+    @include gradient($theme-pink, $theme-red);
+  }
+
+  .confirm-enter {
+    background-color: $theme-pink;
+    color: $white;
+
+    &:hover {
+      @include gradient($theme-pink, $theme-red);
+      color: $white;
+    }
+  }
 }
 
 .theme-teal {
@@ -296,6 +395,20 @@
 
   .task-title-text {
     color: $theme-teal;
+  }
+
+  .confirm-hd {
+    @include gradient($theme-teal, $theme-green);
+  }
+
+  .confirm-enter {
+    background-color: $theme-teal;
+    color: $white;
+
+    &:hover {
+      @include gradient($theme-teal, $theme-green);
+      color: $white;
+    }
   }
 }
 
