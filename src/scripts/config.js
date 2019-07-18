@@ -2,9 +2,15 @@
 
 export const TEMPLATES = [
   {
+    name: '空模板',
+    image: 'images/t-empty.png',
+    value: 0,
+    plans: []
+  },
+  {
     name: '演示模板',
     image: 'images/t-plan.png',
-    value: 0,
+    value: 1,
     plans: [
       {
         id: 1,
@@ -119,12 +125,6 @@ export const TEMPLATES = [
         deleted: false
       }
     ]
-  },
-  {
-    name: '空白模板',
-    image: 'images/t-empty.png',
-    value: 1,
-    plans: []
   }
 ]
 
