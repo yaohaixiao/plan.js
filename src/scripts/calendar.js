@@ -2,7 +2,8 @@
 
 import {
   isFunction,
-  guid
+  guid,
+  assign
 } from './utils'
 
 import {
@@ -568,8 +569,9 @@ class Calendar {
    * @returns {Calendar}
    */
   set (options = {}) {
-    Object.assign(this.attributes, options)
 
+    assign(this.attributes, options)
+    console.log(this.attributes)
     return this
   }
 

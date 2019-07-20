@@ -2,7 +2,8 @@
 
 import {
   isFunction,
-  toSafeText
+  toSafeText,
+  assign
 } from './utils'
 
 import {
@@ -152,7 +153,7 @@ class Confirm {
   }
 
   set (options) {
-    Object.assign(this.attributes, options)
+    assign(this.attributes, options)
 
     return this
   }

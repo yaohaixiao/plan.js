@@ -238,7 +238,7 @@ export const createTaskEstimateElement = (plan) => {
     createElement('p', {
       'className': 'task-estimate-text'
     }, [
-      plan.consuming
+      plan.estimate
     ])
   ])
 }

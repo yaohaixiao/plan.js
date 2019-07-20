@@ -1,6 +1,7 @@
 'use strict'
 
 import {
+  assign,
   clone,
   guid,
   toSafeText
@@ -418,7 +419,7 @@ class Plan {
   }
 
   set (options) {
-    Object.assign(this.attributes, options)
+    assign(this.attributes, options)
 
     return this
   }
@@ -1220,14 +1221,14 @@ class Plan {
     let $title = $viewPanel.querySelector('#view-title')
     let $create = $viewPanel.querySelector('#view-create')
     let $deadline = $viewPanel.querySelector('#view-deadline')
-    let $consuming = $viewPanel.querySelector('#view-consuming')
+    let $estimate = $viewPanel.querySelector('#view-estimate')
     let $level = $viewPanel.querySelector('#view-level')
     let $desc = $viewPanel.querySelector('#view-desc')
 
     $title.innerHTML = ''
     $create.innerHTML = ''
     $deadline.innerHTML = ''
-    $consuming.innerHTML = ''
+    $estimate.innerHTML = ''
     $level.innerHTML = ''
     $desc.innerHTML = ''
 
@@ -1241,7 +1242,7 @@ class Plan {
     let $title = $addPanel.querySelector('#add-title')
     let $create = $addPanel.querySelector('#add-create')
     let $deadline = $addPanel.querySelector('#add-deadline')
-    let $consuming = $addPanel.querySelector('#add-consuming')
+    let $estimate = $addPanel.querySelector('#add-estimate')
     let $level = $addPanel.querySelector('#add-level')
     let $desc = $addPanel.querySelector('#add-desc')
     let $checked = $addPanel.querySelector('.' + CLS_CHECKED)
@@ -1249,7 +1250,7 @@ class Plan {
     $title.value = ''
     $create.innerHTML = ''
     $deadline.value = ''
-    $consuming.value = ''
+    $estimate.value = ''
     $level.value = -1
     $desc.value = ''
 
@@ -1267,7 +1268,7 @@ class Plan {
     let $title = $editPanel.querySelector('#edit-title')
     let $create = $editPanel.querySelector('#edit-create')
     let $deadline = $editPanel.querySelector('#edit-deadline')
-    let $consuming = $editPanel.querySelector('#edit-consuming')
+    let $estimate = $editPanel.querySelector('#edit-estimate')
     let $level = $editPanel.querySelector('#edit-level')
     let $desc = $editPanel.querySelector('#edit-desc')
     let $checked = $editPanel.querySelector('.' + CLS_CHECKED)
@@ -1275,7 +1276,7 @@ class Plan {
     $title.value = ''
     $create.innerHTML = ''
     $deadline.value = ''
-    $consuming.value = ''
+    $estimate.value = ''
     $level.value = -1
     $desc.value = ''
 
@@ -1553,7 +1554,7 @@ class Plan {
     let $title = $viewPanel.querySelector('#view-title')
     let $create = $viewPanel.querySelector('#view-create')
     let $deadline = $viewPanel.querySelector('#view-deadline')
-    let $consuming = $viewPanel.querySelector('#view-consuming')
+    let $estimate = $viewPanel.querySelector('#view-estimate')
     let $level = $viewPanel.querySelector('#view-level')
     let $desc = $viewPanel.querySelector('#view-desc')
     let $icon
@@ -1561,7 +1562,7 @@ class Plan {
     $title.innerHTML = plan.title
     $create.innerHTML = plan.create
     $deadline.innerHTML = plan.deadline
-    $consuming.innerHTML = plan.consuming
+    $estimate.innerHTML = plan.estimate
     $desc.innerHTML = marked(plan.desc)
 
     switch (plan.level) {
@@ -1735,7 +1736,7 @@ class Plan {
     let $title = $editPanel.querySelector('#edit-title')
     let $create = $editPanel.querySelector('#edit-create')
     let $deadline = $editPanel.querySelector('#edit-deadline')
-    let $consuming = $editPanel.querySelector('#edit-consuming')
+    let $estimate = $editPanel.querySelector('#edit-estimate')
     let $level = $editPanel.querySelector('#edit-level')
     let $desc = $editPanel.querySelector('#edit-desc')
     let $checked = $editPanel.querySelector(`[data-level="${plan.level}"]`)
@@ -1743,7 +1744,7 @@ class Plan {
     $title.value = plan.title
     $create.innerHTML = plan.create
     $deadline.value = plan.deadline
-    $consuming.value = plan.consuming
+    $estimate.value = plan.estimate
     $level.value = plan.level
     $desc.value = plan.desc
 
@@ -1951,7 +1952,7 @@ class Plan {
     let $addPanel = elements.addPanel
     let $title = $addPanel.querySelector('#add-title')
     let $deadline = $addPanel.querySelector('#add-deadline')
-    let $consuming = $addPanel.querySelector('#add-consuming')
+    let $estimate = $addPanel.querySelector('#add-estimate')
     let $level = $addPanel.querySelector('#add-level')
     let $desc = $addPanel.querySelector('#add-desc')
     let plan = {}
@@ -1963,7 +1964,7 @@ class Plan {
     plan.id = parseInt(guid(4, 10), 10)
     plan.title = toSafeText($title.value)
     plan.deadline = $deadline.value
-    plan.consuming = $consuming.value
+    plan.estimate = $estimate.value
     plan.level = parseInt($level.value, 10)
     plan.desc = toSafeText($desc.value)
     plan.marked = false
@@ -2010,7 +2011,7 @@ class Plan {
     let $editPanel = elements.editPanel
     let $title = $editPanel.querySelector('#edit-title')
     let $deadline = $editPanel.querySelector('#edit-deadline')
-    let $consuming = $editPanel.querySelector('#edit-consuming')
+    let $estimate = $editPanel.querySelector('#edit-estimate')
     let $level = $editPanel.querySelector('#edit-level')
     let $desc = $editPanel.querySelector('#edit-desc')
     let originPlan = this.getEditPlan()
@@ -2022,7 +2023,7 @@ class Plan {
     plan.id = originPlan.id
     plan.title = $title.value
     plan.deadline = $deadline.value
-    plan.consuming = $consuming.value
+    plan.estimate = $estimate.value
     plan.level = parseInt($level.value, 10)
     plan.desc = $desc.value
     plan.marked = originPlan.marked

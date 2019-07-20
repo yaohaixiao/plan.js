@@ -97,13 +97,49 @@ export const toSafeText = (str) => {
 }
 
 /**
- * 简单粗暴的数据拷贝
+ * 简单粗暴的对象深拷贝
  * ========================================================================
  * @param {Object|Array} o - 要拷贝的数据（对象）
  * @returns {any}
  */
 export const clone = (o) => {
   return JSON.parse(JSON.stringify(o))
+}
+
+/**
+ * 拷贝对象属性值
+ * ========================================================================
+ * 此方法来自 MDN 的 Polyfill 部分
+ * https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+ * ========================================================================
+ * @param target
+ * @param source
+ * @returns {*}
+ */
+export const assign = (target, ...source) => {
+  let to
+
+  // TypeError if undefined or null
+  if (target == null) {
+    throw new TypeError('Cannot convert undefined or null to object');
+  }
+
+  to = Object(target);
+
+  for (let index = 0; index < source.length; index++) {
+    let nextSource = source[index];
+
+    if (nextSource != null) { // Skip over if undefined or null
+      for (let nextKey in nextSource) {
+        // Avoid bugs when hasOwnProperty is shadowed
+        if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+          to[nextKey] = nextSource[nextKey];
+        }
+      }
+    }
+  }
+
+  return to;
 }
 
 /**
@@ -157,5 +193,6 @@ export default {
   stripTags,
   toSafeText,
   clone,
+  assign,
   guid
 }

@@ -5,7 +5,6 @@ import {
 } from './config'
 
 import Plan from './plan'
-import 'babel-polyfill'
 
 let cachedTemplate = localStorage.getItem('plan.template')
 let cachedTheme = localStorage.getItem('plan.theme')
