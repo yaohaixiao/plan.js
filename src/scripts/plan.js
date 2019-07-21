@@ -2128,7 +2128,9 @@ class Plan {
   }
 
   static isDelayed (plan) {
-    return new Date().getTime() > new Date(plan.deadline).getTime() > 0 && plan.status < 2
+    let today = getToday().text
+
+    return new Date(today).getTime() > new Date(plan.deadline).getTime() > 0 && plan.status < 2
   }
 
   static isEstimateTime (str) {

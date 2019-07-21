@@ -569,9 +569,8 @@ class Calendar {
    * @returns {Calendar}
    */
   set (options = {}) {
-
     assign(this.attributes, options)
-    console.log(this.attributes)
+
     return this
   }
 
@@ -942,7 +941,6 @@ class Calendar {
     let elements = this.getEls()
     let time = $date.getAttribute('data-date')
     let callback = this.get('onDatePick')
-    let $picked = null
     let pickedDates
 
     // 选择了选中状态的日期
@@ -950,8 +948,13 @@ class Calendar {
       switch (pickMode) {
         // 单选/星期选择模式
         case 'single':
+          this._pickSingle($date)
+
+          break
         case 'week':
-          return false
+          this._pickWeek($date)
+
+          break
         // 多选模式
         case 'multiple':
           // 取消选中样式
@@ -993,22 +996,7 @@ class Calendar {
       // 选择了未选中状态的日期
       switch (pickMode) {
         case 'single':
-          $picked = elements.date
-
-          // 移除之前选中日期的选中样式
-          if ($picked) {
-            removeClass($picked, CLS_PICKED)
-          }
-
-          // 设置当前选中日期的选中样式
-          addClass($date, CLS_PICKED)
-          elements.date = $date
-
-          this.setDate(time)
-
-          if (isFunction(callback)) {
-            callback(time, $date, this)
-          }
+          this._pickSingle($date)
 
           break
         case 'multiple':
@@ -1068,24 +1056,7 @@ class Calendar {
 
           break
         case 'week':
-          // 获得当前选中日期的星期范围
-          let ranges = getWeekRanges(time)
-
-          // 清除之前的数据，保存现在的星期日期范围
-          this.data.picked = [
-            ranges[0],
-            ranges[ranges.length - 1]
-          ]
-
-          this.setDate(ranges[ranges.length - 1])
-
-          elements.date = $date
-
-          this._updateWeekRanges()
-
-          if (isFunction(callback)) {
-            callback(this.getPicked(), $date, this)
-          }
+          this._pickWeek($date)
 
           break
       }
@@ -1262,6 +1233,72 @@ class Calendar {
    */
   _setYears (time) {
     this.data.years = getYears(time)
+
+    return this
+  }
+
+  /**
+   * 单选模式下选中日期
+   * ========================================================================
+   * @param {Object|HTMLElement} $date - 选中的日期 DOM 节点
+   * @returns {Calendar}
+   * @private
+   */
+  _pickSingle($date) {
+    const CLS_PICKED = this.get('STYLES').PICKED
+    let elements = this.getEls()
+    let time = $date.getAttribute('data-date')
+    let callback = this.get('onDatePick')
+    let $picked = elements.date
+
+    // 移除之前选中日期的选中样式
+    if ($picked) {
+      removeClass($picked, CLS_PICKED)
+    }
+
+    // 设置当前选中日期的选中样式
+    addClass($date, CLS_PICKED)
+    elements.date = $date
+
+    this.setDate(time)
+
+    if (isFunction(callback)) {
+      callback(time, $date, this)
+    }
+
+    return this
+  }
+
+  /**
+   * 星期模式下选中日期
+   * ========================================================================
+   * @param {Object|HTMLElement} $date - 选中的日期 DOM 节点
+   * @returns {Calendar}
+   * @private
+   */
+  _pickWeek ($date) {
+    let elements = this.getEls()
+    let time = $date.getAttribute('data-date')
+    let callback = this.get('onDatePick')
+
+    // 获得当前选中日期的星期范围
+    let ranges = getWeekRanges(time)
+
+    // 清除之前的数据，保存现在的星期日期范围
+    this.data.picked = [
+      ranges[0],
+      ranges[ranges.length - 1]
+    ]
+
+    this.setDate(ranges[ranges.length - 1])
+
+    elements.date = $date
+
+    this._updateWeekRanges()
+
+    if (isFunction(callback)) {
+      callback(this.getPicked(), $date, this)
+    }
 
     return this
   }
