@@ -81,6 +81,23 @@
   @include button(40px, 40px, 16px);
 }
 
+.panel-log{
+  border-bottom:1px solid $border-color;
+  height:34px;
+  line-height:34px;
+  padding:0 10px;
+
+  &:hover{
+    background-color: $background-color-hover;
+  }
+}
+
+.panel-log-time{
+  float:right;
+  color:$light-gray;
+  font-size:12px;
+}
+
 .panel-trash {
   .task-title {
     cursor: move;

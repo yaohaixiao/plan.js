@@ -20,7 +20,7 @@ export const TEMPLATES = [
         level: 0,
         desc: '- 于客户进行多轮沟通，收集尽可能多用户需求 \n- 并分析整理出项目计划',
         create: '2019-07-05',
-        update: '2019-07-14',
+        update: [],
         status: 3,
         marked: true,
         delayed: false,
@@ -34,7 +34,7 @@ export const TEMPLATES = [
         level: 1,
         desc: '根据项目计划，分析整理出的完整产品功能需求，出产品设计方案（功能需求，用户故事）',
         create: '2019-07-05',
-        update: '2019-07-16',
+        update: [],
         status: 2,
         marked: false,
         delayed: false,
@@ -48,7 +48,7 @@ export const TEMPLATES = [
         level: 1,
         desc: '根据功能需求和用户故事，设计出一套完整的系统 UI 界面',
         create: '2019-07-05',
-        update: '2019-07-06',
+        update: [],
         status: 1,
         marked: false,
         delayed: false,
@@ -62,7 +62,7 @@ export const TEMPLATES = [
         level: 1,
         desc: '根据功能需求和用户故事以及 UI 设计图，设计出完整的用户体验细节',
         create: '2019-07-05',
-        update: '2019-07-06',
+        update: [],
         status: 0,
         marked: true,
         delayed: false,
@@ -76,7 +76,7 @@ export const TEMPLATES = [
         level: 1,
         desc: '前端工程师根据功能需求和用户故事，结合 UI 设计图和交互设计，开发出产品的交互原型',
         create: '2019-07-05',
-        update: '2019-07-06',
+        update: [],
         status: 0,
         marked: true,
         delayed: false,
@@ -90,7 +90,7 @@ export const TEMPLATES = [
         level: 2,
         desc: '联系客户，对交互原型进行评审，根据反馈结果进行用户体验优化',
         create: '2019-07-15',
-        update: '2019-07-06',
+        update: [],
         status: 0,
         marked: false,
         delayed: false,
@@ -104,7 +104,7 @@ export const TEMPLATES = [
         level: 3,
         desc: '前端工程师开发出最终的 Plan 产品',
         create: '2019-07-15',
-        update: '2019-07-06',
+        update: [],
         status: 0,
         marked: true,
         delayed: false,
@@ -118,7 +118,7 @@ export const TEMPLATES = [
         level: 3,
         desc: '将最终的产品交付给客户，项目结束',
         create: '2019-07-15',
-        update: '2019-07-06',
+        update: [],
         status: 0,
         marked: true,
         delayed: false,
@@ -189,3 +189,34 @@ export const STORAGE = [
     value: 1
   }
 ]
+
+export const OPERATIONS = {
+  add: {
+    code: 0,
+    text: '创建任务'
+  },
+  edit: {
+    code: 1,
+    text: '编辑任务'
+  },
+  mark: {
+    code: 2,
+    text: '标记任务'
+  },
+  unmark: {
+    code: 3,
+    text: '取消标记'
+  },
+  status: {
+    code: 4,
+    text: '更新状态'
+  },
+  remove: {
+    code: 5,
+    text: '移除任务'
+  },
+  replace: {
+    code: 6,
+    text: '还原任务'
+  }
+}

@@ -9,7 +9,8 @@ import {
 
 import {
   getToday,
-  getMoments
+  getMoments,
+  format
 } from './time'
 
 import {
@@ -32,7 +33,8 @@ import {
 import {
   TEMPLATES,
   THEMES,
-  STORAGE
+  STORAGE,
+  OPERATIONS
 } from './config'
 
 import Calendar from './calendar'
@@ -293,7 +295,11 @@ class Plan {
 
     plan.deleted = true
     plan.delayed = Plan.isDelayed(plan)
-    plan.update = getMoments()
+    plan.update.unshift({
+      time: getMoments(),
+      code: OPERATIONS.remove.code,
+      operate: OPERATIONS.remove.text
+    })
     this.setPlan(plan)
 
     Plan.updateStatusChangedCount($count, elements.trashCount)
@@ -312,7 +318,6 @@ class Plan {
     let donePlans
 
     plan.delayed = Plan.isDelayed(plan)
-    plan.update = getMoments()
     this.setPlan(plan)
 
     todoPlans = this.filterPlans(filter, 0)
@@ -863,7 +868,11 @@ class Plan {
     }
 
     plan.delayed = Plan.isDelayed(plan)
-    plan.update = getMoments()
+    plan.update.unshift({
+      time: getMoments(),
+      code: OPERATIONS.status.code,
+      operate: OPERATIONS.status.text
+    })
     this.setPlan(plan)
 
     $targetCount = this.getStatusCountEl(plan.status)
@@ -898,7 +907,11 @@ class Plan {
     let $plan
 
     plan.marked = !plan.marked
-    plan.update = getMoments()
+    plan.update.unshift({
+      time: getMoments(),
+      code: plan.marked ? OPERATIONS.mark.code : OPERATIONS.unmark.code,
+      operate: plan.marked ? OPERATIONS.mark.text : OPERATIONS.unmark.text,
+    })
     this.setPlan(plan)
 
     switch (status) {
@@ -969,6 +982,11 @@ class Plan {
     let count
 
     plan.deleted = false
+    plan.update.unshift({
+      time: getMoments(),
+      code: OPERATIONS.replace.code,
+      operate: OPERATIONS.replace.text
+    })
     this.update(plan)
 
     $tasksTrash.removeChild($plan)
@@ -1013,6 +1031,8 @@ class Plan {
     let targetStatus = $target.getAttribute('data-status')
     let $sourceCount = this.getStatusCountEl(sourceStatus)
     let $targetCount = this.getStatusCountEl(targetStatus)
+    let code
+    let text
 
     if (targetStatus === sourceStatus) {
       return this
@@ -1021,9 +1041,14 @@ class Plan {
     // 移动到回收站
     if (targetStatus === 'deleted') {
       plan.deleted = true
+      code = OPERATIONS.remove.code
+      text = OPERATIONS.remove.text
     } else {
       // 从回收站移出来
       if (sourceStatus === 'deleted') {
+        code = OPERATIONS.replace.text
+        text = OPERATIONS.replace.text
+
         // 根据过滤器，更新相应的属性
         switch (filter) {
           case 'marked':
@@ -1046,11 +1071,20 @@ class Plan {
         plan.deleted = false
         plan.status = parseInt(targetStatus, 10)
       } else {
+        code = OPERATIONS.status.text
+        text = OPERATIONS.status.text
+
         plan.status = parseInt(targetStatus, 10)
       }
     }
 
-    plan.update = getMoments()
+
+
+    plan.update.unshift({
+      time: getMoments(),
+      code: code,
+      operate: text
+    })
     plan.delayed = Plan.isDelayed(plan)
     this.setPlan(plan)
 
@@ -1224,6 +1258,7 @@ class Plan {
     let $estimate = $viewPanel.querySelector('#view-estimate')
     let $level = $viewPanel.querySelector('#view-level')
     let $desc = $viewPanel.querySelector('#view-desc')
+    let $logs = $viewPanel.querySelector('#view-logs')
 
     $title.innerHTML = ''
     $create.innerHTML = ''
@@ -1231,6 +1266,7 @@ class Plan {
     $estimate.innerHTML = ''
     $level.innerHTML = ''
     $desc.innerHTML = ''
+    $logs.innerHTML = ''
 
     return this
   }
@@ -1557,6 +1593,10 @@ class Plan {
     let $estimate = $viewPanel.querySelector('#view-estimate')
     let $level = $viewPanel.querySelector('#view-level')
     let $desc = $viewPanel.querySelector('#view-desc')
+    let $logs = $viewPanel.querySelector('#view-logs')
+    let $list = createElement('ol', {
+      'className': 'panel-logs'
+    })
     let $icon
 
     $title.innerHTML = plan.title
@@ -1606,6 +1646,29 @@ class Plan {
 
     $level.innerHTML = ''
     $level.appendChild($icon)
+
+    plan.update.forEach(log => {
+      let $operate = createElement('span', {
+        'className': 'panel-log-operate'
+      }, [
+        log.operate
+      ])
+      let $time = createElement('span', {
+        'className': 'panel-log-time'
+      }, [
+        format(log.time, 'MM-dd hh:mm')
+      ])
+      let $li = createElement('li', {
+        'className': 'panel-log'
+      }, [
+        $operate,
+        $time
+      ])
+
+      $list.appendChild($li)
+    })
+
+    $logs.appendChild($list)
 
     return this
   }
@@ -1971,7 +2034,11 @@ class Plan {
     plan.deleted = false
     plan.status = 0
     plan.create = moments
-    plan.update = moments
+    plan.update = [{
+      time: moments,
+      code: OPERATIONS.add.code,
+      operate: OPERATIONS.add.text
+    }]
 
     this.closeAddPanel()
         .add(plan)
@@ -2030,6 +2097,11 @@ class Plan {
     plan.deleted = originPlan.deleted
     plan.status = originPlan.status
     plan.create = originPlan.create
+    plan.update.unshift({
+      time: getMoments(),
+      code: OPERATIONS.edit.code,
+      operate: OPERATIONS.add.text
+    })
 
     this.closeEditPanel()
         .update(plan)

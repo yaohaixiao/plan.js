@@ -319,10 +319,10 @@ export const isEqual = (timeOne, timeTwo) => {
 export const toAllSupported = (time) => {
   let date = []
 
-  if(isNumber(time)){
+  if (isNumber(time)) {
     return time
   } else {
-    if(isString(time)) {
+    if (isString(time)) {
       if (time.indexOf('-')) {
         date = time.split('-')
       } else {
@@ -332,8 +332,8 @@ export const toAllSupported = (time) => {
       }
 
       if (date.length === 1) {
-          date.push('1')
-          date.push('1')
+        date.push('1')
+        date.push('1')
       } else {
         if (date.length === 2) {
           // 例如：'2019-1'
@@ -341,7 +341,7 @@ export const toAllSupported = (time) => {
             date.push('1')
           } else {
             // 例如：'1-2019'
-            if (data[1].length === 4) {
+            if (date[1].length === 4) {
               date.unshift('1')
             }
           }
@@ -353,6 +353,45 @@ export const toAllSupported = (time) => {
   }
 }
 
+/**
+ * 格式化时间
+ * ========================================================================
+ * @param {String} time - 要格式化的时间字符串
+ * @param {String} fmt - 格式化的样式字符串
+ * @returns {*}
+ */
+export const format = (time, fmt) => {
+  let date = new Date(toAllSupported(time))
+  let regs = {
+    // 月份
+    'M+': date.getMonth() + 1,
+    // 日
+    'd+': date.getDate(),
+    // 小时
+    'h+': date.getHours(),
+    // 分
+    'm+': date.getMinutes(),
+    // 秒
+    's+': date.getSeconds(),
+    // 季度
+    'q+': Math.floor((date.getMonth() + 3) / 3),
+    // 毫秒
+    'S': date.getMilliseconds()
+  }
+
+  if (/(y+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substring(4 - RegExp.$1.length))
+  }
+
+  Object.keys(regs).forEach(key => {
+    if (new RegExp('(' + key + ')').test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (regs[key]) : (('00' + regs[key]).substring(('' + regs[key]).length)))
+    }
+  })
+
+  return fmt
+}
+
 export default {
   getYear,
   getMonth,
@@ -362,6 +401,7 @@ export default {
   getYears,
   getRanges,
   getMoments,
+  format,
   isLeapYear,
   isToday,
   isDatesEqual,
