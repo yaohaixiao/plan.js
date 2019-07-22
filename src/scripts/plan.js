@@ -2100,7 +2100,7 @@ class Plan {
     plan.update.unshift({
       time: getMoments(),
       code: OPERATIONS.edit.code,
-      operate: OPERATIONS.add.text
+      operate: OPERATIONS.edit.text
     })
 
     this.closeEditPanel()
