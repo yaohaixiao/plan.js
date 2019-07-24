@@ -2,7 +2,7 @@
 
 import {
   TEMPLATES
-} from './config'
+} from './plan-config'
 
 import Plan from './plan'
 

@@ -16,20 +16,14 @@ import {
   TEMPLATES,
   THEMES,
   STORAGE
-} from './config'
+} from './plan-config'
 
 import mitt from 'mitt'
-
 const emitter = mitt()
+
 const $wrap = document.querySelector('#setting-panel')
 
 const Panel = {
-  initialize () {
-    this.render()
-        .addEventListeners()
-
-    return this
-  },
   _elements: {
     wrap: $wrap,
     templates: $wrap.querySelector('#setting-templates'),
@@ -63,9 +57,12 @@ const Panel = {
     on($wrap, '.setting-theme', 'click', this._onThemeClick, this)
     on($wrap, '.setting-cache', 'click', this._onCacheClick, this)
 
+    emitter.on('panel.setting.update', this.setData)
     emitter.on('panel.setting.open', this.open)
     emitter.on('panel.setting.close', this.close)
     emitter.on('panel.setting.toggle', this.toggle)
+
+    console.log('setting -> addEventListeners')
 
     return this
   },
@@ -75,9 +72,10 @@ const Panel = {
     off($wrap, 'click', this._onThemeClick)
     off($wrap, 'click', this._onCacheClick)
 
-    emitter.on('panel.setting.open', this.open)
-    emitter.on('panel.setting.close', this.close)
-    emitter.on('panel.setting.toggle', this.toggle)
+    emitter.off('panel.setting.update', this.setData)
+    emitter.off('panel.setting.open', this.open)
+    emitter.off('panel.setting.close', this.close)
+    emitter.off('panel.setting.toggle', this.toggle)
 
     return this
   },
@@ -107,19 +105,19 @@ const Panel = {
       'type': 'hidden',
       'name': 'template',
       'id': 'setting-template',
-      'value': this.get('template')
+      'value': data.template
     })
     let $theme = createElement('input', {
       'type': 'hidden',
       'name': 'theme',
       'id': 'setting-theme',
-      'value': this.get('theme')
+      'value': data.theme
     })
     let $cache = createElement('input', {
       'type': 'hidden',
       'name': 'cache',
       'id': 'setting-cache',
-      'value': this.get('cache')
+      'value': data.cache
     })
     let $templatesGroup = createElement('div', {
       'className': 'field-templates'
@@ -247,6 +245,7 @@ const Panel = {
     return this
   },
   toggle () {
+    console.log('setting -> toggle')
     if (hasClass($wrap, 'panel-opened')) {
       this.close()
     } else {

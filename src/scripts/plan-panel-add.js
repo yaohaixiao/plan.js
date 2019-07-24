@@ -28,7 +28,7 @@ import {
 
 import mitt from 'mitt'
 import Calendar from './calendar'
-import {OPERATIONS} from './config'
+import {OPERATIONS} from './plan-config'
 
 const emitter = mitt()
 const $wrap = document.querySelector('#add-panel')
@@ -36,11 +36,6 @@ const $wrap = document.querySelector('#add-panel')
 let $calendar
 
 const Panel = {
-  initialize () {
-    this.addEventListeners()
-
-    return this
-  },
   _elements: {
     wrap: $wrap,
     title: $wrap.querySelector('#add-title'),

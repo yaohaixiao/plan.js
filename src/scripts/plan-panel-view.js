@@ -22,11 +22,6 @@ const emitter = mitt()
 const $wrap = document.querySelector('#view-panel')
 
 const Panel = {
-  initialize () {
-    this.addEventListeners()
-
-    return this
-  },
   _elements: {
     wrap: $wrap,
     title: $wrap.querySelector('#view-title'),

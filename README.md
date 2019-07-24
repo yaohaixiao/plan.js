@@ -1,6 +1,6 @@
-# Plan
+# PlanV2
 
-Plan - A Javascript todo list app, easy to use & nice UI.
+PlanV2 - A Javascript todo list app, easy to use & nice UI.
 
 ## Feature
 - 4 task levels;

@@ -28,14 +28,14 @@ import {
 
 import {
   createTaskElement
-} from './task'
+} from './plan-task'
 
 import {
   TEMPLATES,
   THEMES,
   STORAGE,
   OPERATIONS
-} from './config'
+} from './plan-config'
 
 import Calendar from './calendar'
 import Confirm from './confirm'
