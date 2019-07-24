@@ -12,7 +12,7 @@ import {
 /**
  * 绑定代理事件
  * ========================================================================
- * @param {HTMLElement} el - 绑定代理事件的 DOM 节点
+ * @param {Object|HTMLElement} el - 绑定代理事件的 DOM 节点
  * @param {String} selector - 触发 el 代理事件的 DOM 节点的选择器
  * @param {String} type - 事件类型
  * @param {Function} callback - 绑定事件的回调函数
@@ -48,7 +48,7 @@ export const on = (el, selector, type, callback, context, capture, /* private */
 /**
  * 绑定只触发一次的事件
  * ========================================================================
- * @param {HTMLElement} el - 绑定代理事件的 DOM 节点
+ * @param {Object|HTMLElement} el - 绑定代理事件的 DOM 节点
  * @param {String} selector - 触发 el 代理事件的 DOM 节点的选择器
  * @param {String} type - 事件类型
  * @param {Function} callback - 绑定事件的回调函数
@@ -63,7 +63,7 @@ export const once = (el, type, selector, callback, context, capture) => {
 /**
  * 取消事件绑定
  * ========================================================================
- * @param {HTMLElement} el - 取消绑定（代理）事件的 DOM 节点
+ * @param {Object|HTMLElement} el - 取消绑定（代理）事件的 DOM 节点
  * @param {String} type - 事件类型
  * @param {Function} callback - 绑定事件的回调函数
  * @param {Boolean} [capture] - 是否采用事件捕获（默认值：false - 事件冒泡）
