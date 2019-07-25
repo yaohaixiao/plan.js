@@ -20,6 +20,8 @@ import {
 
 import emitter from './plan-emitter'
 
+const CLS_OPTION_CHECKED = 'field-option-checked'
+const CLS_RADIO_CHECKED = 'field-radio-checked'
 const $wrap = document.querySelector('#setting-panel')
 
 const Panel = {
@@ -55,11 +57,9 @@ const Panel = {
     const SPACE = ' '
     const CLS_RADIOS_GROUP = 'field-radios-group'
     const CLS_RADIO = 'field-radio'
-    const CLS_RADIO_CHECKED = 'field-radio-checked'
     const CLS_RADIO_ICON = 'field-radio-icon'
     const CLS_RADIO_LABEL = 'field-radio-label'
     const CLS_OPTION = 'field-option'
-    const CLS_OPTION_CHECKED = 'field-option-checked'
     const CLS_FIELD_TEMPLATE = 'field-template'
     const CLS_FIELD_THEME = 'field-theme'
     const CLS_SETTING_TEMPLATE = 'setting-template'
@@ -249,8 +249,7 @@ const Panel = {
 
     return this
   },
-  template ($button) {
-    const CLS_OPTION_CHECKED = 'field-option-checked'
+  changeTemplate ($button) {
     let value = $button.getAttribute('data-template')
     let elements = this.getEls()
     let $templates = elements.templates
@@ -273,8 +272,7 @@ const Panel = {
 
     return this
   },
-  theme ($button) {
-    const CLS_OPTION_CHECKED = 'field-option-checked'
+  changeTheme ($button) {
     let value = $button.getAttribute('data-value')
     let elements = this.getEls()
     let $body = document.body
@@ -292,8 +290,7 @@ const Panel = {
     }
     addClass($button, CLS_OPTION_CHECKED)
 
-    removeClass($body, THEMES[this.get('theme')].theme)
-    addClass($body, THEMES[parseInt(value, 10)].theme)
+    $body.className = THEMES[parseInt(value, 10)].theme
 
     emitter.emit('plan.update.theme', parseInt(value, 10))
 
@@ -301,9 +298,7 @@ const Panel = {
 
     return this
   },
-  cache ($button) {
-    const CLS_OPTION_CHECKED = 'panel-option-checked'
-    const CLS_RADIO_CHECKED = 'field-radio-checked'
+  changeCache ($button) {
     let value = $button.getAttribute('data-cache')
     let elements = this.getEls()
     let $storage = elements.storage
@@ -336,23 +331,50 @@ const Panel = {
 
     return this
   },
+  /**
+   * 点击取消按钮的事件处理器 - 点击后关闭设置 Panel
+   * ========================================================================
+   * @returns {Panel}
+   * @private
+   */
   _onCancelClick () {
     this.close()
 
     return this
   },
+  /**
+   * 点击模板选项的事件处理器 - 如果同时选择了关闭缓存模式，选择模板后刷新界面会更新演示数据
+   * ========================================================================
+   * @param evt
+   * @returns {Panel}
+   * @private
+   */
   _onTemplateClick (evt) {
-    this.template(evt.delegateTarget)
+    this.changeTemplate(evt.delegateTarget)
 
     return this
   },
+  /**
+   * 点击主题选项的事件处理器 - 点击后切换 Plan 的主题样式
+   * ========================================================================
+   * @param evt
+   * @returns {Panel}
+   * @private
+   */
   _onThemeClick (evt) {
-    this.theme(evt.delegateTarget)
+    this.changeTheme(evt.delegateTarget)
 
     return this
   },
+  /**
+   * 点击缓存 radio 按钮的时间处理器 - 点击后会取消（并清空）或者开启缓存数据
+   * ========================================================================
+   * @param evt
+   * @returns {Panel}
+   * @private
+   */
   _onCacheClick (evt) {
-    this.cache(evt.delegateTarget)
+    this.changeCache(evt.delegateTarget)
 
     return this
   }

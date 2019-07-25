@@ -38,6 +38,9 @@ const Columns = {
 
     return this
   },
+  getEls () {
+    return this._elements
+  },
   addEventListeners () {
     on($wrap, '.column-up', 'click', this._onCollapseClick, this)
     on($wrap, '.column-down', 'click', this._onExpandClick, this)
@@ -327,12 +330,12 @@ const Columns = {
     return this
   },
   open () {
-    addClass($wrap, 'panel-opened')
+    removeClass($wrap, 'panel-opened')
 
     return this
   },
   close () {
-    removeClass($wrap, 'panel-opened')
+    addClass($wrap, 'panel-opened')
 
     return this
   },
@@ -347,7 +350,13 @@ const Columns = {
     return this
   },
   _onOverlayClick () {
-    this.close()
+    this.open()
+
+    emitter.emit('panel.view.close')
+    emitter.emit('panel.add.close')
+    emitter.emit('panel.edit.close')
+    emitter.emit('panel.trash.close')
+    emitter.emit('panel.setting.close')
 
     return this
   }

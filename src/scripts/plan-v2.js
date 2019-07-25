@@ -122,7 +122,7 @@ class PlanV2 {
   }
 
   render () {
-    addClass(document.body, THEMES[this.get('theme')].theme)
+    document.body.className = THEMES[this.get('theme')].theme
 
     this.$panelSetting.render()
 
@@ -142,7 +142,6 @@ class PlanV2 {
     emitter.on('plan.update.template', this.set.bind(this))
     emitter.on('plan.update.theme', this.set.bind(this))
     emitter.on('plan.update.cache', this.set.bind(this))
-
     // 更新数据
     emitter.on('plan.update.filter', this.setFilter(this))
     emitter.on('plan.update.plans', this.setPlans(this))
@@ -191,7 +190,6 @@ class PlanV2 {
     emitter.off('plan.update.template', this.setTemplate.bind(this))
     emitter.off('plan.update.theme', this.setTheme.bind(this))
     emitter.off('plan.update.cache', this.setCache.bind(this))
-
     // 更新数据
     emitter.off('plan.update.filter', this.setFilter(this))
     emitter.off('plan.update.plans', this.setPlans(this))
