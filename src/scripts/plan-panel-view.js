@@ -16,12 +16,14 @@ import {
 } from './delegate'
 
 import marked from 'marked'
-import mitt from 'mitt'
+import emitter from './plan-emitter'
 
-const emitter = mitt()
 const $wrap = document.querySelector('#view-panel')
 
 const Panel = {
+  initialize () {
+    this.addEventListeners()
+  },
   _elements: {
     wrap: $wrap,
     title: $wrap.querySelector('#view-title'),
@@ -61,9 +63,9 @@ const Panel = {
     on($wrap, '.view-cancel', 'click', this._onCancelClick, this)
     on($wrap, '.view-edit', 'click', this._onEditClick, this)
 
-    emitter.on('panel.view.update', this.setPlan)
-    emitter.on('panel.view.open', this.open)
-    emitter.on('panel.view.close', this.close)
+    emitter.on('panel.view.update', this.setPlan.bind(this))
+    emitter.on('panel.view.open', this.open.bind(this))
+    emitter.on('panel.view.close', this.close.bind(this))
 
     return this
   },
@@ -71,9 +73,9 @@ const Panel = {
     off($wrap, 'click', this._onCancelClick)
     off($wrap, 'click', this._onEditClick)
 
-    emitter.off('panel.view.update', this.setPlan)
-    emitter.off('panel.view.open', this.open)
-    emitter.off('panel.view.close', this.close)
+    emitter.off('panel.view.update', this.setPlan.bind(this))
+    emitter.off('panel.view.open', this.open.bind(this))
+    emitter.off('panel.view.close', this.close.bind(this))
 
     return this
   },

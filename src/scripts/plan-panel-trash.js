@@ -19,18 +19,19 @@ import {clone} from './utils'
 import {getMoments} from './time'
 import {createTaskElement} from './plan-task'
 import {isDelayed} from './plan-static'
-import Confirm from './confirm'
 
-import mitt from 'mitt'
-const emitter = mitt()
+import emitter from './plan-emitter'
 
 const $wrap = document.querySelector('#trash-panel')
 
 const Panel = {
+  initialize () {
+    this.addEventListeners()
+  },
   _elements: {
     wrap: $wrap,
     count: $wrap.querySelector('#trash-count'),
-    tasks: $wrap.querySelector('#trash-tasks')
+    tasks: $wrap.querySelector('#tasks-trash')
   },
   _plans: [],
   getPlans () {
@@ -54,11 +55,11 @@ const Panel = {
     on($wrap, '.task-replace', 'click', this._onReplaceClick, this)
     on($wrap, '.task-delete', 'click', this._onDeleteClick, this)
 
-    emitter.on('panel.trash.update', this.setPlans)
-    emitter.on('panel.trash.add', this.add)
-    emitter.on('panel.trash.open', this.open)
-    emitter.on('panel.trash.close', this.close)
-    emitter.on('panel.trash.toggle', this.toggle)
+    emitter.on('panel.trash.update', this.setPlans.bind(this))
+    emitter.on('panel.trash.add', this.add.bind(this))
+    emitter.on('panel.trash.open', this.open.bind(this))
+    emitter.on('panel.trash.close', this.close.bind(this))
+    emitter.on('panel.trash.toggle', this.toggle.bind(this))
 
     return this
   },
@@ -67,10 +68,10 @@ const Panel = {
     off($wrap, 'click', this._onReplaceClick)
     off($wrap, 'click', this._onDeleteClick)
 
-    emitter.off('panel.trash.update', this.setPlans)
-    emitter.off('panel.trash.open', this.open)
-    emitter.off('panel.trash.close', this.close)
-    emitter.off('panel.trash.toggle', this.toggle)
+    emitter.off('panel.trash.update', this.setPlans.bind(this))
+    emitter.off('panel.trash.open', this.open.bind(this))
+    emitter.off('panel.trash.close', this.close.bind(this))
+    emitter.off('panel.trash.toggle', this.toggle.bind(this))
 
     return this
   },
@@ -107,7 +108,7 @@ const Panel = {
     $count.innerHTML = count.toString()
     $tasks.appendChild(createTaskElement(plan))
 
-    emitter('plan.remove', plan)
+    emitter.emit('plan.remove', plan)
 
     return this
   },
@@ -167,28 +168,28 @@ const Panel = {
     $plan = $tasks.querySelector(`div.task[data-id="${plan.id}"]`)
     $tasks.removeChild($plan)
 
-    emitter('plan.update', plan)
+    emitter.emit('plan.update', plan)
 
     return this
   },
   close () {
-    emitter('toolbar.trash.normalize')
+    emitter.emit('toolbar.trash.normalize')
     removeClass($wrap, 'panel-opened')
-    emitter('columns.open')
+    emitter.emit('columns.open')
 
     this.empty()
 
     return this
   },
   open () {
-    emitter('panel.view.close')
-    emitter('panel.add.close')
-    emitter('panel.edit.close')
-    emitter('panel.setting.close')
+    emitter.emit('panel.view.close')
+    emitter.emit('panel.add.close')
+    emitter.emit('panel.edit.close')
+    emitter.emit('panel.setting.close')
 
-    emitter('toolbar.trash.highlight')
+    emitter.emit('toolbar.trash.highlight')
     addClass($wrap, 'panel-opened')
-    emitter('columns.close')
+    emitter.emit('columns.close')
 
     return this
   },

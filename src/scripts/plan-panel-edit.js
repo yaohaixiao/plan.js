@@ -19,16 +19,18 @@ import {
   on
 } from './delegate'
 
-import mitt from 'mitt'
+import emitter from './plan-emitter'
 import Calendar from './calendar'
 import {OPERATIONS} from './plan-config'
 
-const emitter = mitt()
 const $wrap = document.querySelector('#edit-panel')
 
 let $calendar
 
 const Panel = {
+  initialize () {
+    this.addEventListeners()
+  },
   _elements: {
     wrap: $wrap,
     title: $wrap.querySelector('#edit-title'),
@@ -69,9 +71,9 @@ const Panel = {
     on($wrap, '.edit-save', 'click', this._onSaveClick, this)
     on($wrap, '.edit-level', 'click', this._onLevelClick, this)
 
-    emitter.on('panel.edit.update', this.setPlan)
-    emitter.on('panel.edit.open', this.open)
-    emitter.on('panel.edit.close', this.close)
+    emitter.on('panel.edit.update', this.setPlan.bind(this))
+    emitter.on('panel.edit.open', this.open.bind(this))
+    emitter.on('panel.edit.close', this.close.bind(this))
 
     return this
   },
@@ -80,9 +82,9 @@ const Panel = {
     off($wrap, 'click', this._onSaveClick)
     off($wrap, 'click', this._onLevelClick)
 
-    emitter.off('panel.edit.update', this.setPlan)
-    emitter.off('panel.edit.open', this.open)
-    emitter.off('panel.edit.close', this.close)
+    emitter.off('panel.edit.update', this.setPlan.bind(this))
+    emitter.off('panel.edit.open', this.open.bind(this))
+    emitter.off('panel.edit.close', this.close.bind(this))
 
     return this
   },

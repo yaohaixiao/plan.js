@@ -26,16 +26,18 @@ import {
   on
 } from './delegate'
 
-import mitt from 'mitt'
+import emitter from './plan-emitter'
 import Calendar from './calendar'
 import {OPERATIONS} from './plan-config'
 
-const emitter = mitt()
 const $wrap = document.querySelector('#add-panel')
 
 let $calendar
 
 const Panel = {
+  initialize () {
+    this.addEventListeners()
+  },
   _elements: {
     wrap: $wrap,
     title: $wrap.querySelector('#add-title'),
@@ -85,10 +87,10 @@ const Panel = {
     on($wrap, '.add-save', 'click', this._onSaveClick, this)
     on($wrap, '.add-level', 'click', this._onLevelClick, this)
 
-    emitter.on('panel.add.update.filter', this.setFilter)
-    emitter.on('panel.add.update', this.setPlan)
-    emitter.on('panel.add.open', this.open)
-    emitter.on('panel.add.close', this.close)
+    emitter.on('panel.add.update.filter', this.setFilter.bind(this))
+    emitter.on('panel.add.update', this.setPlan.bind(this))
+    emitter.on('panel.add.open', this.open.bind(this))
+    emitter.on('panel.add.close', this.close.bind(this))
 
     return this
   },
@@ -97,10 +99,10 @@ const Panel = {
     off($wrap, 'click', this._onSaveClick)
     off($wrap, 'click', this._onLevelClick)
 
-    emitter.off('panel.add.update.filter', this.setFilter)
-    emitter.off('panel.add.update', this.setPlan)
-    emitter.off('panel.add.open', this.open)
-    emitter.off('panel.add.close', this.close)
+    emitter.off('panel.add.update.filter', this.setFilter.bind(this))
+    emitter.off('panel.add.update', this.setPlan.bind(this))
+    emitter.off('panel.add.open', this.open.bind(this))
+    emitter.off('panel.add.close', this.close.bind(this))
 
     return this
   },
