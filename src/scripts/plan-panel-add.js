@@ -17,8 +17,7 @@ import {
 } from './time'
 
 import {
-  isDelayed,
-  isLevelSaveAsFilter
+  isDelayed
 } from './plan-static'
 
 import {
@@ -31,12 +30,15 @@ import Calendar from './calendar'
 import {OPERATIONS} from './plan-config'
 
 const $wrap = document.querySelector('#add-panel')
+const CLS_CHECKED = 'field-level-checked'
 
 let $calendar
 
 const Panel = {
   initialize () {
     this.addEventListeners()
+
+    return this
   },
   _elements: {
     wrap: $wrap,
@@ -62,15 +64,6 @@ const Panel = {
     delayed: false,
     deleted: false
   },
-  _filter: 'diamonds',
-  getFilter () {
-    return this._filter
-  },
-  setFilter (filter) {
-    this._filter = filter
-
-    return this
-  },
   getPlan () {
     return this._plan
   },
@@ -86,11 +79,12 @@ const Panel = {
     on($wrap, '.add-cancel', 'click', this._onCancelClick, this)
     on($wrap, '.add-save', 'click', this._onSaveClick, this)
     on($wrap, '.add-level', 'click', this._onLevelClick, this)
+    on($wrap, '.add-deadline-input', 'click', this._onDeadlineInputFocus, this)
+    on($wrap, '.add-calendar-icon', 'click', this._onCalendarIconClick, this)
 
-    emitter.on('panel.add.update.filter', this.setFilter.bind(this))
-    emitter.on('panel.add.update', this.setPlan.bind(this))
     emitter.on('panel.add.open', this.open.bind(this))
     emitter.on('panel.add.close', this.close.bind(this))
+    emitter.on('panel.add.toggle', this.toggle.bind(this))
 
     return this
   },
@@ -98,15 +92,20 @@ const Panel = {
     off($wrap, 'click', this._onCancelClick)
     off($wrap, 'click', this._onSaveClick)
     off($wrap, 'click', this._onLevelClick)
+    off($wrap, 'click', this._onDeadlineInputFocus)
+    off($wrap, 'click', this._onCalendarIconClick)
 
-    emitter.off('panel.add.update.filter', this.setFilter.bind(this))
-    emitter.off('panel.add.update', this.setPlan.bind(this))
     emitter.off('panel.add.open', this.open.bind(this))
     emitter.off('panel.add.close', this.close.bind(this))
+    emitter.off('panel.add.toggle', this.toggle.bind(this))
 
     return this
   },
   close () {
+    if (!this.isOpened()) {
+      return this
+    }
+
     removeClass($wrap, 'panel-opened')
 
     emitter.emit('columns.open')
@@ -123,8 +122,12 @@ const Panel = {
   open () {
     let $create = $wrap.querySelector('#add-create')
     let $deadline = $wrap.querySelector('#add-deadline')
-    let $icon = $wrap.querySelector('.add-deadline')
+    let $icon = $wrap.querySelector('.add-calendar-icon')
     let today = getToday().text
+
+    if (this.isOpened()) {
+      return this
+    }
 
     emitter.emit('panel.view.close')
     emitter.emit('panel.edit.close')
@@ -152,8 +155,19 @@ const Panel = {
 
     return this
   },
+  toggle () {
+    if (this.isOpened()) {
+      this.close()
+    } else {
+      this.open()
+    }
+
+    return this
+  },
+  isOpened () {
+    return hasClass($wrap, 'panel-opened')
+  },
   empty () {
-    const CLS_CHECKED = 'field-level-checked'
     let $title = $wrap.querySelector('#add-title')
     let $create = $wrap.querySelector('#add-create')
     let $deadline = $wrap.querySelector('#add-deadline')
@@ -175,8 +189,20 @@ const Panel = {
 
     return this
   },
-  level ($button) {
-    const CLS_CHECKED = 'field-level-checked'
+  toggleCalendar ($icon) {
+    const CLS_CHECKED = 'field-icon-checked'
+
+    if (hasClass($icon, CLS_CHECKED)) {
+      removeClass($icon, CLS_CHECKED)
+    } else {
+      addClass($icon, CLS_CHECKED)
+    }
+
+    $calendar.toggle()
+
+    return this
+  },
+  changeLevel ($button) {
     let id = $button.getAttribute('data-level')
     let $checked = $wrap.querySelector('.' + CLS_CHECKED)
     let $input = $wrap.querySelector(`#add-level`)
@@ -205,8 +231,6 @@ const Panel = {
     let $desc = elements.desc
     let plan = {}
     let moments = getMoments()
-    let filter = this.getFilter()
-    let status
 
     // TODO: 添加校验
 
@@ -221,36 +245,62 @@ const Panel = {
     plan.deleted = false
     plan.status = 0
     plan.create = moments
-    plan.update = [{
-      time: moments,
-      code: OPERATIONS.add.code,
-      operate: OPERATIONS.add.text
-    }]
-
+    plan.update = [
+      {
+        time: moments,
+        code: OPERATIONS.add.code,
+        operate: OPERATIONS.add.text
+      }
+    ]
     plan.delayed = isDelayed(plan)
-
-    status = plan.status
-
-    if ((status !== 'marked' && isLevelSaveAsFilter(plan.level, filter)) || filter === 'inbox') {
-      emitter.emit('plan.todo.add', plan)
-    }
 
     emitter.emit('plan.add', plan)
 
     return this
   },
+  /**
+   * 点击取消按钮的事件处理器，点击后关闭添加 Panel
+   * ========================================================================
+   * @returns {Panel}
+   * @private
+   */
   _onCancelClick () {
     this.close()
 
     return this
   },
+  /**
+   * 点击保存的事件处理器，点击后新增一个任务
+   * ========================================================================
+   * @returns {Panel}
+   * @private
+   */
   _onSaveClick () {
     this.save()
 
     return this
   },
+  /**
+   * 点击任务级别的事件处理器，点击后更改任务级别
+   * ========================================================================
+   * @param {Event} evt - 事件对象
+   * @returns {Panel}
+   * @private
+   */
   _onLevelClick (evt) {
-    this.level(evt.delegateTarget)
+    this.changeLevel(evt.delegateTarget)
+
+    return this
+  },
+  _onDeadlineInputFocus () {
+    let $icon = $wrap.querySelector('.add-calendar-icon')
+
+    this.toggleCalendar($icon)
+
+    return this
+  },
+  _onCalendarIconClick (evt) {
+    this.toggleCalendar(evt.delegateTarget)
 
     return this
   }

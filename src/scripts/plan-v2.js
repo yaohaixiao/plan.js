@@ -16,15 +16,6 @@ import {
 } from './dom'
 
 import {
-  on,
-  off
-} from './delegate'
-
-import {
-  createTaskElement
-} from './plan-task'
-
-import {
   isDelayed,
   updateStatusChangedCount
 } from './plan-static'
@@ -46,8 +37,6 @@ import emitter from './plan-emitter'
 
 import dragula from 'dragula'
 import marked from 'marked'
-
-let $wrap = document.querySelector('#plan')
 
 class PlanV2 {
   constructor (options) {
@@ -108,7 +97,10 @@ class PlanV2 {
       cache: this.get('cache')
     })
 
-    this.$columns.initialize()
+    this.$columns.initialize({
+      filter: this.getFilter(),
+      plans: this.getPlans().filter(plan => !plan.deleted)
+    })
 
     this.$dragula = dragula([
       this.$panelTrash.tasks,
@@ -125,31 +117,58 @@ class PlanV2 {
     document.body.className = THEMES[this.get('theme')].theme
 
     this.$panelSetting.render()
+    this.$columns.render()
 
     return this
   }
 
   addEventListeners () {
-    // ---------- task ----------
-    on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
-    on($wrap, '.task-prev', 'click', this._onPrevButtonClick, this)
-    on($wrap, '.task-edit', 'click', this._onEditButtonClick, this)
-    on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
-    on($wrap, '.task-delete', 'click', this._onDeleteButtonClick, this)
-    on($wrap, '.task-next', 'click', this._onNextButtonClick, this)
-
     // 更新配置信息
     emitter.on('plan.update.template', this.set.bind(this))
     emitter.on('plan.update.theme', this.set.bind(this))
     emitter.on('plan.update.cache', this.set.bind(this))
+
     // 更新数据
     emitter.on('plan.update.filter', this.setFilter(this))
     emitter.on('plan.update.plans', this.setPlans(this))
+    emitter.on('plan.add', this.add.bind(this))
+    emitter.on('plan.edit', this.edit.bind(this))
+    emitter.on('plan.mark', this.mark.bind(this))
+    emitter.on('plan.remove', this.remove.bind(this))
+    emitter.on('plan.delete', this.delete.bind(this))
 
     // 拖动完成，更新任务状态
     this.$dragula.on('drop', ($plan, $target, $source) => {
       this.drop($plan, $target, $source)
     })
+
+    return this
+  }
+
+  removeEventListeners () {
+    this.$toolbar.removeEventListeners()
+    this.$panelView.removeEventListeners()
+    this.$panelAdd.removeEventListeners()
+    this.$panelEdit.removeEventListeners()
+    this.$panelTrash.removeEventListeners()
+    this.$panelSetting.removeEventListeners()
+    this.$columns.removeEventListeners()
+
+    // 更新配置信息
+    emitter.off('plan.update.template', this.setTemplate.bind(this))
+    emitter.off('plan.update.theme', this.setTheme.bind(this))
+    emitter.off('plan.update.cache', this.setCache.bind(this))
+
+    // 更新数据
+    emitter.off('plan.update.filter', this.setFilter(this))
+    emitter.off('plan.update.plans', this.setPlans(this))
+    emitter.on('plan.add', this.add.bind(this))
+    emitter.on('plan.edit', this.edit.bind(this))
+    emitter.on('plan.mark', this.mark.bind(this))
+    emitter.on('plan.remove', this.remove.bind(this))
+    emitter.on('plan.delete', this.delete.bind(this))
+
+    this.$dragula.destroy()
 
     return this
   }
@@ -165,36 +184,6 @@ class PlanV2 {
     this.removeEventListeners()
         .reset()
         .empty()
-
-    return this
-  }
-
-  removeEventListeners () {
-    this.$toolbar.removeEventListeners()
-    this.$panelView.removeEventListeners()
-    this.$panelAdd.removeEventListeners()
-    this.$panelEdit.removeEventListeners()
-    this.$panelTrash.removeEventListeners()
-    this.$panelSetting.removeEventListeners()
-    this.$columns.removeEventListeners()
-
-    // ---------- task ----------
-    off($wrap, 'click', this._onTaskTitleClick)
-    off($wrap, 'click', this._onPrevButtonClick)
-    off($wrap, 'click', this._onEditButtonClick)
-    off($wrap, 'click', this._onMarkedButtonClick)
-    off($wrap, 'click', this._onDeleteButtonClick)
-    off($wrap, 'click', this._onNextButtonClick)
-
-    // 更新配置信息
-    emitter.off('plan.update.template', this.setTemplate.bind(this))
-    emitter.off('plan.update.theme', this.setTheme.bind(this))
-    emitter.off('plan.update.cache', this.setCache.bind(this))
-    // 更新数据
-    emitter.off('plan.update.filter', this.setFilter(this))
-    emitter.off('plan.update.plans', this.setPlans(this))
-
-    this.$dragula.destroy()
 
     return this
   }
@@ -303,6 +292,8 @@ class PlanV2 {
       template: template
     })
 
+    localStorage.setItem('plan.template', template)
+
     return this
   }
 
@@ -313,6 +304,8 @@ class PlanV2 {
 
     addClass(document.body, THEMES[this.get('theme')].theme)
 
+    localStorage.setItem('plan.theme', theme)
+
     return this
   }
 
@@ -321,116 +314,64 @@ class PlanV2 {
       cache: cache
     })
 
-    return this
-  }
+    localStorage.setItem('plan.cache', cache)
 
-  view (plan) {
-    if (plan.deleted) {
-      return this
+    if (cache === 0) {
+      localStorage.removeItem('plan.plans')
     }
-
-    emitter.emit('panel.view.update', plan)
-    emitter.emit('panel.view.open')
 
     return this
   }
 
-  changeStatus (plan, direction) {
-    let status = plan.status
-    let $columns = this.$columns
-    let $sourceCount = $columns.getStatusCountEl(status)
-    let $sourceTasks = $columns.getStatusTasksEl(status)
-    let $plan = $sourceTasks.querySelector(`div.task[data-id="${id}"]`)
-    let $targetCount = $columns.getStatusCountEl(plan.status)
-    let $targetTasks = $columns.getStatusTasksEl(plan.status)
+  add (plan) {
+    let plans = clone(this.getPlans())
 
-    if (direction === 'prev') {
-      plan.status -= 1
+    plans.push(plan)
 
-      if (plan.status < 0) {
-        plan.status = 0
-      }
-    } else {
-      if (direction === 'next') {
-        plan.status += 1
+    this.setPlans(plans)
 
-        if (plan.status > 3) {
-          plan.status = 3
-        }
-      }
-    }
-
-    plan.delayed = isDelayed(plan)
-    plan.update.unshift({
-      time: getMoments(),
-      code: OPERATIONS.status.code,
-      operate: OPERATIONS.status.text
-    })
-    this.setPlan(plan)
-
-    updateStatusChangedCount($sourceCount, $targetCount)
-
-    $sourceTasks.removeChild($plan)
-    $targetTasks.appendChild(createTaskElement(plan))
+    emitter.emit('columns.add', plan)
 
     return this
   }
 
   edit (plan) {
-    emitter.emit('panel.edit.update', plan)
-    emitter.emit('panel.edit.open')
+    this.setPlan(plan)
+
+    emitter.emit('columns.edit', plan)
 
     return this
   }
 
   mark (plan) {
-    const CLS_MARKED = 'task-marked'
-    let filter = this.getFilter()
-    let status = plan.status
-    let selector = `div.task[data-id="${id}"]`
-    let $columns = this.$columns
-    let $plan
-
-    plan.marked = !plan.marked
-    plan.update.unshift({
-      time: getMoments(),
-      code: plan.marked ? OPERATIONS.mark.code : OPERATIONS.unmark.code,
-      operate: plan.marked ? OPERATIONS.mark.text : OPERATIONS.unmark.text,
-    })
     this.setPlan(plan)
-
-    switch (status) {
-      case 0:
-        $plan = $columns.tasksTodo.querySelector(selector)
-        break
-      case 1:
-        $plan = $columns.tasksDoing.querySelector(selector)
-        break
-      case 2:
-        $plan = $columns.tasksChecking.querySelector(selector)
-        break
-      case 3:
-        $plan = $columns.tasksDone.querySelector(selector)
-        break
-    }
-
-    if (filter === 'marked') {
-      $columns.updateColumn(status, $columns.filterPlans(status, 'marked'))
-    } else {
-      if (plan.marked) {
-        addClass($plan, CLS_MARKED)
-        $plan.setAttribute('data-marked', '1')
-      } else {
-        removeClass($plan, CLS_MARKED)
-        $plan.setAttribute('data-marked', '0')
-      }
-    }
 
     return this
   }
 
   remove (plan) {
-    console.log(plan)
+    this.setPlan(plan)
+
+    emitter.emit('panel.trash.add', plan)
+
+    return this
+  }
+
+  delete (plan) {
+    let plans = clone(this.getPlans())
+    let index = -1
+
+    plans.forEach((task, i) => {
+      if (task.id === plan.id) {
+        index = i
+      }
+    })
+
+    if (index > -1) {
+      plans.splice(index, 1)
+    }
+
+    this.setPlans(plans)
 
     return this
   }
@@ -501,6 +442,10 @@ class PlanV2 {
 
     updateStatusChangedCount($sourceCount, $targetCount)
 
+    if(!plan.deleted) {
+      emitter.emit('columns.edit', plan)
+    }
+
     if (plan.deleted) {
       addClass($plan, 'task-deleted')
       $plan.setAttribute('data-deleted', '1')
@@ -527,82 +472,6 @@ class PlanV2 {
       removeClass($plan, 'task-delayed')
       $plan.setAttribute('data-delay', '0')
     }
-
-    return this
-  }
-
-  _getTasksFragment (plans) {
-    let $fragment = document.createDocumentFragment()
-
-    if (plans.length < 1) {
-      return $fragment
-    }
-
-    plans.forEach((plan) => {
-      let $plan = createTaskElement(plan)
-
-      $fragment.appendChild($plan)
-    })
-
-    return $fragment
-  }
-
-  _onTaskTitleClick (evt) {
-    let $title = evt.delegateTarget
-    let id = $title.getAttribute('data-id')
-    let plan = this.getPlan(parseInt(id, 10))
-
-    this.view(plan)
-
-    return this
-  }
-
-  _onPrevButtonClick (evt) {
-    let $button = evt.delegateTarget
-    let id = $button.getAttribute('data-id')
-    let plan = this.getPlan(parseInt(id, 10))
-
-    this.changeStatus(plan, 'prev')
-
-    return this
-  }
-
-  _onNextButtonClick (evt) {
-    let $button = evt.delegateTarget
-    let id = $button.getAttribute('data-id')
-    let plan = this.getPlan(parseInt(id, 10))
-
-    this.changeStatus(plan, 'next')
-
-    return this
-  }
-
-  _onEditButtonClick (evt) {
-    let $button = evt.delegateTarget
-    let id = $button.getAttribute('data-id')
-    let plan = this.getPlan(parseInt(id, 10))
-
-    this.edit(plan)
-
-    return this
-  }
-
-  _onMarkedButtonClick (evt) {
-    let $button = evt.delegateTarget
-    let id = $button.getAttribute('data-id')
-    let plan = this.getPlan(parseInt(id, 10))
-
-    this.mark(plan)
-
-    return this
-  }
-
-  _onDeleteButtonClick (evt) {
-    let $button = evt.delegateTarget
-    let id = $button.getAttribute('data-id')
-    let plan = this.getPlan(parseInt(id, 10))
-
-    this.remove(plan)
 
     return this
   }

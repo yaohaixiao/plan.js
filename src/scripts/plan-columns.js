@@ -11,12 +11,23 @@ import {
 } from './dom'
 
 import emitter from './plan-emitter'
+import {createTaskElement} from './plan-task'
+import {getMoments} from './time'
+import {OPERATIONS} from './plan-config'
+import {
+  isDelayed,
+  updateStatusChangedCount
+} from './plan-static'
 
 let $wrap = document.querySelector('#columns')
 
 const Columns = {
-  initialize () {
-    this.addEventListeners()
+  initialize ({filter, plans}) {
+    this.setFilter(filter)
+        .setPlans(plans)
+        .addEventListeners()
+
+    return this
   },
   _elements: {
     wrap: $wrap,
@@ -30,6 +41,25 @@ const Columns = {
     tasksDone: $wrap.querySelector('#tasks-done')
   },
   _plans: [],
+  _filter: 'inbox',
+  render () {
+    let todoPlans = this.getTodoPlans()
+    let doingPlans = this.getDoingPlans()
+    let checkingPlans = this.getCheckingPlans()
+    let donePlans = this.getDonePlans()
+
+    this.updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
+
+    return this
+  },
+  getFilter () {
+    return this._filter
+  },
+  setFilter (filter) {
+    this._filter = filter
+
+    return this
+  },
   getPlans () {
     return this._plans
   },
@@ -46,8 +76,20 @@ const Columns = {
     on($wrap, '.column-down', 'click', this._onExpandClick, this)
     on($wrap, '.columns-overlay', 'click', this._onOverlayClick, this)
 
+    // ---------- task ----------
+    on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
+    on($wrap, '.task-prev', 'click', this._onPrevButtonClick, this)
+    on($wrap, '.task-edit', 'click', this._onEditButtonClick, this)
+    on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
+    on($wrap, '.task-delete', 'click', this._onDeleteButtonClick, this)
+    on($wrap, '.task-next', 'click', this._onNextButtonClick, this)
+
     emitter.on('columns.open', this.open.bind(this))
     emitter.on('columns.close', this.close.bind(this))
+
+    emitter.on('columns.update.filter', this.setFilter.bind(this))
+    emitter.on('columns.add', this.add.bind(this))
+    emitter.on('columns.edit', this.edit.bind(this))
 
     return this
   },
@@ -55,6 +97,14 @@ const Columns = {
     off($wrap, 'click', this._onCollapseClick)
     off($wrap, 'click', this._onExpandClick)
     off($wrap, 'click', this._onOverlayClick)
+
+    // ---------- task ----------
+    off($wrap, 'click', this._onTaskTitleClick)
+    off($wrap, 'click', this._onPrevButtonClick)
+    off($wrap, 'click', this._onEditButtonClick)
+    off($wrap, 'click', this._onMarkedButtonClick)
+    off($wrap, 'click', this._onDeleteButtonClick)
+    off($wrap, 'click', this._onNextButtonClick)
 
     emitter.off('columns.open', this.open.bind(this))
     emitter.off('columns.close', this.close.bind(this))
@@ -146,12 +196,6 @@ const Columns = {
         })
 
         break
-      case 'deleted':
-        plans = originPlans.filter((plan) => {
-          return plan.deleted
-        })
-
-        break
       default:
         plans = originPlans.filter((plan) => {
           return plan.status === status && !plan.deleted
@@ -163,19 +207,119 @@ const Columns = {
     return plans
   },
   getTodoPlans () {
-    return this.filterPlans('inbox', 0)
+    return this.filterPlans(this.getFilter(), 0)
   },
   getDoingPlans () {
-    return this.filterPlans('inbox', 1)
+    return this.filterPlans(this.getFilter(), 1)
   },
   getCheckingPlans () {
-    return this.filterPlans('inbox', 2)
+    return this.filterPlans(this.getFilter(), 2)
   },
   getDonePlans () {
-    return this.filterPlans('inbox', 3)
+    return this.filterPlans(this.getFilter(), 3)
   },
   getMarkedPlans () {
     return this.filterPlans('marked')
+  },
+  add (plan) {
+    return this
+  },
+  edit (plan) {
+    return this
+  },
+  remove (plan) {
+    // emitter.emit('plan.edit', plan)
+
+    return this
+  },
+  mark (plan) {
+    const CLS_MARKED = 'task-marked'
+    let filter = this.getFilter()
+    let status = plan.status
+    let selector = `div.task[data-id="${id}"]`
+    let $columns = this.$columns
+    let $plan
+
+    plan.marked = !plan.marked
+    plan.update.unshift({
+      time: getMoments(),
+      code: plan.marked ? OPERATIONS.mark.code : OPERATIONS.unmark.code,
+      operate: plan.marked ? OPERATIONS.mark.text : OPERATIONS.unmark.text,
+    })
+    this.setPlan(plan)
+
+    emitter.emit('plan.edit', plan)
+
+    switch (status) {
+      case 0:
+        $plan = $columns.tasksTodo.querySelector(selector)
+        break
+      case 1:
+        $plan = $columns.tasksDoing.querySelector(selector)
+        break
+      case 2:
+        $plan = $columns.tasksChecking.querySelector(selector)
+        break
+      case 3:
+        $plan = $columns.tasksDone.querySelector(selector)
+        break
+    }
+
+    if (filter === 'marked') {
+      $columns.updateColumn(status, $columns.filterPlans(status, 'marked'))
+    } else {
+      if (plan.marked) {
+        addClass($plan, CLS_MARKED)
+        $plan.setAttribute('data-marked', '1')
+      } else {
+        removeClass($plan, CLS_MARKED)
+        $plan.setAttribute('data-marked', '0')
+      }
+    }
+
+    return this
+  },
+  changeStatus (plan, direction) {
+    let status = plan.status
+    let $columns = this.$columns
+    let $sourceCount = $columns.getStatusCountEl(status)
+    let $sourceTasks = $columns.getStatusTasksEl(status)
+    let $plan = $sourceTasks.querySelector(`div.task[data-id="${id}"]`)
+    let $targetCount = $columns.getStatusCountEl(plan.status)
+    let $targetTasks = $columns.getStatusTasksEl(plan.status)
+
+    if (direction === 'prev') {
+      plan.status -= 1
+
+      if (plan.status < 0) {
+        plan.status = 0
+      }
+    } else {
+      if (direction === 'next') {
+        plan.status += 1
+
+        if (plan.status > 3) {
+          plan.status = 3
+        }
+      }
+    }
+
+    plan.delayed = isDelayed(plan)
+    plan.update.unshift({
+      time: getMoments(),
+      code: OPERATIONS.status.code,
+      operate: OPERATIONS.status.text
+    })
+    this.setPlan(plan)
+
+    emitter.emit('plan.edit', plan)
+
+    updateStatusChangedCount($sourceCount, $targetCount)
+
+    $sourceTasks.removeChild($plan)
+    $targetTasks.appendChild(createTaskElement(plan))
+
+    return this
   },
   updateTodoColumn (todoPlans) {
     let elements = this.getEls()
@@ -305,6 +449,7 @@ const Columns = {
 
     return this
   },
+
   collapse ($button) {
     const CLS_HIDDEN = 'hidden'
     let status = parseInt($button.getAttribute('data-status'), 10)
@@ -336,6 +481,77 @@ const Columns = {
   },
   close () {
     addClass($wrap, 'panel-opened')
+
+    return this
+  },
+  _getTasksFragment (plans) {
+    let $fragment = document.createDocumentFragment()
+
+    if (plans.length < 1) {
+      return $fragment
+    }
+
+    plans.forEach((plan) => {
+      let $plan = createTaskElement(plan)
+
+      $fragment.appendChild($plan)
+    })
+
+    return $fragment
+  },
+  _onTaskTitleClick (evt) {
+    let $title = evt.delegateTarget
+    let id = $title.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+
+    emitter.emit('panel.view.update', plan)
+    emitter.emit('panel.view.open')
+
+    return this
+  },
+  _onPrevButtonClick (evt) {
+    let $button = evt.delegateTarget
+    let id = $button.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+
+    this.changeStatus(plan, 'prev')
+
+    return this
+  },
+  _onNextButtonClick (evt) {
+    let $button = evt.delegateTarget
+    let id = $button.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+
+    this.changeStatus(plan, 'next')
+
+    return this
+  },
+  _onEditButtonClick (evt) {
+    let $button = evt.delegateTarget
+    let id = $button.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+
+    emitter.emit('panel.edit.update', plan)
+    emitter.emit('panel.edit.open')
+
+    return this
+  },
+  _onMarkedButtonClick (evt) {
+    let $button = evt.delegateTarget
+    let id = $button.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+
+    this.mark(plan)
+
+    return this
+  },
+  _onDeleteButtonClick (evt) {
+    let $button = evt.delegateTarget
+    let id = $button.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+
+    this.remove(plan)
 
     return this
   },

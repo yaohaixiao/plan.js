@@ -173,34 +173,47 @@ const Panel = {
     return this
   },
   close () {
-    emitter.emit('toolbar.trash.normalize')
-    removeClass($wrap, 'panel-opened')
+    if(!this.isOpened()){
+      return this
+    }
+
+    emitter.emit('toolbar.trash.toggle.highlight')
     emitter.emit('columns.open')
+
+    removeClass($wrap, 'panel-opened')
 
     this.empty()
 
     return this
   },
   open () {
+    if(this.isOpened()){
+      return this
+    }
+
+    emitter.emit('toolbar.trash.toggle.highlight')
+
     emitter.emit('panel.view.close')
     emitter.emit('panel.add.close')
     emitter.emit('panel.edit.close')
     emitter.emit('panel.setting.close')
-
-    emitter.emit('toolbar.trash.highlight')
-    addClass($wrap, 'panel-opened')
     emitter.emit('columns.close')
+
+    addClass($wrap, 'panel-opened')
 
     return this
   },
   toggle () {
-    if (hasClass($wrap, 'panel-opened')) {
+    if (this.isOpened()) {
       this.close()
     } else {
       this.open()
     }
 
     return this
+  },
+  isOpened () {
+    return hasClass($wrap, 'panel-opened')
   },
   empty () {
     let elements = this.getEls()

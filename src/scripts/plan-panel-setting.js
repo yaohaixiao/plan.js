@@ -25,8 +25,10 @@ const CLS_RADIO_CHECKED = 'field-radio-checked'
 const $wrap = document.querySelector('#setting-panel')
 
 const Panel = {
-  initialize (data) {
-    this.setData(data)
+  initialize ({template, theme, cache}) {
+    this.setTemplate(template)
+        .setTheme(theme)
+        .setCache(cache)
         .addEventListeners()
 
     return this
@@ -37,22 +39,9 @@ const Panel = {
     themes: $wrap.querySelector('#setting-themes'),
     storage: $wrap.querySelector('#setting-storage')
   },
-  _data: {
-    template: 0,
-    theme: 0,
-    cache: 0
-  },
-  getData () {
-    return this._data
-  },
-  setData (data) {
-    this._data = data
-
-    return this
-  },
-  getEls () {
-    return this._elements
-  },
+  _template: 0,
+  _theme: 0,
+  _cache: 0,
   render () {
     const SPACE = ' '
     const CLS_RADIOS_GROUP = 'field-radios-group'
@@ -65,10 +54,9 @@ const Panel = {
     const CLS_SETTING_TEMPLATE = 'setting-template'
     const CLS_SETTING_THEME = 'setting-theme'
     const CLS_SETTING_CACHE = 'setting-cache'
-    let data = this.getData()
-    let template = data.template
-    let theme = data.theme
-    let cache = data.cache
+    let template = this.getTemplate()
+    let theme = this.getTheme()
+    let cache = this.getCache()
     let elements = this.getEls()
     let $templates = elements.templates
     let $themes = elements.themes
@@ -77,19 +65,19 @@ const Panel = {
       'type': 'hidden',
       'name': 'template',
       'id': 'setting-template',
-      'value': data.template
+      'value': template
     })
     let $theme = createElement('input', {
       'type': 'hidden',
       'name': 'theme',
       'id': 'setting-theme',
-      'value': data.theme
+      'value': theme
     })
     let $cache = createElement('input', {
       'type': 'hidden',
       'name': 'cache',
       'id': 'setting-cache',
-      'value': data.cache
+      'value': cache
     })
     let $templatesGroup = createElement('div', {
       'className': 'field-templates'
@@ -197,6 +185,33 @@ const Panel = {
 
     return this
   },
+  getTemplate () {
+    return this._template
+  },
+  setTemplate (val) {
+    this._template = val
+
+    return this
+  },
+  getTheme () {
+    return this._theme
+  },
+  setTheme (val) {
+    this._theme = val
+
+    return this
+  },
+  getCache () {
+    return this._cache
+  },
+  setCache (val) {
+    this._cache = val
+
+    return this
+  },
+  getEls () {
+    return this._elements
+  },
   addEventListeners () {
     on($wrap, '.setting-cancel', 'click', this._onCancelClick, this)
     on($wrap, '.setting-template', 'click', this._onTemplateClick, this)
@@ -222,32 +237,45 @@ const Panel = {
     return this
   },
   close () {
-    emitter.emit('toolbar.setting.normalize')
-    removeClass($wrap, 'panel-opened')
+    if (!this.isOpened()) {
+      return this
+    }
+
+    emitter.emit('toolbar.setting.toggle.highlight')
     emitter.emit('columns.open')
+
+    removeClass($wrap, 'panel-opened')
 
     return this
   },
   open () {
+    if (this.isOpened()) {
+      return this
+    }
+
+    emitter.emit('toolbar.setting.toggle.highlight')
+
     emitter.emit('panel.view.close')
     emitter.emit('panel.add.close')
     emitter.emit('panel.edit.close')
     emitter.emit('panel.trash.close')
-
-    emitter.emit('toolbar.setting.highlight')
-    addClass($wrap, 'panel-opened')
     emitter.emit('columns.close')
+
+    addClass($wrap, 'panel-opened')
 
     return this
   },
   toggle () {
-    if (hasClass($wrap, 'panel-opened')) {
+    if (this.isOpened()) {
       this.close()
     } else {
       this.open()
     }
 
     return this
+  },
+  isOpened () {
+    return hasClass($wrap, 'panel-opened')
   },
   changeTemplate ($button) {
     let value = $button.getAttribute('data-template')
@@ -267,8 +295,6 @@ const Panel = {
     addClass($button, CLS_OPTION_CHECKED)
 
     emitter.emit('plan.update.template', parseInt(value, 10))
-
-    localStorage.setItem('plan.template', value)
 
     return this
   },
@@ -293,8 +319,6 @@ const Panel = {
     $body.className = THEMES[parseInt(value, 10)].theme
 
     emitter.emit('plan.update.theme', parseInt(value, 10))
-
-    localStorage.setItem('plan.theme', value)
 
     return this
   },
@@ -322,12 +346,6 @@ const Panel = {
     addClass($radio, CLS_RADIO_CHECKED)
 
     emitter.emit('plan.update.cache', parseInt(value, 10))
-
-    localStorage.setItem('plan.cache', value)
-
-    if (parseInt(value, 10) === 0) {
-      localStorage.removeItem('plan.plans')
-    }
 
     return this
   },
