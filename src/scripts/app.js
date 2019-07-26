@@ -4,7 +4,7 @@ import {
   TEMPLATES
 } from './plan-config'
 
-import Plan from './plan'
+import Plan from './plan-v2'
 
 let cachedTemplate = localStorage.getItem('plan.template')
 let cachedTheme = localStorage.getItem('plan.theme')

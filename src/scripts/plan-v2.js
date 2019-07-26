@@ -124,9 +124,9 @@ class PlanV2 {
 
   addEventListeners () {
     // 更新配置信息
-    emitter.on('plan.update.template', this.set.bind(this))
-    emitter.on('plan.update.theme', this.set.bind(this))
-    emitter.on('plan.update.cache', this.set.bind(this))
+    emitter.on('plan.update.template', this.setTemplate.bind(this))
+    emitter.on('plan.update.theme', this.setTheme.bind(this))
+    emitter.on('plan.update.cache', this.setCache.bind(this))
 
     // 更新数据
     emitter.on('plan.update.filter', this.setFilter(this))
