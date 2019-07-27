@@ -7,16 +7,14 @@ import {
 } from './dom'
 
 import {
-  format
-} from './time'
-
-import {
   off,
   on
 } from './delegate'
 
+import { format } from './time'
 import marked from 'marked'
-import emitter from './plan-emitter'
+
+import emitter from './plan.emitter'
 
 const $wrap = document.querySelector('#view-panel')
 
@@ -32,7 +30,7 @@ const Panel = {
     estimate: $wrap.querySelector('#view-estimate'),
     level: $wrap.querySelector('#view-level'),
     desc: $wrap.querySelector('#view-desc'),
-    logs: $wrap.querySelector('#view-logs'),
+    logs: $wrap.querySelector('#view-logs')
   },
   _plan: {
     id: 1,
@@ -219,7 +217,10 @@ const Panel = {
     return this
   },
   _onEditClick () {
-    emitter.on('panel.edit.open')
+    emitter.emit('panel.edit.update', this.getPlan())
+    emitter.emit('panel.edit.open')
+
+    return this
   }
 }
 

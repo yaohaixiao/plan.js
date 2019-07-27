@@ -16,16 +16,16 @@ import {
   TEMPLATES,
   THEMES,
   STORAGE
-} from './plan-config'
+} from './plan.config'
 
-import emitter from './plan-emitter'
+import emitter from './plan.emitter'
 
 const CLS_OPTION_CHECKED = 'field-option-checked'
 const CLS_RADIO_CHECKED = 'field-radio-checked'
 const $wrap = document.querySelector('#setting-panel')
 
 const Panel = {
-  initialize ({template, theme, cache}) {
+  initialize ({ template, theme, cache }) {
     this.setTemplate(template)
         .setTheme(theme)
         .setCache(cache)

@@ -2,7 +2,8 @@
 
 import {
   guid,
-  toSafeText
+  toSafeText,
+  clone
 } from './utils'
 
 import {
@@ -17,17 +18,15 @@ import {
 } from './time'
 
 import {
-  isDelayed
-} from './plan-static'
-
-import {
   off,
   on
 } from './delegate'
 
-import emitter from './plan-emitter'
 import Calendar from './calendar'
-import {OPERATIONS} from './plan-config'
+
+import { OPERATIONS } from './plan.config'
+import { isDelayed } from './plan.static'
+import emitter from './plan.emitter'
 
 const $wrap = document.querySelector('#add-panel')
 const CLS_CHECKED = 'field-level-checked'
@@ -229,32 +228,34 @@ const Panel = {
     let $estimate = elements.estimate
     let $level = elements.level
     let $desc = elements.desc
-    let plan = {}
     let moments = getMoments()
+    let plan = {}
 
     // TODO: 添加校验
 
     // 收集新任务的数据
-    plan.id = parseInt(guid(4, 10), 10)
-    plan.title = toSafeText($title.value)
-    plan.deadline = $deadline.value
-    plan.estimate = $estimate.value
-    plan.level = parseInt($level.value, 10)
-    plan.desc = toSafeText($desc.value)
-    plan.marked = false
-    plan.deleted = false
-    plan.status = 0
-    plan.create = moments
-    plan.update = [
-      {
-        time: moments,
-        code: OPERATIONS.add.code,
-        operate: OPERATIONS.add.text
-      }
-    ]
-    plan.delayed = isDelayed(plan)
+    plan = {
+      id: parseInt(guid(4, 10), 10),
+      title: toSafeText($title.value),
+      deadline: $deadline.value,
+      estimate: $estimate.value,
+      level: parseInt($level.value, 10),
+      desc: toSafeText($desc.value),
+      marked: false,
+      deleted: false,
+      status: 0,
+      create: moments,
+      update: [
+        {
+          time: moments,
+          code: OPERATIONS.add.code,
+          operate: OPERATIONS.add.text
+        }
+      ],
+      delayed: isDelayed(plan)
+    }
 
-    emitter.emit('plan.add', plan)
+    emitter.emit('plan.add', clone(plan))
 
     return this
   },

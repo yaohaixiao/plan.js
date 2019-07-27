@@ -1,7 +1,8 @@
 'use strict'
 
 import {
-  clone
+  clone,
+  assign
 } from './utils'
 
 import {
@@ -10,18 +11,18 @@ import {
   removeClass
 } from './dom'
 
-import {
-  getMoments
-} from './time'
+import { getMoments } from './time'
 
 import {
   off,
   on
 } from './delegate'
 
-import emitter from './plan-emitter'
 import Calendar from './calendar'
-import {OPERATIONS} from './plan-config'
+
+import { OPERATIONS } from './plan.config'
+import { isDelayed } from './plan.static'
+import emitter from './plan.emitter'
 
 const $wrap = document.querySelector('#edit-panel')
 
@@ -30,6 +31,8 @@ let $calendar
 const Panel = {
   initialize () {
     this.addEventListeners()
+
+    return this
   },
   _elements: {
     wrap: $wrap,
@@ -70,6 +73,8 @@ const Panel = {
     on($wrap, '.edit-cancel', 'click', this._onCancelClick, this)
     on($wrap, '.edit-save', 'click', this._onSaveClick, this)
     on($wrap, '.edit-level', 'click', this._onLevelClick, this)
+    on($wrap, '.edit-deadline-input', 'click', this._onDeadlineInputFocus, this)
+    on($wrap, '.edit-calendar-icon', 'click', this._onCalendarIconClick, this)
 
     emitter.on('panel.edit.update', this.setPlan.bind(this))
     emitter.on('panel.edit.open', this.open.bind(this))
@@ -81,6 +86,8 @@ const Panel = {
     off($wrap, 'click', this._onCancelClick)
     off($wrap, 'click', this._onSaveClick)
     off($wrap, 'click', this._onLevelClick)
+    off($wrap, 'click', this._onDeadlineInputFocus)
+    off($wrap, 'click', this._onCalendarIconClick)
 
     emitter.off('panel.edit.update', this.setPlan.bind(this))
     emitter.off('panel.edit.open', this.open.bind(this))
@@ -89,6 +96,10 @@ const Panel = {
     return this
   },
   close () {
+    if (!this.isOpened()) {
+      return this
+    }
+
     removeClass($wrap, 'panel-opened')
 
     emitter.emit('columns.open')
@@ -104,7 +115,11 @@ const Panel = {
   },
   open () {
     let $deadline = $wrap.querySelector('#edit-deadline')
-    let $icon = $wrap.querySelector('.edit-deadline')
+    let $icon = $wrap.querySelector('.edit-calendar-icon')
+
+    if (this.isOpened()) {
+      return this
+    }
 
     emitter.emit('panel.add.close')
     emitter.emit('panel.view.close')
@@ -113,7 +128,7 @@ const Panel = {
 
     $calendar = new Calendar({
       parent: 'edit-calendar',
-      time: this.getEditPlan().deadline,
+      time: this.getPlan().deadline,
       hasFooter: false,
       onDatePick: (time) => {
         $deadline.value = time
@@ -131,6 +146,9 @@ const Panel = {
     emitter.emit('columns.close')
 
     return this
+  },
+  isOpened () {
+    return hasClass($wrap, 'panel-opened')
   },
   update () {
     let plan = this.getPlan()
@@ -178,7 +196,20 @@ const Panel = {
 
     return this
   },
-  level ($button) {
+  toggleCalendar ($icon) {
+    const CLS_CHECKED = 'field-icon-checked'
+
+    if (hasClass($icon, CLS_CHECKED)) {
+      removeClass($icon, CLS_CHECKED)
+    } else {
+      addClass($icon, CLS_CHECKED)
+    }
+
+    $calendar.toggle()
+
+    return this
+  },
+  changeLevel ($button) {
     const CLS_CHECKED = 'field-level-checked'
     let id = $button.getAttribute('data-level')
     let $checked = $wrap.querySelector('.' + CLS_CHECKED)
@@ -209,16 +240,20 @@ const Panel = {
     let plan = clone(originPlan)
 
     // 收集新任务的数据
-    plan.id = originPlan.id
-    plan.title = $title.value
-    plan.deadline = $deadline.value
-    plan.estimate = $estimate.value
-    plan.level = parseInt($level.value, 10)
-    plan.desc = $desc.value
-    plan.marked = originPlan.marked
-    plan.deleted = originPlan.deleted
-    plan.status = originPlan.status
-    plan.create = originPlan.create
+    assign(plan, {
+      id: originPlan.id,
+      title: $title.value,
+      deadline: $deadline.value,
+      estimate: $estimate.value,
+      level: parseInt($level.value, 10),
+      desc: $desc.value,
+      marked: originPlan.marked,
+      deleted: originPlan.deleted,
+      status: originPlan.status,
+      create: originPlan.create,
+      delayed: isDelayed(plan)
+    })
+
     plan.update.unshift({
       time: getMoments(),
       code: OPERATIONS.edit.code,
@@ -227,7 +262,7 @@ const Panel = {
 
     this.close()
 
-    emitter.on('plan.update', plan)
+    emitter.emit('plan.edit', clone(plan))
 
     return this
   },
@@ -242,7 +277,19 @@ const Panel = {
     return this
   },
   _onLevelClick (evt) {
-    this.level(evt.delegateTarget)
+    this.changeLevel(evt.delegateTarget)
+
+    return this
+  },
+  _onDeadlineInputFocus () {
+    let $icon = $wrap.querySelector('.edit-calendar-icon')
+
+    this.toggleCalendar($icon)
+
+    return this
+  },
+  _onCalendarIconClick (evt) {
+    this.toggleCalendar(evt.delegateTarget)
 
     return this
   }
