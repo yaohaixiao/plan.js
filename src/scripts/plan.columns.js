@@ -268,10 +268,10 @@ const Columns = {
     let plans = clone(this.getPlans())
 
     plans.push(plan)
-    this.setPlans(plan)
+    this.setPlans(plans)
 
     count += 1
-    $count.innerHTML = count
+    $count.innerHTML = count.toString()
 
     $tasks.appendChild($plan)
 
@@ -315,6 +315,14 @@ const Columns = {
     $count.innerHTML = count.toString()
     $tasks.removeChild($plan)
 
+    plan.deleted = true
+    plan.delayed = isDelayed(plan)
+    plan.update.unshift({
+      time: getMoments(),
+      code: OPERATIONS.remove.code,
+      operate: OPERATIONS.remove.text
+    })
+
     emitter.emit('plan.remove', clone(plan))
 
     return this
@@ -323,7 +331,7 @@ const Columns = {
     const CLS_MARKED = 'task-marked'
     let filter = this.getFilter()
     let status = plan.status
-    let selector = `div.task[data-id="${plan.id}"]`
+    let selector = `.task[data-id="${plan.id}"]`
     let elements = this.getEls()
     let $plan
 

@@ -367,17 +367,9 @@ class PlanV2 {
   }
 
   remove (plan) {
-    plan.deleted = true
-    plan.delayed = isDelayed(plan)
-    plan.update.unshift({
-      time: getMoments(),
-      code: OPERATIONS.remove.code,
-      operate: OPERATIONS.remove.text
-    })
-
     this.setPlan(plan)
 
-    emitter.emit('panel.trash.add', clone(plan))
+    emitter.emit('panel.trash.add', plan)
 
     return this
   }
