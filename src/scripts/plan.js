@@ -347,7 +347,7 @@ class PlanV2 {
 
     this.setPlans(plans)
 
-    emitter.emit('columns.add', clone(plan))
+    emitter.emit('columns.add', plan)
 
     return this
   }
@@ -355,7 +355,7 @@ class PlanV2 {
   edit (plan) {
     this.setPlan(plan)
 
-    emitter.emit('columns.edit', clone(plan))
+    emitter.emit('columns.edit', plan)
 
     return this
   }
@@ -385,7 +385,7 @@ class PlanV2 {
   replace (plan) {
     this.setPlan(plan)
 
-    emitter.emit('columns.add', clone(plan))
+    emitter.emit('columns.add', plan)
 
     return this
   }

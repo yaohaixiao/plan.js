@@ -260,6 +260,20 @@ const Columns = {
     return this
   },
   add (plan) {
+    let status = plan.status
+    let $tasks = this.getStatusTasksEl(status)
+    let $count = this.getStatusCountEl(status)
+    let $plan = createTaskElement(plan)
+    let count = parseInt($count.innerHTML, 10)
+    let plans = clone(this.getPlans())
+
+    plans.push(plan)
+    this.setPlans(plan)
+
+    count += 1
+    $count.innerHTML = count
+
+    $tasks.appendChild($plan)
 
     return this
   },
