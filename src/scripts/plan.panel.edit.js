@@ -76,7 +76,7 @@ const Panel = {
     on($wrap, '.edit-deadline-input', 'click', this._onDeadlineInputFocus, this)
     on($wrap, '.edit-calendar-icon', 'click', this._onCalendarIconClick, this)
 
-    emitter.on('panel.edit.update', this.setPlan.bind(this))
+    emitter.on('panel.edit.update', this.update.bind(this))
     emitter.on('panel.edit.open', this.open.bind(this))
     emitter.on('panel.edit.close', this.close.bind(this))
 
@@ -114,9 +114,6 @@ const Panel = {
     return this
   },
   open () {
-    let $deadline = $wrap.querySelector('#edit-deadline')
-    let $icon = $wrap.querySelector('.edit-calendar-icon')
-
     if (this.isOpened()) {
       return this
     }
@@ -125,6 +122,38 @@ const Panel = {
     emitter.emit('panel.view.close')
     emitter.emit('panel.trash.close')
     emitter.emit('panel.setting.close')
+
+    addClass($wrap, 'panel-opened')
+
+    emitter.emit('columns.close')
+
+    return this
+  },
+  isOpened () {
+    return hasClass($wrap, 'panel-opened')
+  },
+  update (plan) {
+    let $title = $wrap.querySelector('#edit-title')
+    let $create = $wrap.querySelector('#edit-create')
+    let $deadline = $wrap.querySelector('#edit-deadline')
+    let $icon = $wrap.querySelector('.edit-calendar-icon')
+    let $estimate = $wrap.querySelector('#edit-estimate')
+    let $level = $wrap.querySelector('#edit-level')
+    let $desc = $wrap.querySelector('#edit-desc')
+    let $checked = $wrap.querySelector(`[data-level="${plan.level}"]`)
+
+    this.setPlan(plan)
+
+    $title.value = plan.title
+    $create.innerHTML = plan.create
+    $deadline.value = plan.deadline
+    $estimate.value = plan.estimate
+    $level.value = plan.level
+    $desc.value = plan.desc
+
+    if ($checked) {
+      addClass($checked, 'field-level-checked')
+    }
 
     $calendar = new Calendar({
       parent: 'edit-calendar',
@@ -139,37 +168,7 @@ const Panel = {
 
     $calendar.hide()
 
-    this.update()
-
-    addClass($wrap, 'panel-opened')
-
-    emitter.emit('columns.close')
-
-    return this
-  },
-  isOpened () {
-    return hasClass($wrap, 'panel-opened')
-  },
-  update () {
-    let plan = this.getPlan()
-    let $title = $wrap.querySelector('#edit-title')
-    let $create = $wrap.querySelector('#edit-create')
-    let $deadline = $wrap.querySelector('#edit-deadline')
-    let $estimate = $wrap.querySelector('#edit-estimate')
-    let $level = $wrap.querySelector('#edit-level')
-    let $desc = $wrap.querySelector('#edit-desc')
-    let $checked = $wrap.querySelector(`[data-level="${plan.level}"]`)
-
-    $title.value = plan.title
-    $create.innerHTML = plan.create
-    $deadline.value = plan.deadline
-    $estimate.value = plan.estimate
-    $level.value = plan.level
-    $desc.value = plan.desc
-
-    if ($checked) {
-      addClass($checked, 'field-level-checked')
-    }
+    this.open()
 
     return this
   },
