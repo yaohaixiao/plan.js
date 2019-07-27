@@ -608,7 +608,6 @@ const Columns = {
     let plan = this.getPlan(parseInt(id, 10))
 
     emitter.emit('panel.view.update', plan)
-    emitter.emit('panel.view.open')
 
     return this
   },
@@ -636,7 +635,6 @@ const Columns = {
     let plan = this.getPlan(parseInt(id, 10))
 
     emitter.emit('panel.edit.update', plan)
-    emitter.emit('panel.edit.open')
 
     return this
   },

@@ -38,7 +38,7 @@ import emitter from './plan.emitter'
 import dragula from 'dragula'
 import marked from 'marked'
 
-class PlanV2 {
+class Plan {
   constructor (options) {
     this.attributes = {
       template: 0,
@@ -511,4 +511,4 @@ class PlanV2 {
   }
 }
 
-export default PlanV2
+export default Plan

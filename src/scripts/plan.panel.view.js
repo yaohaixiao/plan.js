@@ -61,7 +61,7 @@ const Panel = {
     on($wrap, '.view-cancel', 'click', this._onCancelClick, this)
     on($wrap, '.view-edit', 'click', this._onEditClick, this)
 
-    emitter.on('panel.view.update', this.setPlan.bind(this))
+    emitter.on('panel.view.update', this.update.bind(this))
     emitter.on('panel.view.open', this.open.bind(this))
     emitter.on('panel.view.close', this.close.bind(this))
 
@@ -71,7 +71,7 @@ const Panel = {
     off($wrap, 'click', this._onCancelClick)
     off($wrap, 'click', this._onEditClick)
 
-    emitter.off('panel.view.update', this.setPlan.bind(this))
+    emitter.off('panel.view.update', this.update.bind(this))
     emitter.off('panel.view.open', this.open.bind(this))
     emitter.off('panel.view.close', this.close.bind(this))
 
@@ -92,17 +92,14 @@ const Panel = {
     emitter.emit('panel.trash.close')
     emitter.emit('panel.setting.close')
 
-    this.update()
-
     addClass($wrap, 'panel-opened')
 
     emitter.emit('columns.close')
 
     return this
   },
-  update () {
+  update (plan) {
     const CLS_LEVEL = 'field-view-level field-level-icon field-level-checked'
-    let plan = this.getPlan()
     let elements = this.getEls()
     let $title = elements.title
     let $create = elements.create
@@ -115,6 +112,8 @@ const Panel = {
       'className': 'panel-logs'
     })
     let $icon
+
+    this.setPlan(plan)
 
     $title.innerHTML = plan.title
     $create.innerHTML = plan.create
@@ -189,6 +188,8 @@ const Panel = {
     $logs.innerHTML = ''
     $logs.appendChild($list)
 
+    this.open()
+
     return this
   },
   empty () {
@@ -218,7 +219,6 @@ const Panel = {
   },
   _onEditClick () {
     emitter.emit('panel.edit.update', this.getPlan())
-    emitter.emit('panel.edit.open')
 
     return this
   }
