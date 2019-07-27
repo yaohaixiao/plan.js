@@ -11,29 +11,54 @@ import {
   on
 } from './delegate'
 
+import { clone } from './utils'
+import { getMoments } from './time'
+
+import Confirm from './confirm'
+
+import { OPERATIONS } from './plan.config'
+import emitter from './plan.emitter'
+
 import {
-  OPERATIONS
-} from './plan-config'
+  createTaskElement,
+  getTasksFragment
+} from './plan.task'
 
-import {clone} from './utils'
-import {getMoments} from './time'
-import {createTaskElement} from './plan-task'
-import {isDelayed} from './plan-static'
-
-import emitter from './plan-emitter'
+import { isDelayed } from './plan.static'
 
 const $wrap = document.querySelector('#trash-panel')
+let $confirm
 
 const Panel = {
-  initialize () {
-    this.addEventListeners()
+  initialize (plans) {
+    this.setPlans(plans)
+        .addEventListeners()
+
+    return this
   },
   _elements: {
     wrap: $wrap,
-    count: $wrap.querySelector('#trash-count'),
-    tasks: $wrap.querySelector('#tasks-trash')
+    trashCount: $wrap.querySelector('#trash-count'),
+    tasksTrash: $wrap.querySelector('#tasks-trash')
   },
   _plans: [],
+  render () {
+    let plans = this.getPlans()
+    let elements = this.getEls()
+    let $tasksTrash = elements.tasksTrash
+    let $fragment = getTasksFragment(plans)
+
+    elements.trashCount.innerHTML = `${plans.length}`
+    $tasksTrash.innerHTML = ''
+    $tasksTrash.appendChild($fragment)
+
+    return this
+  },
+  getPlan (id) {
+    return this.getPlans().filter((plan) => {
+      return plan.id === id
+    })[0]
+  },
   getPlans () {
     return this._plans
   },
@@ -45,17 +70,11 @@ const Panel = {
   getEls () {
     return this._elements
   },
-  render () {
-    this.update()
-
-    return this
-  },
   addEventListeners () {
     on($wrap, '.trash-cancel', 'click', this._onCancelClick, this)
     on($wrap, '.task-replace', 'click', this._onReplaceClick, this)
     on($wrap, '.task-delete', 'click', this._onDeleteClick, this)
 
-    emitter.on('panel.trash.update', this.setPlans.bind(this))
     emitter.on('panel.trash.add', this.add.bind(this))
     emitter.on('panel.trash.open', this.open.bind(this))
     emitter.on('panel.trash.close', this.close.bind(this))
@@ -68,7 +87,7 @@ const Panel = {
     off($wrap, 'click', this._onReplaceClick)
     off($wrap, 'click', this._onDeleteClick)
 
-    emitter.off('panel.trash.update', this.setPlans.bind(this))
+    emitter.off('panel.trash.add', this.add.bind(this))
     emitter.off('panel.trash.open', this.open.bind(this))
     emitter.off('panel.trash.close', this.close.bind(this))
     emitter.off('panel.trash.toggle', this.toggle.bind(this))
@@ -88,8 +107,8 @@ const Panel = {
   },
   add (plan) {
     let elements = this.getEls()
-    let $tasks = elements.tasks
-    let $count = elements.count
+    let $tasks = elements.tasksTrash
+    let $count = elements.trashCount
     let count = parseInt($count.innerHTML, 10)
     let plans = clone(this.getPlans())
 
@@ -104,19 +123,17 @@ const Panel = {
     plans.unshift(plan)
     this.setPlans(plans)
 
-    count+=1
+    count += 1
     $count.innerHTML = count.toString()
     $tasks.appendChild(createTaskElement(plan))
-
-    emitter.emit('plan.remove', plan)
 
     return this
   },
   delete (plan) {
     let plans = clone(this.getPlans())
     let elements = this.getEls()
-    let $tasks = elements.tasks
-    let $count = elements.count
+    let $tasks = elements.tasksTrash
+    let $count = elements.trashCount
     let index = this.indexOf(plans, plan)
     let count = parseInt($count.innerHTML, 10)
     let $plan
@@ -131,17 +148,17 @@ const Panel = {
     count -= 1
     $count.innerHTML = count.toString()
 
-    $plan = $tasks.querySelector(`div.task[data-id="${plan.id}"]`)
+    $plan = $tasks.querySelector(`.task[data-id="${plan.id}"]`)
     $tasks.removeChild($plan)
 
-    emitter.on('plan.delete', plan)
+    emitter.emit('plan.delete', clone(plan))
 
     return this
   },
   replace (plan) {
     let elements = this.getEls()
-    let $tasks = elements.tasks
-    let $count = elements.count
+    let $tasks = elements.tasksTrash
+    let $count = elements.trashCount
     let count = parseInt($count.innerHTML, 10)
     let plans = clone(this.getPlans())
     let index = this.indexOf(plans, plan)
@@ -168,12 +185,29 @@ const Panel = {
     $plan = $tasks.querySelector(`div.task[data-id="${plan.id}"]`)
     $tasks.removeChild($plan)
 
-    emitter.emit('plan.update', plan)
+    emitter.emit('plan.replace', clone(plan))
+
+    return this
+  },
+  confirm (plan) {
+    $confirm = new Confirm({
+      title: '确定删除任务吗？',
+      message: '任务将被彻底删除，无法恢复',
+      cancelText: '取消',
+      enterText: '删除',
+      afterEnter: () => {
+        this.delete(plan)
+
+        $confirm.destroy()
+      }
+    })
+
+    $confirm.open()
 
     return this
   },
   close () {
-    if(!this.isOpened()){
+    if (!this.isOpened()) {
       return this
     }
 
@@ -182,12 +216,10 @@ const Panel = {
 
     removeClass($wrap, 'panel-opened')
 
-    this.empty()
-
     return this
   },
   open () {
-    if(this.isOpened()){
+    if (this.isOpened()) {
       return this
     }
 
@@ -217,11 +249,9 @@ const Panel = {
   },
   empty () {
     let elements = this.getEls()
-    let $count = elements.count
-    let $tasks = elements.tasks
 
-    $count.innerHTML = '0'
-    $tasks.innerHTML = ''
+    elements.trashCount.innerHTML = '0'
+    elements.tasksTrash.innerHTML = ''
 
     return this
   },
@@ -244,7 +274,7 @@ const Panel = {
     let id = parseInt($button.getAttribute('data-id'), 10)
     let plan = this.getPlan(id)
 
-    this.delete(plan)
+    this.confirm(plan)
 
     return this
   }

@@ -1,6 +1,6 @@
 'use strict'
 
-import {getToday} from './time'
+import { getToday } from './time'
 
 export const isDelayed = (plan) => {
   let today = getToday().text

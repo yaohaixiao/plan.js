@@ -14,7 +14,7 @@ export const TEMPLATES = [
     plans: [
       {
         id: 1,
-        title: '分析 PlanV2 项目的用户需求',
+        title: '分析 Plan 项目的用户需求',
         deadline: '2019-07-14',
         estimate: '3d',
         level: 0,
@@ -42,7 +42,7 @@ export const TEMPLATES = [
       },
       {
         id: 3,
-        title: '出 PlanV2 的 UI 设计稿',
+        title: '出 Plan 的 UI 设计稿',
         deadline: '2019-07-18',
         estimate: '3d',
         level: 1,

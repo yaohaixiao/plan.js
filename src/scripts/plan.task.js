@@ -1,8 +1,24 @@
 'use strict'
 
-import {createElement} from './dom'
-import {toSafeText} from './utils'
+import { createElement } from './dom'
+import { toSafeText } from './utils'
 import marked from 'marked'
+
+export const getTasksFragment = (plans) => {
+  let $fragment = document.createDocumentFragment()
+
+  if (plans.length < 1) {
+    return $fragment
+  }
+
+  plans.forEach((plan) => {
+    let $plan = createTaskElement(plan)
+
+    $fragment.appendChild($plan)
+  })
+
+  return $fragment
+}
 
 export const createTaskElement = (plan) => {
   let id = plan.id
@@ -287,5 +303,6 @@ export default {
   createTaskEstimateElement,
   createTaskFooterElement,
   createTaskMainElement,
-  createTaskElement
+  createTaskElement,
+  getTasksFragment
 }

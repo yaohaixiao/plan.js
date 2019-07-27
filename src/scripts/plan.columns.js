@@ -10,19 +10,28 @@ import {
   removeClass
 } from './dom'
 
-import emitter from './plan-emitter'
-import {createTaskElement} from './plan-task'
-import {getMoments} from './time'
-import {OPERATIONS} from './plan-config'
+import { clone } from './utils'
+import { getMoments } from './time'
+import Confirm from './confirm'
+
+import { OPERATIONS } from './plan.config'
+import emitter from './plan.emitter'
+
+import {
+  getTasksFragment,
+  createTaskElement
+} from './plan.task'
+
 import {
   isDelayed,
   updateStatusChangedCount
-} from './plan-static'
+} from './plan.static'
 
 let $wrap = document.querySelector('#columns')
+let $confirm
 
 const Columns = {
-  initialize ({filter, plans}) {
+  initialize ({ filter, plans }) {
     this.setFilter(filter)
         .setPlans(plans)
         .addEventListeners()
@@ -43,12 +52,7 @@ const Columns = {
   _plans: [],
   _filter: 'inbox',
   render () {
-    let todoPlans = this.getTodoPlans()
-    let doingPlans = this.getDoingPlans()
-    let checkingPlans = this.getCheckingPlans()
-    let donePlans = this.getDonePlans()
-
-    this.updateColumns(todoPlans, doingPlans, checkingPlans, donePlans)
+    this.updateColumns()
 
     return this
   },
@@ -57,6 +61,30 @@ const Columns = {
   },
   setFilter (filter) {
     this._filter = filter
+
+    return this
+  },
+  getPlan (id) {
+    return this.getPlans().filter((plan) => {
+      return plan.id === id
+    })[0]
+  },
+  setPlan (plan) {
+    let plans = clone(this.getPlans())
+    let index = -1
+
+    // 查询是否存在
+    plans.forEach((task, i) => {
+      if (task.id === plan.id) {
+        index = i
+      }
+    })
+
+    // 如果存在，则更新数据
+    if (index > -1) {
+      plans[index] = plan
+      this.setPlans(plans)
+    }
 
     return this
   },
@@ -77,7 +105,7 @@ const Columns = {
     on($wrap, '.columns-overlay', 'click', this._onOverlayClick, this)
 
     // ---------- task ----------
-    on($wrap, '.task-title', 'click', this._onTaskTitleClick, this)
+    on($wrap, '.task-title', 'click', this._onTitleClick, this)
     on($wrap, '.task-prev', 'click', this._onPrevButtonClick, this)
     on($wrap, '.task-edit', 'click', this._onEditButtonClick, this)
     on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
@@ -87,7 +115,7 @@ const Columns = {
     emitter.on('columns.open', this.open.bind(this))
     emitter.on('columns.close', this.close.bind(this))
 
-    emitter.on('columns.update.filter', this.setFilter.bind(this))
+    emitter.on('columns.filter', this.filter.bind(this))
     emitter.on('columns.add', this.add.bind(this))
     emitter.on('columns.edit', this.edit.bind(this))
 
@@ -99,7 +127,7 @@ const Columns = {
     off($wrap, 'click', this._onOverlayClick)
 
     // ---------- task ----------
-    off($wrap, 'click', this._onTaskTitleClick)
+    off($wrap, 'click', this._onTitleClick)
     off($wrap, 'click', this._onPrevButtonClick)
     off($wrap, 'click', this._onEditButtonClick)
     off($wrap, 'click', this._onMarkedButtonClick)
@@ -108,6 +136,10 @@ const Columns = {
 
     emitter.off('columns.open', this.open.bind(this))
     emitter.off('columns.close', this.close.bind(this))
+
+    emitter.on('columns.filter', this.filter.bind(this))
+    emitter.on('columns.add', this.add.bind(this))
+    emitter.on('columns.edit', this.edit.bind(this))
 
     return this
   },
@@ -221,14 +253,55 @@ const Columns = {
   getMarkedPlans () {
     return this.filterPlans('marked')
   },
+  filter (filter) {
+    this.setFilter(filter)
+        .updateColumns()
+
+    return this
+  },
   add (plan) {
+
     return this
   },
   edit (plan) {
+    let $plan = createTaskElement(plan)
+    let $originPlan = $wrap.querySelector(`.task[data-id="${plan.id}"]`)
+    let $tasks = this.getStatusTasksEl(plan.status)
+
+    this.setPlan(plan)
+
+    $tasks.replaceChild($plan, $originPlan)
+
     return this
   },
   remove (plan) {
-    // emitter.emit('plan.edit', plan)
+    let $tasks = this.getStatusTasksEl(plan.status)
+    let $count = this.getStatusCountEl(plan.status)
+    let $plan = $tasks.querySelector(`.task[data-id="${plan.id}"]`)
+    let plans = clone(this.getPlans())
+    let index = -1
+    let count
+
+    plans.forEach((task, i) => {
+      if (task.id === plan.id) {
+        index = i
+      }
+    })
+
+    if (index === -1) {
+      return this
+    }
+
+    plans.splice(index, 1)
+    this.setPlans(plans)
+
+    count = parseInt($count.innerHTML, 10)
+    count -= 1
+
+    $count.innerHTML = count.toString()
+    $tasks.removeChild($plan)
+
+    emitter.emit('plan.remove', clone(plan))
 
     return this
   },
@@ -236,37 +309,37 @@ const Columns = {
     const CLS_MARKED = 'task-marked'
     let filter = this.getFilter()
     let status = plan.status
-    let selector = `div.task[data-id="${id}"]`
-    let $columns = this.$columns
+    let selector = `div.task[data-id="${plan.id}"]`
+    let elements = this.getEls()
     let $plan
 
     plan.marked = !plan.marked
     plan.update.unshift({
       time: getMoments(),
       code: plan.marked ? OPERATIONS.mark.code : OPERATIONS.unmark.code,
-      operate: plan.marked ? OPERATIONS.mark.text : OPERATIONS.unmark.text,
+      operate: plan.marked ? OPERATIONS.mark.text : OPERATIONS.unmark.text
     })
     this.setPlan(plan)
 
-    emitter.emit('plan.edit', plan)
+    emitter.emit('plan.update', clone(plan))
 
     switch (status) {
       case 0:
-        $plan = $columns.tasksTodo.querySelector(selector)
+        $plan = elements.tasksTodo.querySelector(selector)
         break
       case 1:
-        $plan = $columns.tasksDoing.querySelector(selector)
+        $plan = elements.tasksDoing.querySelector(selector)
         break
       case 2:
-        $plan = $columns.tasksChecking.querySelector(selector)
+        $plan = elements.tasksChecking.querySelector(selector)
         break
       case 3:
-        $plan = $columns.tasksDone.querySelector(selector)
+        $plan = elements.tasksDone.querySelector(selector)
         break
     }
 
     if (filter === 'marked') {
-      $columns.updateColumn(status, $columns.filterPlans(status, 'marked'))
+      this.updateColumn(status)
     } else {
       if (plan.marked) {
         addClass($plan, CLS_MARKED)
@@ -279,14 +352,30 @@ const Columns = {
 
     return this
   },
+  confirm (plan) {
+    $confirm = new Confirm({
+      title: '确定删除任务吗？',
+      message: '任务将被放入回收站，稍后可以恢复',
+      cancelText: '取消',
+      enterText: '删除',
+      afterEnter: () => {
+        this.remove(plan)
+
+        $confirm.destroy()
+      }
+    })
+
+    $confirm.open()
+
+    return this
+  },
   changeStatus (plan, direction) {
     let status = plan.status
-    let $columns = this.$columns
-    let $sourceCount = $columns.getStatusCountEl(status)
-    let $sourceTasks = $columns.getStatusTasksEl(status)
-    let $plan = $sourceTasks.querySelector(`div.task[data-id="${id}"]`)
-    let $targetCount = $columns.getStatusCountEl(plan.status)
-    let $targetTasks = $columns.getStatusTasksEl(plan.status)
+    let $sourceCount = this.getStatusCountEl(status)
+    let $sourceTasks = this.getStatusTasksEl(status)
+    let $plan = $sourceTasks.querySelector(`div.task[data-id="${plan.id}"]`)
+    let $targetCount
+    let $targetTasks
 
     if (direction === 'prev') {
       plan.status -= 1
@@ -312,7 +401,10 @@ const Columns = {
     })
     this.setPlan(plan)
 
-    emitter.emit('plan.edit', plan)
+    emitter.emit('plan.update', clone(plan))
+
+    $targetCount = this.getStatusCountEl(plan.status)
+    $targetTasks = this.getStatusTasksEl(plan.status)
 
     updateStatusChangedCount($sourceCount, $targetCount)
 
@@ -321,12 +413,13 @@ const Columns = {
 
     return this
   },
-  updateTodoColumn (todoPlans) {
+  updateTodoColumn () {
+    let todoPlans = this.getTodoPlans()
     let elements = this.getEls()
     // 待处理
     let $tasksTodo = elements.tasksTodo
     let $todoCount = elements.todoCount
-    let $todoFragment = this._getTasksFragment(todoPlans)
+    let $todoFragment = getTasksFragment(todoPlans)
 
     $todoCount.innerHTML = `${todoPlans.length}`
     $tasksTodo.innerHTML = ''
@@ -335,12 +428,13 @@ const Columns = {
     return this
   },
 
-  updateDoingColumn (doingPlans) {
+  updateDoingColumn () {
+    let doingPlans = this.getDoingPlans()
     let elements = this.getEls()
     // 处理中
     let $tasksDoing = elements.tasksDoing
     let $doingCount = elements.doingCount
-    let $doingFragment = this._getTasksFragment(doingPlans)
+    let $doingFragment = getTasksFragment(doingPlans)
 
     $doingCount.innerHTML = `${doingPlans.length}`
     $tasksDoing.innerHTML = ''
@@ -349,12 +443,13 @@ const Columns = {
     return this
   },
 
-  updateCheckingColumn (checkingPlans) {
+  updateCheckingColumn () {
+    let checkingPlans = this.getCheckingPlans()
     let elements = this.getEls()
     // 待验证
     let $tasksChecking = elements.tasksChecking
     let $checkingCount = elements.checkingCount
-    let $checkingFragment = this._getTasksFragment(checkingPlans)
+    let $checkingFragment = getTasksFragment(checkingPlans)
 
     $checkingCount.innerHTML = `${checkingPlans.length}`
     $tasksChecking.innerHTML = ''
@@ -363,12 +458,13 @@ const Columns = {
     return this
   },
 
-  updateDoneColumn (donePlans) {
+  updateDoneColumn () {
+    let donePlans = this.getDonePlans()
     let elements = this.getEls()
     // 已完成
     let $tasksDone = elements.tasksDone
     let $doneCount = elements.doneCount
-    let $doneFragment = this._getTasksFragment(donePlans)
+    let $doneFragment = getTasksFragment(donePlans)
 
     $doneCount.innerHTML = `${donePlans.length}`
     $tasksDone.innerHTML = ''
@@ -377,30 +473,30 @@ const Columns = {
     return this
   },
 
-  updateColumn (status, plans) {
+  updateColumn (status) {
     switch (status) {
       case 0:
-        this.updateTodoColumn(plans)
+        this.updateTodoColumn()
         break
       case 1:
-        this.updateDoingColumn(plans)
+        this.updateDoingColumn()
         break
       case 2:
-        this.updateCheckingColumn(plans)
+        this.updateCheckingColumn()
         break
       case 3:
-        this.updateDoneColumn(plans)
+        this.updateDoneColumn()
         break
     }
 
     return this
   },
 
-  updateColumns (todoPlans, doingPlans, checkingPlans, donePlans) {
-    this.updateTodoColumn(todoPlans)
-        .updateDoingColumn(doingPlans)
-        .updateCheckingColumn(checkingPlans)
-        .updateDoneColumn(donePlans)
+  updateColumns () {
+    this.updateTodoColumn()
+        .updateDoingColumn()
+        .updateCheckingColumn()
+        .updateDoneColumn()
 
     return this
   },
@@ -484,22 +580,7 @@ const Columns = {
 
     return this
   },
-  _getTasksFragment (plans) {
-    let $fragment = document.createDocumentFragment()
-
-    if (plans.length < 1) {
-      return $fragment
-    }
-
-    plans.forEach((plan) => {
-      let $plan = createTaskElement(plan)
-
-      $fragment.appendChild($plan)
-    })
-
-    return $fragment
-  },
-  _onTaskTitleClick (evt) {
+  _onTitleClick (evt) {
     let $title = evt.delegateTarget
     let id = $title.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
@@ -551,7 +632,7 @@ const Columns = {
     let id = $button.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
 
-    this.remove(plan)
+    this.confirm(plan)
 
     return this
   },
@@ -566,13 +647,9 @@ const Columns = {
     return this
   },
   _onOverlayClick () {
-    this.open()
+    emitter.emit('plan.close.panels')
 
-    emitter.emit('panel.view.close')
-    emitter.emit('panel.add.close')
-    emitter.emit('panel.edit.close')
-    emitter.emit('panel.trash.close')
-    emitter.emit('panel.setting.close')
+    this.open()
 
     return this
   }
