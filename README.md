@@ -5,7 +5,7 @@ Plan - A Javascript todo list app, easy to use & nice UI.
 ## Feature
 - 4 task levels;
 - Drag & Drop to switch task status;
-- Using localStorage to cache the tasks;
+- Using localStorage to cache the data;
 - Responsive layout, friendly to mobile access;
 - Support markdown grammar;
 - Nice UI with 8 themes;
@@ -47,6 +47,7 @@ Plan - A Javascript todo list app, easy to use & nice UI.
 - [calendar.js](https://github.com/yaohaixiao/calendar.js)
 - [dragula](https://github.com/bevacqua/dragula)
 - [marked](https://github.com/markedjs/marked)
+- [mitt](https://github.com/developit/mitt)
 - [normalize.css](https://github.com/necolas/normalize.css)
 
 ## License

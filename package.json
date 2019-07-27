@@ -1,6 +1,6 @@
 {
   "name": "plan",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Plan 是一个纯 JavaScript 开发的 Todo 类型的任务管理应用。",
   "main": "plan.js",
   "scripts": {
