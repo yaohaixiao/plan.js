@@ -10,7 +10,7 @@ Plan - A Javascript todo list app, easy to use & nice UI.
 - Support markdown grammar;
 - Nice UI with 8 themes;
 - Highlight important tasks and delayed tasks;
-- User experience is friendly and easy to use.
+- User friendly and easy to use.
 
 ## Browser Support
 
