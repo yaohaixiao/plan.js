@@ -2,7 +2,8 @@
 
 import {
   assign,
-  clone
+  clone,
+  findIndex
 } from './utils'
 
 import {
@@ -10,9 +11,7 @@ import {
 } from './time'
 
 import {
-  addClass,
-  removeClass,
-  replaceClass
+  addClass
 } from './dom'
 
 import {
@@ -36,7 +35,6 @@ import Columns from './plan.columns'
 import emitter from './plan.emitter'
 
 import dragula from 'dragula'
-import marked from 'marked'
 
 class Plan {
   constructor (options) {
@@ -252,13 +250,8 @@ class Plan {
 
   setPlan (plan) {
     let plans = clone(this.getPlans())
-    let index = -1
-
-    // 查询是否存在
-    plans.forEach((task, i) => {
-      if (task.id === plan.id) {
-        index = i
-      }
+    let index = findIndex(plans, (task) => {
+      return task.id === plan.id
     })
 
     // 如果存在，则更新数据
@@ -270,6 +263,10 @@ class Plan {
     return this
   }
 
+  /**
+   *
+   * @returns {Array}
+   */
   getPlans () {
     return this.data.plans
   }

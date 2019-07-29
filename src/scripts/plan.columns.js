@@ -10,7 +10,10 @@ import {
   removeClass
 } from './dom'
 
-import { clone } from './utils'
+import {
+  clone,
+  findIndex
+} from './utils'
 import { getMoments } from './time'
 import Confirm from './confirm'
 
@@ -71,13 +74,8 @@ const Columns = {
   },
   setPlan (plan) {
     let plans = clone(this.getPlans())
-    let index = -1
-
-    // 查询是否存在
-    plans.forEach((task, i) => {
-      if (task.id === plan.id) {
-        index = i
-      }
+    let index = findIndex(plans, (task) => {
+      return task.id === plan.id
     })
 
     // 如果存在，则更新数据
