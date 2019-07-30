@@ -145,7 +145,7 @@ export const createTaskArchiveElement = (plan) => {
     'data-id': `${id}`
   }, [
     createElement('i', {
-      'className': 'icon-checkmark-outline'
+      'className': 'icon-checkbox-checked'
     })
   ])
 }
