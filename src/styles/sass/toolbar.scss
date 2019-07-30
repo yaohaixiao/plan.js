@@ -15,7 +15,7 @@
 
 .toolbar {
   box-sizing: border-box;
-  padding: 48px 0 96px;
+  padding: 48px 0 144px;
 }
 
 .toolbar-filters {
@@ -29,6 +29,7 @@
   width: 68px;
 }
 
+.toolbar-archives,
 .toolbar-plus,
 .toolbar-trash,
 .toolbar-setting {
@@ -41,6 +42,10 @@
 
 .toolbar-plus {
   top: 48px;
+}
+
+.toolbar-archives{
+  bottom:96px;
 }
 
 .toolbar-trash {
