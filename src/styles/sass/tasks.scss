@@ -193,20 +193,23 @@
 }
 
 .task-button {
-  @include button(30px, 27px, 13px);
+  @include button(30px, 24px, 13px);
   cursor: pointer;
 }
 
-.task-prev {
+.task-prev,
+.task-replace,
+.task-next,
+.task-archive {
   display: none;
 }
 
-.task-replace {
-  display: none;
+.task-delete {
+  @include button(30px, 24px, 13px, $light-gray, $pink);
 }
 
-.task-next {
-  display: none;
+.task-archive {
+  @include button(30px, 24px, 13px, $light-gray, $green);
 }
 
 .task-marked {
@@ -255,6 +258,36 @@
   }
 }
 
+.task-archived {
+  .task-prev {
+    display: none;
+  }
+
+  .task-edit {
+    display: none;
+  }
+
+  .task-bookmark {
+    display: none;
+  }
+
+  .task-replace {
+    display: none;
+  }
+
+  .task-delete {
+    display: block;
+  }
+
+  .task-next {
+    display: none;
+  }
+
+  .task-archive {
+    display: none;
+  }
+}
+
 .task-status-0 {
   .task-prev {
     display: none;
@@ -264,5 +297,9 @@
 .task-status-3 {
   .task-next {
     display: none;
+  }
+
+  .task-archive {
+    display: block;
   }
 }

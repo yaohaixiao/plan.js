@@ -28,11 +28,44 @@ import Toolbar from './plan.toolbar'
 import PanelView from './plan.panel.view'
 import PanelAdd from './plan.panel.add'
 import PanelEdit from './plan.panel.edit'
+import PanelArchives from './plan.panel.archives'
 import PanelTrash from './plan.panel.trash'
 import PanelSetting from './plan.panel.setting'
 import Columns from './plan.columns'
 
 import emitter from './plan.emitter'
+
+import {
+  PLAN_UPDATE_TEMPLATE,
+  PLAN_UPDATE_THEME,
+  PLAN_UPDATE_CACHE,
+  PLAN_FILTER,
+  PLAN_UPDATE,
+  PLAN_ADD,
+  PLAN_EDIT,
+  PLAN_DELETE,
+  PLAN_REMOVE,
+  PLAN_REPLACE,
+  PLAN_ARCHIVE,
+  PLAN_CLOSE_PANELS,
+  PANEL_VIEW_EMPTY,
+  PANEL_VIEW_CLOSE,
+  PANEL_ADD_EMPTY,
+  PANEL_ADD_CLOSE,
+  PANEL_EDIT_EMPTY,
+  PANEL_EDIT_CLOSE,
+  PANEL_ARCHIVES_ADD,
+  PANEL_ARCHIVES_EMPTY,
+  PANEL_ARCHIVES_CLOSE,
+  PANEL_TRASH_ADD,
+  PANEL_TRASH_EMPTY,
+  PANEL_TRASH_CLOSE,
+  PANEL_SETTING_CLOSE,
+  COLUMNS_EMPTY,
+  COLUMNS_FILTER,
+  COLUMNS_ADD,
+  COLUMNS_EDIT
+} from './plan.actions'
 
 import dragula from 'dragula'
 
@@ -49,6 +82,7 @@ class Plan {
     this.$panelView = null
     this.$panelAdd = null
     this.$panelEdit = null
+    this.$panelArchives = null
     this.$panelTrash = null
     this.$panelSetting = null
     this.$columns = null
@@ -74,8 +108,8 @@ class Plan {
     this.$panelView = PanelView
     this.$panelAdd = PanelAdd
     this.$panelEdit = PanelEdit
+    this.$panelArchives = PanelArchives
     this.$panelTrash = PanelTrash
-
     this.$panelSetting = PanelSetting
 
     this.$columns = Columns
@@ -89,6 +123,7 @@ class Plan {
     this.$panelAdd.initialize()
     this.$panelEdit.initialize()
 
+    this.$panelArchives.initialize(this.getPlans().filter(plan => plan.archived))
     this.$panelTrash.initialize(this.getPlans().filter(plan => plan.deleted))
 
     this.$panelSetting.initialize({
@@ -117,6 +152,7 @@ class Plan {
   render () {
     document.body.className = THEMES[this.get('theme')].theme
 
+    this.$panelArchives.render()
     this.$panelTrash.render()
     this.$panelSetting.render()
     this.$columns.render()
@@ -126,21 +162,22 @@ class Plan {
 
   addEventListeners () {
     // 更新配置
-    emitter.on('plan.update.template', this.setTemplate.bind(this))
-    emitter.on('plan.update.theme', this.setTheme.bind(this))
-    emitter.on('plan.update.cache', this.setCache.bind(this))
+    emitter.on(PLAN_UPDATE_TEMPLATE, this.setTemplate.bind(this))
+    emitter.on(PLAN_UPDATE_THEME, this.setTheme.bind(this))
+    emitter.on(PLAN_UPDATE_CACHE, this.setCache.bind(this))
 
     // 更新数据
-    emitter.on('plan.filter', this.filter.bind(this))
-    emitter.on('plan.add', this.add.bind(this))
-    emitter.on('plan.edit', this.edit.bind(this))
-    emitter.on('plan.update', this.update.bind(this))
-    emitter.on('plan.remove', this.remove.bind(this))
-    emitter.on('plan.replace', this.replace.bind(this))
-    emitter.on('plan.delete', this.delete.bind(this))
+    emitter.on(PLAN_FILTER, this.filter.bind(this))
+    emitter.on(PLAN_ADD, this.add.bind(this))
+    emitter.on(PLAN_EDIT, this.edit.bind(this))
+    emitter.on(PLAN_UPDATE, this.update.bind(this))
+    emitter.on(PLAN_REMOVE, this.remove.bind(this))
+    emitter.on(PLAN_REPLACE, this.replace.bind(this))
+    emitter.on(PLAN_DELETE, this.delete.bind(this))
+    emitter.on(PLAN_ARCHIVE, this.archive.bind(this))
 
     // 收起 Panel
-    emitter.on('plan.close.panels', this.closePanels.bind(this))
+    emitter.on(PLAN_CLOSE_PANELS, this.closePanels.bind(this))
 
     // 拖动完成，更新任务状态
     this.$dragula.on('drop', ($plan, $target, $source) => {
@@ -160,20 +197,21 @@ class Plan {
     this.$columns.removeEventListeners()
 
     // 更新配置
-    emitter.off('plan.update.template', this.setTemplate.bind(this))
-    emitter.off('plan.update.theme', this.setTheme.bind(this))
-    emitter.off('plan.update.cache', this.setCache.bind(this))
+    emitter.off(PLAN_UPDATE_TEMPLATE, this.setTemplate.bind(this))
+    emitter.off(PLAN_UPDATE_THEME, this.setTheme.bind(this))
+    emitter.off(PLAN_UPDATE_CACHE, this.setCache.bind(this))
 
     // 更新数据
-    emitter.off('plan.filter', this.filter.bind(this))
-    emitter.off('plan.add', this.add.bind(this))
-    emitter.off('plan.edit', this.edit.bind(this))
-    emitter.off('plan.update', this.update.bind(this))
-    emitter.off('plan.remove', this.remove.bind(this))
-    emitter.off('plan.replace', this.replace.bind(this))
-    emitter.off('plan.delete', this.delete.bind(this))
+    emitter.off(PLAN_FILTER, this.filter.bind(this))
+    emitter.off(PLAN_ADD, this.add.bind(this))
+    emitter.off(PLAN_EDIT, this.edit.bind(this))
+    emitter.off(PLAN_UPDATE, this.update.bind(this))
+    emitter.off(PLAN_REMOVE, this.remove.bind(this))
+    emitter.off(PLAN_REPLACE, this.replace.bind(this))
+    emitter.off(PLAN_DELETE, this.delete.bind(this))
+    emitter.off(PLAN_ARCHIVE, this.archive.bind(this))
 
-    emitter.off('plan.close.panels', this.closePanels.bind(this))
+    emitter.off(PLAN_CLOSE_PANELS, this.closePanels.bind(this))
 
     this.$dragula.destroy()
 
@@ -222,12 +260,12 @@ class Plan {
   }
 
   empty () {
-    emitter.emit('panel.view.empty')
-    emitter.emit('panel.add.empty')
-    emitter.emit('panel.edit.empty')
-    emitter.emit('panel.trash.empty')
-    emitter.emit('panel.setting.empty')
-    emitter.emit('panel.columns.empty')
+    emitter.emit(PANEL_VIEW_EMPTY)
+    emitter.emit(PANEL_ADD_EMPTY)
+    emitter.emit(PANEL_EDIT_EMPTY)
+    emitter.emit(PANEL_ARCHIVES_EMPTY)
+    emitter.emit(PANEL_TRASH_EMPTY)
+    emitter.emit(COLUMNS_EMPTY)
 
     return this
   }
@@ -332,7 +370,7 @@ class Plan {
   filter(filter) {
     this.setFilter(filter)
 
-    emitter.emit('columns.filter', filter)
+    emitter.emit(COLUMNS_FILTER, filter)
 
     return this
   }
@@ -344,7 +382,7 @@ class Plan {
 
     this.setPlans(plans)
 
-    emitter.emit('columns.add', plan)
+    emitter.emit(COLUMNS_ADD, plan)
 
     return this
   }
@@ -352,7 +390,7 @@ class Plan {
   edit (plan) {
     this.setPlan(plan)
 
-    emitter.emit('columns.edit', plan)
+    emitter.emit(COLUMNS_EDIT, plan)
 
     return this
   }
@@ -366,7 +404,7 @@ class Plan {
   remove (plan) {
     this.setPlan(plan)
 
-    emitter.emit('panel.trash.add', plan)
+    emitter.emit(PANEL_TRASH_ADD, plan)
 
     return this
   }
@@ -374,7 +412,7 @@ class Plan {
   replace (plan) {
     this.setPlan(plan)
 
-    emitter.emit('columns.add', plan)
+    emitter.emit(COLUMNS_ADD, plan)
 
     return this
   }
@@ -399,12 +437,29 @@ class Plan {
     return this
   }
 
-  closePanels () {
-    emitter.emit('panel.view.close')
-    emitter.emit('panel.add.close')
-    emitter.emit('panel.edit.close')
-    emitter.emit('panel.trash.close')
-    emitter.emit('panel.setting.close')
+  archive (plan) {
+    this.setPlan(plan)
+
+    emitter.emit(PANEL_ARCHIVES_ADD, plan)
+
+    return this
+  }
+
+  closePanels (action) {
+    let actions = [
+      PANEL_VIEW_CLOSE,
+      PANEL_ADD_CLOSE,
+      PANEL_EDIT_CLOSE,
+      PANEL_ARCHIVES_CLOSE,
+      PANEL_TRASH_CLOSE,
+      PANEL_SETTING_CLOSE
+    ]
+
+    if (action) {
+      actions = actions.filter(evt => evt !== action)
+    }
+
+    actions.forEach(evt => emitter.emit(evt))
 
     return this
   }
@@ -434,7 +489,7 @@ class Plan {
 
     updateStatusChangedCount($sourceCount, $targetCount)
 
-    emitter.emit('columns.edit', plan)
+    emitter.emit(COLUMNS_EDIT, plan)
 
     return this
   }

@@ -20,27 +20,25 @@ import { OPERATIONS } from './plan.config'
 import emitter from './plan.emitter'
 
 import {
+  PLAN_DELETE,
+  TOOLBAR_ARCHIVES_TOGGLE_HIGHLIGHT,
+  PANEL_ARCHIVES_ADD,
+  PANEL_ARCHIVES_OPEN,
+  PANEL_ARCHIVES_CLOSE,
+  PANEL_ARCHIVES_TOGGLE,
+  COLUMNS_OPEN,
+  COLUMNS_CLOSE,
+  PLAN_CLOSE_PANELS
+} from './plan.actions'
+
+import {
   createTaskElement,
   getTasksFragment
 } from './plan.task'
 
 import { isDelayed } from './plan.static'
 
-import {
-  PLAN_DELETE,
-  PLAN_REPLACE,
-  PLAN_CLOSE_PANELS,
-  TOOLBAR_TRASH_TOGGLE_HIGHLIGHT,
-  PANEL_TRASH_ADD,
-  PANEL_TRASH_OPEN,
-  PANEL_TRASH_CLOSE,
-  PANEL_TRASH_EMPTY,
-  PANEL_TRASH_TOGGLE,
-  COLUMNS_OPEN,
-  COLUMNS_CLOSE
-} from './plan.actions'
-
-const $wrap = document.querySelector('#trash-panel')
+const $wrap = document.querySelector('#archives-panel')
 let $confirm
 
 const Panel = {
@@ -52,45 +50,41 @@ const Panel = {
   },
   _elements: {
     wrap: $wrap,
-    trashCount: $wrap.querySelector('#trash-count'),
-    tasksTrash: $wrap.querySelector('#tasks-trash')
+    archivesCount: $wrap.querySelector('#archives-count'),
+    tasksArchives: $wrap.querySelector('#tasks-archives')
   },
   _plans: [],
   addEventListeners () {
-    on($wrap, '.trash-cancel', 'click', this._onCancelClick, this)
-    on($wrap, '.task-replace', 'click', this._onReplaceClick, this)
+    on($wrap, '.archives-cancel', 'click', this._onCancelClick, this)
     on($wrap, '.task-delete', 'click', this._onDeleteClick, this)
 
-    emitter.on(PANEL_TRASH_ADD, this.add.bind(this))
-    emitter.on(PANEL_TRASH_OPEN, this.open.bind(this))
-    emitter.on(PANEL_TRASH_CLOSE, this.close.bind(this))
-    emitter.on(PANEL_TRASH_TOGGLE, this.toggle.bind(this))
-    emitter.on(PANEL_TRASH_EMPTY, this.empty.bind(this))
+    emitter.on(PANEL_ARCHIVES_ADD, this.add.bind(this))
+    emitter.on(PANEL_ARCHIVES_OPEN, this.open.bind(this))
+    emitter.on(PANEL_ARCHIVES_CLOSE, this.close.bind(this))
+    emitter.on(PANEL_ARCHIVES_TOGGLE, this.toggle.bind(this))
 
     return this
   },
   removeEventListeners () {
     off($wrap, 'click', this._onCancelClick)
-    off($wrap, 'click', this._onReplaceClick)
     off($wrap, 'click', this._onDeleteClick)
 
-    emitter.off(PANEL_TRASH_ADD, this.add.bind(this))
-    emitter.off(PANEL_TRASH_OPEN, this.open.bind(this))
-    emitter.off(PANEL_TRASH_CLOSE, this.close.bind(this))
-    emitter.off(PANEL_TRASH_TOGGLE, this.toggle.bind(this))
-    emitter.off(PANEL_TRASH_EMPTY, this.empty.bind(this))
+    emitter.off(PANEL_ARCHIVES_ADD, this.add.bind(this))
+    emitter.off(PANEL_ARCHIVES_OPEN, this.open.bind(this))
+    emitter.off(PANEL_ARCHIVES_CLOSE, this.close.bind(this))
+    emitter.off(PANEL_ARCHIVES_TOGGLE, this.toggle.bind(this))
 
     return this
   },
   render () {
     let plans = this.getPlans()
     let elements = this.getEls()
-    let $tasksTrash = elements.tasksTrash
+    let $tasksArchives = elements.tasksArchives
     let $fragment = getTasksFragment(plans)
 
-    elements.trashCount.innerHTML = `${plans.length}`
-    $tasksTrash.innerHTML = ''
-    $tasksTrash.appendChild($fragment)
+    elements.archivesCount.innerHTML = `${plans.length}`
+    $tasksArchives.innerHTML = ''
+    $tasksArchives.appendChild($fragment)
 
     return this
   },
@@ -123,17 +117,18 @@ const Panel = {
   },
   add (plan) {
     let elements = this.getEls()
-    let $tasks = elements.tasksTrash
-    let $count = elements.trashCount
+    let $tasks = elements.tasksArchives
+    let $count = elements.archivesCount
     let count = parseInt($count.innerHTML, 10)
     let plans = clone(this.getPlans())
 
-    plan.deleted = true
+    plan.status = 4
+    plan.archived = true
     plan.delayed = isDelayed(plan)
     plan.update.unshift({
       time: getMoments(),
-      code: OPERATIONS.remove.code,
-      operate: OPERATIONS.remove.text
+      code: OPERATIONS.archive.code,
+      operate: OPERATIONS.archive.text
     })
 
     plans.unshift(plan)
@@ -148,8 +143,8 @@ const Panel = {
   delete (plan) {
     let plans = clone(this.getPlans())
     let elements = this.getEls()
-    let $tasks = elements.tasksTrash
-    let $count = elements.trashCount
+    let $tasks = elements.tasksArchives
+    let $count = elements.archivesCount
     let index = this.indexOf(plans, plan)
     let count = parseInt($count.innerHTML, 10)
     let $plan
@@ -167,41 +162,7 @@ const Panel = {
     $plan = $tasks.querySelector(`.task[data-id="${plan.id}"]`)
     $tasks.removeChild($plan)
 
-    emitter.emit(PLAN_DELETE, clone(plan))
-
-    return this
-  },
-  replace (plan) {
-    let elements = this.getEls()
-    let $tasks = elements.tasksTrash
-    let $count = elements.trashCount
-    let count = parseInt($count.innerHTML, 10)
-    let plans = clone(this.getPlans())
-    let index = this.indexOf(plans, plan)
-    let $plan
-
-    plan.deleted = false
-    plan.delayed = isDelayed(plan)
-    plan.update.unshift({
-      time: getMoments(),
-      code: OPERATIONS.remove.code,
-      operate: OPERATIONS.remove.text
-    })
-
-    if (index === -1) {
-      return this
-    }
-
-    plans.splice(index, 1)
-    this.setPlans(plans)
-
-    count -= 1
-    $count.innerHTML = count.toString()
-
-    $plan = $tasks.querySelector(`div.task[data-id="${plan.id}"]`)
-    $tasks.removeChild($plan)
-
-    emitter.emit(PLAN_REPLACE, clone(plan))
+      emitter.emit(PLAN_DELETE, clone(plan))
 
     return this
   },
@@ -227,7 +188,7 @@ const Panel = {
       return this
     }
 
-    emitter.emit(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT)
+    emitter.emit(TOOLBAR_ARCHIVES_TOGGLE_HIGHLIGHT)
     emitter.emit(COLUMNS_OPEN)
 
     removeClass($wrap, 'panel-opened')
@@ -239,8 +200,8 @@ const Panel = {
       return this
     }
 
-    emitter.emit(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT)
-    emitter.emit(PLAN_CLOSE_PANELS, 'panel.trash.close')
+    emitter.emit(TOOLBAR_ARCHIVES_TOGGLE_HIGHLIGHT)
+    emitter.emit(PLAN_CLOSE_PANELS, 'panel.archives.close')
     emitter.emit(COLUMNS_CLOSE)
 
     addClass($wrap, 'panel-opened')
@@ -262,8 +223,8 @@ const Panel = {
   empty () {
     let elements = this.getEls()
 
-    elements.trashCount.innerHTML = '0'
-    elements.tasksTrash.innerHTML = ''
+    elements.archivesCount.innerHTML = '0'
+    elements.tasksArchives.innerHTML = ''
 
     return this
   },

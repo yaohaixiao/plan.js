@@ -30,6 +30,21 @@ import {
   updateStatusChangedCount
 } from './plan.static'
 
+import {
+  PLAN_REMOVE,
+  PLAN_UPDATE,
+  PLAN_ARCHIVE,
+  PLAN_CLOSE_PANELS,
+  PANEL_VIEW_UPDATE,
+  PANEL_EDIT_UPDATE,
+  COLUMNS_CLOSE,
+  COLUMNS_OPEN,
+  COLUMNS_EMPTY,
+  COLUMNS_FILTER,
+  COLUMNS_ADD,
+  COLUMNS_EDIT
+} from './plan.actions'
+
 let $wrap = document.querySelector('#columns')
 let $confirm
 
@@ -54,6 +69,54 @@ const Columns = {
   },
   _plans: [],
   _filter: 'inbox',
+  addEventListeners () {
+    on($wrap, '.column-up', 'click', this._onCollapseClick, this)
+    on($wrap, '.column-down', 'click', this._onExpandClick, this)
+    on($wrap, '.columns-overlay', 'click', this._onOverlayClick, this)
+
+    // ---------- task ----------
+    on($wrap, '.task-title', 'click', this._onTitleClick, this)
+    on($wrap, '.task-prev', 'click', this._onPrevButtonClick, this)
+    on($wrap, '.task-edit', 'click', this._onEditButtonClick, this)
+    on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
+    on($wrap, '.task-delete', 'click', this._onDeleteButtonClick, this)
+    on($wrap, '.task-next', 'click', this._onNextButtonClick, this)
+    on($wrap, '.task-archive', 'click', this._onArchiveButtonClick, this)
+
+    emitter.on(COLUMNS_OPEN, this.open.bind(this))
+    emitter.on(COLUMNS_CLOSE, this.close.bind(this))
+    emitter.on(COLUMNS_EMPTY, this.empty.bind(this))
+
+    emitter.on(COLUMNS_FILTER, this.filter.bind(this))
+    emitter.on(COLUMNS_ADD, this.add.bind(this))
+    emitter.on(COLUMNS_EDIT, this.edit.bind(this))
+
+    return this
+  },
+  removeEventListeners () {
+    off($wrap, 'click', this._onCollapseClick)
+    off($wrap, 'click', this._onExpandClick)
+    off($wrap, 'click', this._onOverlayClick)
+
+    // ---------- task ----------
+    off($wrap, 'click', this._onTitleClick)
+    off($wrap, 'click', this._onPrevButtonClick)
+    off($wrap, 'click', this._onEditButtonClick)
+    off($wrap, 'click', this._onMarkedButtonClick)
+    off($wrap, 'click', this._onDeleteButtonClick)
+    off($wrap, 'click', this._onNextButtonClick)
+    off($wrap, 'click', this._onArchiveButtonClick)
+
+    emitter.off(COLUMNS_OPEN, this.open.bind(this))
+    emitter.off(COLUMNS_CLOSE, this.close.bind(this))
+    emitter.off(COLUMNS_EMPTY, this.empty.bind(this))
+
+    emitter.on(COLUMNS_FILTER, this.filter.bind(this))
+    emitter.on(COLUMNS_ADD, this.add.bind(this))
+    emitter.on(COLUMNS_EDIT, this.edit.bind(this))
+
+    return this
+  },
   render () {
     this.updateColumns()
 
@@ -97,50 +160,7 @@ const Columns = {
   getEls () {
     return this._elements
   },
-  addEventListeners () {
-    on($wrap, '.column-up', 'click', this._onCollapseClick, this)
-    on($wrap, '.column-down', 'click', this._onExpandClick, this)
-    on($wrap, '.columns-overlay', 'click', this._onOverlayClick, this)
 
-    // ---------- task ----------
-    on($wrap, '.task-title', 'click', this._onTitleClick, this)
-    on($wrap, '.task-prev', 'click', this._onPrevButtonClick, this)
-    on($wrap, '.task-edit', 'click', this._onEditButtonClick, this)
-    on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
-    on($wrap, '.task-delete', 'click', this._onDeleteButtonClick, this)
-    on($wrap, '.task-next', 'click', this._onNextButtonClick, this)
-
-    emitter.on('columns.open', this.open.bind(this))
-    emitter.on('columns.close', this.close.bind(this))
-
-    emitter.on('columns.filter', this.filter.bind(this))
-    emitter.on('columns.add', this.add.bind(this))
-    emitter.on('columns.edit', this.edit.bind(this))
-
-    return this
-  },
-  removeEventListeners () {
-    off($wrap, 'click', this._onCollapseClick)
-    off($wrap, 'click', this._onExpandClick)
-    off($wrap, 'click', this._onOverlayClick)
-
-    // ---------- task ----------
-    off($wrap, 'click', this._onTitleClick)
-    off($wrap, 'click', this._onPrevButtonClick)
-    off($wrap, 'click', this._onEditButtonClick)
-    off($wrap, 'click', this._onMarkedButtonClick)
-    off($wrap, 'click', this._onDeleteButtonClick)
-    off($wrap, 'click', this._onNextButtonClick)
-
-    emitter.off('columns.open', this.open.bind(this))
-    emitter.off('columns.close', this.close.bind(this))
-
-    emitter.on('columns.filter', this.filter.bind(this))
-    emitter.on('columns.add', this.add.bind(this))
-    emitter.on('columns.edit', this.edit.bind(this))
-
-    return this
-  },
   getStatusCountEl (status) {
     let elements = this.getEls()
     let $count
@@ -321,7 +341,7 @@ const Columns = {
       operate: OPERATIONS.remove.text
     })
 
-    emitter.emit('plan.remove', clone(plan))
+    emitter.emit(PLAN_REMOVE, clone(plan))
 
     return this
   },
@@ -341,7 +361,7 @@ const Columns = {
     })
     this.setPlan(plan)
 
-    emitter.emit('plan.update', clone(plan))
+    emitter.emit(PLAN_UPDATE, clone(plan))
 
     switch (status) {
       case 0:
@@ -389,6 +409,46 @@ const Columns = {
 
     return this
   },
+  archive (plan) {
+    let $tasks = this.getStatusTasksEl(plan.status)
+    let $count = this.getStatusCountEl(plan.status)
+    let $plan = $tasks.querySelector(`.task[data-id="${plan.id}"]`)
+    let plans = clone(this.getPlans())
+    let index = -1
+    let count
+
+    plans.forEach((task, i) => {
+      if (task.id === plan.id) {
+        index = i
+      }
+    })
+
+    if (index === -1) {
+      return this
+    }
+
+    plans.splice(index, 1)
+    this.setPlans(plans)
+
+    count = parseInt($count.innerHTML, 10)
+    count -= 1
+
+    $count.innerHTML = count.toString()
+    $tasks.removeChild($plan)
+
+    plan.status = 4
+    plan.archived = true
+    plan.delayed = isDelayed(plan)
+    plan.update.unshift({
+      time: getMoments(),
+      code: OPERATIONS.archive.code,
+      operate: OPERATIONS.archive.text
+    })
+
+    emitter.emit(PLAN_ARCHIVE, clone(plan))
+
+    return this
+  },
   changeStatus (plan, direction) {
     let status = plan.status
     let $sourceCount = this.getStatusCountEl(status)
@@ -421,7 +481,7 @@ const Columns = {
     })
     this.setPlan(plan)
 
-    emitter.emit('plan.update', clone(plan))
+    emitter.emit(PLAN_UPDATE, clone(plan))
 
     $targetCount = this.getStatusCountEl(plan.status)
     $targetTasks = this.getStatusTasksEl(plan.status)
@@ -447,7 +507,6 @@ const Columns = {
 
     return this
   },
-
   updateDoingColumn () {
     let doingPlans = this.getDoingPlans()
     let elements = this.getEls()
@@ -462,7 +521,6 @@ const Columns = {
 
     return this
   },
-
   updateCheckingColumn () {
     let checkingPlans = this.getCheckingPlans()
     let elements = this.getEls()
@@ -477,7 +535,6 @@ const Columns = {
 
     return this
   },
-
   updateDoneColumn () {
     let donePlans = this.getDonePlans()
     let elements = this.getEls()
@@ -557,7 +614,7 @@ const Columns = {
     return this
   },
 
-  emptyColumns () {
+  empty () {
     this.emptyTodoColumn()
         .emptyDoingColumn()
         .emptyCheckingColumn()
@@ -605,7 +662,7 @@ const Columns = {
     let id = $title.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
 
-    emitter.emit('panel.view.update', plan)
+    emitter.emit(PANEL_VIEW_UPDATE, plan)
 
     return this
   },
@@ -632,7 +689,7 @@ const Columns = {
     let id = $button.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
 
-    emitter.emit('panel.edit.update', plan)
+    emitter.emit(PANEL_EDIT_UPDATE, plan)
 
     return this
   },
@@ -654,6 +711,15 @@ const Columns = {
 
     return this
   },
+  _onArchiveButtonClick (evt) {
+    let $button = evt.delegateTarget
+    let id = $button.getAttribute('data-id')
+    let plan = this.getPlan(parseInt(id, 10))
+
+    this.archive(plan)
+
+    return this
+  },
   _onCollapseClick (evt) {
     this.collapse(evt.delegateTarget)
 
@@ -665,7 +731,7 @@ const Columns = {
     return this
   },
   _onOverlayClick () {
-    emitter.emit('plan.close.panels')
+    emitter.emit(PLAN_CLOSE_PANELS)
 
     this.open()
 

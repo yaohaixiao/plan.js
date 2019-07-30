@@ -38,6 +38,10 @@ export const createTaskElement = (plan) => {
     classTask += ' ' + 'task-delayed'
   }
 
+  if (plan.archived) {
+    classTask += ' ' + 'task-archived'
+  }
+
   classTask += ' ' + 'task-status-' + plan.status
 
   return createElement('div', {
@@ -47,6 +51,7 @@ export const createTaskElement = (plan) => {
     'data-status': `${plan.status}`,
     'data-deleted': `${plan.deleted ? 1 : 0}`,
     'data-delayed': `${plan.delayed ? 1 : 0}`,
+    'data-archived': `${plan.archived ? 1 : 0}`,
     'data-marked': `${plan.marked ? 1 : 0}`
   }, [
     $main,
@@ -101,7 +106,7 @@ export const createTasKDeleteElement = (plan) => {
     'data-id': `${id}`
   }, [
     createElement('i', {
-      'className': 'icon-trash'
+      'className': 'icon-bin'
     })
   ])
 }
@@ -132,6 +137,19 @@ export const createTaskNextElement = (plan) => {
   ])
 }
 
+export const createTaskArchiveElement = (plan) => {
+  let id = plan.id
+
+  return createElement('div', {
+    'className': 'task-button task-archive',
+    'data-id': `${id}`
+  }, [
+    createElement('i', {
+      'className': 'icon-checkmark-outline'
+    })
+  ])
+}
+
 export const createTaskSideElement = (plan) => {
   let $prev = createTaskPrevElement(plan)
   let $next = createTaskNextElement(plan)
@@ -139,6 +157,7 @@ export const createTaskSideElement = (plan) => {
   let $mark = createTaskMarkElement(plan)
   let $delete = createTasKDeleteElement(plan)
   let $replace = createTaskReplaceElement(plan)
+  let $archive = createTaskArchiveElement(plan)
 
   return createElement('div', {
     'className': 'task-side'
@@ -148,7 +167,8 @@ export const createTaskSideElement = (plan) => {
     $mark,
     $replace,
     $delete,
-    $next
+    $next,
+    $archive
   ])
 }
 
