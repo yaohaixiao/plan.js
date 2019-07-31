@@ -33,7 +33,6 @@ import {
 import {
   PLAN_REMOVE,
   PLAN_UPDATE,
-  PLAN_ARCHIVE,
   PLAN_CLOSE_PANELS,
   PANEL_VIEW_UPDATE,
   PANEL_EDIT_UPDATE,
@@ -83,7 +82,6 @@ const Columns = {
     on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
     on($wrap, '.task-delete', 'click', this._onDeleteButtonClick, this)
     on($wrap, '.task-next', 'click', this._onNextButtonClick, this)
-    on($wrap, '.task-archive', 'click', this._onArchiveButtonClick, this)
 
     emitter.on(COLUMNS_OPEN, this.open.bind(this))
     emitter.on(COLUMNS_CLOSE, this.close.bind(this))
@@ -109,7 +107,6 @@ const Columns = {
     off($wrap, 'click', this._onMarkedButtonClick)
     off($wrap, 'click', this._onDeleteButtonClick)
     off($wrap, 'click', this._onNextButtonClick)
-    off($wrap, 'click', this._onArchiveButtonClick)
 
     emitter.off(COLUMNS_OPEN, this.open.bind(this))
     emitter.off(COLUMNS_CLOSE, this.close.bind(this))
@@ -433,46 +430,6 @@ const Columns = {
 
     return this
   },
-  archive (plan) {
-    let $tasks = this.getStatusTasksEl(plan.status)
-    let $count = this.getStatusCountEl(plan.status)
-    let $plan = $tasks.querySelector(`.task[data-id="${plan.id}"]`)
-    let plans = clone(this.getPlans())
-    let index = -1
-    let count
-
-    plans.forEach((task, i) => {
-      if (task.id === plan.id) {
-        index = i
-      }
-    })
-
-    if (index === -1) {
-      return this
-    }
-
-    plans.splice(index, 1)
-    this.setPlans(plans)
-
-    count = parseInt($count.innerHTML, 10)
-    count -= 1
-
-    $count.innerHTML = count.toString()
-    $tasks.removeChild($plan)
-
-    plan.status = 4
-    plan.archived = true
-    plan.delayed = isDelayed(plan)
-    plan.update.unshift({
-      time: getMoments(),
-      code: OPERATIONS.archive.code,
-      operate: OPERATIONS.archive.text
-    })
-
-    emitter.emit(PLAN_ARCHIVE, clone(plan))
-
-    return this
-  },
   changeStatus (plan, direction) {
     let status = plan.status
     let $sourceCount = this.getStatusCountEl(status)
@@ -740,15 +697,6 @@ const Columns = {
     let plan = this.getPlan(parseInt(id, 10))
 
     this.confirm(plan)
-
-    return this
-  },
-  _onArchiveButtonClick (evt) {
-    let $button = evt.delegateTarget
-    let id = $button.getAttribute('data-id')
-    let plan = this.getPlan(parseInt(id, 10))
-
-    this.archive(plan)
 
     return this
   },

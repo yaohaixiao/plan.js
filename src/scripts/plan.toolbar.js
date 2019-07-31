@@ -14,13 +14,11 @@ import {
   PLAN_CLOSE_PANELS,
   TOOLBAR_SETTING_TOGGLE_HIGHLIGHT,
   TOOLBAR_TRASH_TOGGLE_HIGHLIGHT,
-  TOOLBAR_ARCHIVES_TOGGLE_HIGHLIGHT,
+  TOOLBAR_CHARTS_TOGGLE_HIGHLIGHT,
   PANEL_ADD_TOGGLE,
-  PANEL_ARCHIVES_TOGGLE,
+  PANEL_CHARTS_TOGGLE,
   PANEL_SETTING_TOGGLE,
-  PANEL_TRASH_TOGGLE,
-  COLUMNS_OPEN,
-  COLUMNS_CLOSE
+  PANEL_TRASH_TOGGLE
 } from './plan.actions'
 
 let $wrap = document.querySelector('#toolbar')
@@ -45,13 +43,13 @@ const Toolbar = {
     // 重要任务
     on($wrap, '.toolbar-bookmark', 'click', this._onBookmarkFilterClick, this)
     // 任务归档
-    on($wrap, '.toolbar-archives', 'click', this._onArchivesClick, this)
+    on($wrap, '.toolbar-charts', 'click', this._onChartsClick, this)
     // 回收站
     on($wrap, '.toolbar-trash', 'click', this._onTrashClick, this)
     // 设置
     on($wrap, '.toolbar-setting', 'click', this._onSettingClick, this)
 
-    emitter.on(TOOLBAR_ARCHIVES_TOGGLE_HIGHLIGHT, this.archivesToggleHighlight.bind(this))
+    emitter.on(TOOLBAR_CHARTS_TOGGLE_HIGHLIGHT, this.chartsToggleHighlight.bind(this))
     emitter.on(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT, this.trashToggleHighlight.bind(this))
     emitter.on(TOOLBAR_SETTING_TOGGLE_HIGHLIGHT, this.settingToggleHighlight.bind(this))
 
@@ -73,7 +71,7 @@ const Toolbar = {
     // 设置
     off($wrap, 'click', this._onSettingClick)
 
-    emitter.off(TOOLBAR_ARCHIVES_TOGGLE_HIGHLIGHT, this.archivesToggleHighlight.bind(this))
+    emitter.off(TOOLBAR_CHARTS_TOGGLE_HIGHLIGHT, this.chartsToggleHighlight.bind(this))
     emitter.off(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT, this.trashToggleHighlight.bind(this))
     emitter.off(TOOLBAR_SETTING_TOGGLE_HIGHLIGHT, this.settingToggleHighlight.bind(this))
 
@@ -105,12 +103,12 @@ const Toolbar = {
     this.setFilter(prop)
 
     emitter.emit(PLAN_FILTER, prop)
-    emitter.emit('plan.close.panels')
+    emitter.emit(PLAN_CLOSE_PANELS)
 
     return this
   },
-  archivesToggleHighlight () {
-    this.toggleHighlight($wrap.querySelector('.toolbar-archives'))
+  chartsToggleHighlight () {
+    this.toggleHighlight($wrap.querySelector('.toolbar-charts'))
 
     return this
   },
@@ -170,8 +168,8 @@ const Toolbar = {
 
     return this
   },
-  _onArchivesClick () {
-    emitter.emit(PANEL_ARCHIVES_TOGGLE)
+  _onChartsClick () {
+    emitter.emit(PANEL_CHARTS_TOGGLE)
 
     return this
   },

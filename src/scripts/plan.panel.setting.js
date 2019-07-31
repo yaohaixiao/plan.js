@@ -267,7 +267,7 @@ const Panel = {
     }
 
     emitter.emit(TOOLBAR_SETTING_TOGGLE_HIGHLIGHT)
-    emitter.emit(PLAN_CLOSE_PANELS, 'panel.setting.close')
+    emitter.emit(PLAN_CLOSE_PANELS, PANEL_SETTING_CLOSE)
     emitter.emit(COLUMNS_CLOSE)
 
     addClass($wrap, 'panel-opened')

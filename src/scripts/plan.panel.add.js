@@ -141,7 +141,7 @@ const Panel = {
       return this
     }
 
-    emitter.emit(PLAN_CLOSE_PANELS, 'panel.add.close')
+    emitter.emit(PLAN_CLOSE_PANELS, PANEL_ADD_CLOSE)
 
     $calendar = new Calendar({
       parent: 'add-calendar',

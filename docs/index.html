@@ -27,7 +27,7 @@
             <div class="toolbar-button toolbar-bookmark" data-filter="marked"><i class="icon-bookmark"></i></div>
           </div>
         </div>
-        <div class="toolbar-button toolbar-archives"><i class="icon-inbox-check"></i></div>
+        <div class="toolbar-button toolbar-charts"><i class="icon-pie-chart"></i></div>
         <div class="toolbar-button toolbar-trash"><i class="icon-bin"></i></div>
         <div class="toolbar-button toolbar-setting"><i class="icon-cog"></i></div>
       </div>
@@ -37,7 +37,7 @@
         <div class="panel-hd">
           <div class="panel-button panel-cancel view-cancel" id="view-cancel"><i class="icon-cheveron-left"></i></div>
           <h2 class="panel-title">任务详情</h2>
-          <div class="panel-button panel-modify view-edit" id="view-save"><i class="icon-edit-pencil"></i></div>
+          <div class="panel-button panel-modify view-edit" id="view-save"><i class="icon-pencil"></i></div>
         </div>
         <div class="panel-bd">
           <div class="tasks">
@@ -128,7 +128,7 @@
         <div class="panel-hd">
           <div class="panel-button panel-cancel edit-cancel" id="edit-cancel"><i class="icon-cheveron-left"></i></div>
           <h2 class="panel-title">编辑任务</h2>
-          <div class="panel-button panel-save edit-save" id="edit-save"><i class="icon-save-disk"></i></div>
+          <div class="panel-button panel-save edit-save" id="edit-save"><i class="icon-floppy-disk"></i></div>
         </div>
         <div class="panel-bd">
           <div class="tasks">
@@ -183,14 +183,13 @@
           </div>
         </div>
       </div>
-      <div class="panel panel-trash" id="archives-panel">
+      <div class="panel panel-trash" id="charts-panel">
         <div class="panel-hd">
-          <div class="panel-button panel-cancel archives-cancel" id="archives-cancel"><i class="icon-cheveron-left"></i></div>
-          <h2 class="panel-title">归档（<strong class="panel-count" id="archives-count">0</strong>）</h2>
-          <div class="panel-button panel-export archives-export" id="archives-export"><i class="icon-share"></i></div>
+          <div class="panel-button panel-cancel charts-cancel" id="charts-cancel"><i class="icon-cheveron-left"></i></div>
+          <h2 class="panel-title">统计分析</h2>
         </div>
         <div class="panel-bd">
-          <div class="tasks" id="tasks-archives" data-status="archived"></div>
+          <div class="tasks" id="tasks-charts"></div>
         </div>
       </div>
       <div class="panel panel-trash" id="trash-panel">

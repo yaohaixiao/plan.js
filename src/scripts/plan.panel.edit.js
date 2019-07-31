@@ -131,8 +131,7 @@ const Panel = {
       return this
     }
 
-
-    emitter.emit(PLAN_CLOSE_PANELS, 'panel.edit.close')
+    emitter.emit(PLAN_CLOSE_PANELS, PANEL_EDIT_CLOSE)
 
     addClass($wrap, 'panel-opened')
 

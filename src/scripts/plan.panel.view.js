@@ -3,6 +3,7 @@
 import {
   addClass,
   createElement,
+  hasClass,
   removeClass
 } from './dom'
 
@@ -91,6 +92,10 @@ const Panel = {
     return this._elements
   },
   close () {
+    if (!this.isOpened()) {
+      return this
+    }
+
     removeClass($wrap, 'panel-opened')
 
     emitter.emit(COLUMNS_OPEN)
@@ -100,13 +105,20 @@ const Panel = {
     return this
   },
   open () {
-    emitter.emit(PLAN_CLOSE_PANELS, 'panel.view.close')
+    if (this.isOpened()) {
+      return this
+    }
+
+    emitter.emit(PLAN_CLOSE_PANELS, PANEL_VIEW_CLOSE)
 
     addClass($wrap, 'panel-opened')
 
     emitter.emit(COLUMNS_CLOSE)
 
     return this
+  },
+  isOpened () {
+    return hasClass($wrap, 'panel-opened')
   },
   update (plan) {
     const CLS_LEVEL = 'field-view-level field-level-icon field-level-checked'

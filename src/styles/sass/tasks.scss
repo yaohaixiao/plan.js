@@ -51,7 +51,7 @@
     }
 
     .task-main {
-      margin-left: 24px;
+      margin-left: 26px;
     }
   }
 }
@@ -186,30 +186,25 @@
 
 .task-side {
   height: 100%;
-  left: -25px;
+  left: -27px;
   top: 0;
   transition: .3s;
   width: 24px;
 }
 
 .task-button {
-  @include button(24px, 24px, 13px);
+  @include button(26px, 26px, 13px);
   cursor: pointer;
 }
 
 .task-prev,
 .task-replace,
-.task-next,
-.task-archive {
+.task-next {
   display: none;
 }
 
 .task-delete {
-  @include button(24px, 24px, 13px, $light-gray, $pink);
-}
-
-.task-archive {
-  @include button(24px, 24px, 13px, $light-gray, $green);
+  @include button(26px, 26px, 13px, $light-gray, $pink);
 }
 
 .task-marked {
@@ -258,36 +253,6 @@
   }
 }
 
-.task-archived {
-  .task-prev {
-    display: none;
-  }
-
-  .task-edit {
-    display: none;
-  }
-
-  .task-bookmark {
-    display: none;
-  }
-
-  .task-replace {
-    display: none;
-  }
-
-  .task-delete {
-    display: block;
-  }
-
-  .task-next {
-    display: none;
-  }
-
-  .task-archive {
-    display: none;
-  }
-}
-
 .task-status-0 {
   .task-prev {
     display: none;
@@ -297,9 +262,5 @@
 .task-status-3 {
   .task-next {
     display: none;
-  }
-
-  .task-archive {
-    display: block;
   }
 }

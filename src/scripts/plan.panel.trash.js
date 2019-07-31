@@ -252,7 +252,7 @@ const Panel = {
     }
 
     emitter.emit(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT)
-    emitter.emit(PLAN_CLOSE_PANELS, 'panel.trash.close')
+    emitter.emit(PLAN_CLOSE_PANELS, PANEL_TRASH_CLOSE)
     emitter.emit(COLUMNS_CLOSE, true)
 
     addClass($wrap, 'panel-opened')

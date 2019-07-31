@@ -30,7 +30,7 @@ import Toolbar from './plan.toolbar'
 import PanelView from './plan.panel.view'
 import PanelAdd from './plan.panel.add'
 import PanelEdit from './plan.panel.edit'
-import PanelArchives from './plan.panel.archives'
+import PanelCharts from './plan.panel.charts'
 import PanelTrash from './plan.panel.trash'
 import PanelSetting from './plan.panel.setting'
 import Columns from './plan.columns'
@@ -48,7 +48,6 @@ import {
   PLAN_DELETE,
   PLAN_REMOVE,
   PLAN_REPLACE,
-  PLAN_ARCHIVE,
   PLAN_CLOSE_PANELS,
   PANEL_VIEW_EMPTY,
   PANEL_VIEW_CLOSE,
@@ -56,9 +55,9 @@ import {
   PANEL_ADD_CLOSE,
   PANEL_EDIT_EMPTY,
   PANEL_EDIT_CLOSE,
-  PANEL_ARCHIVES_ADD,
-  PANEL_ARCHIVES_EMPTY,
-  PANEL_ARCHIVES_CLOSE,
+  PANEL_CHARTS_UPDATE,
+  PANEL_CHARTS_EMPTY,
+  PANEL_CHARTS_CLOSE,
   PANEL_TRASH_ADD,
   PANEL_TRASH_PUSH,
   PANEL_TRASH_EMPTY,
@@ -87,7 +86,7 @@ class Plan {
     this.$panelView = null
     this.$panelAdd = null
     this.$panelEdit = null
-    this.$panelArchives = null
+    this.$panelCharts = null
     this.$panelTrash = null
     this.$panelSetting = null
     this.$columns = null
@@ -113,7 +112,7 @@ class Plan {
     this.$panelView = PanelView
     this.$panelAdd = PanelAdd
     this.$panelEdit = PanelEdit
-    this.$panelArchives = PanelArchives
+    this.$panelCharts = PanelCharts
     this.$panelTrash = PanelTrash
     this.$panelSetting = PanelSetting
 
@@ -128,7 +127,7 @@ class Plan {
     this.$panelAdd.initialize()
     this.$panelEdit.initialize()
 
-    this.$panelArchives.initialize(this.getPlans().filter(plan => plan.archived))
+    this.$panelCharts.initialize(this.getPlans().filter(plan => !plan.deleted))
     this.$panelTrash.initialize(this.getPlans().filter(plan => plan.deleted))
 
     this.$panelSetting.initialize({
@@ -158,7 +157,7 @@ class Plan {
   render () {
     document.body.className = THEMES[this.get('theme')].theme
 
-    this.$panelArchives.render()
+    this.$panelCharts.render()
     this.$panelTrash.render()
     this.$panelSetting.render()
     this.$columns.render()
@@ -180,7 +179,6 @@ class Plan {
     emitter.on(PLAN_REMOVE, this.remove.bind(this))
     emitter.on(PLAN_REPLACE, this.replace.bind(this))
     emitter.on(PLAN_DELETE, this.delete.bind(this))
-    emitter.on(PLAN_ARCHIVE, this.archive.bind(this))
 
     // 收起 Panel
     emitter.on(PLAN_CLOSE_PANELS, this.closePanels.bind(this))
@@ -215,7 +213,6 @@ class Plan {
     emitter.off(PLAN_REMOVE, this.remove.bind(this))
     emitter.off(PLAN_REPLACE, this.replace.bind(this))
     emitter.off(PLAN_DELETE, this.delete.bind(this))
-    emitter.off(PLAN_ARCHIVE, this.archive.bind(this))
 
     emitter.off(PLAN_CLOSE_PANELS, this.closePanels.bind(this))
 
@@ -269,7 +266,7 @@ class Plan {
     emitter.emit(PANEL_VIEW_EMPTY)
     emitter.emit(PANEL_ADD_EMPTY)
     emitter.emit(PANEL_EDIT_EMPTY)
-    emitter.emit(PANEL_ARCHIVES_EMPTY)
+    emitter.emit(PANEL_CHARTS_EMPTY)
     emitter.emit(PANEL_TRASH_EMPTY)
     emitter.emit(COLUMNS_EMPTY)
 
@@ -443,20 +440,12 @@ class Plan {
     return this
   }
 
-  archive (plan) {
-    this.setPlan(plan)
-
-    emitter.emit(PANEL_ARCHIVES_ADD, plan)
-
-    return this
-  }
-
   closePanels (action) {
     let actions = [
       PANEL_VIEW_CLOSE,
       PANEL_ADD_CLOSE,
       PANEL_EDIT_CLOSE,
-      PANEL_ARCHIVES_CLOSE,
+      PANEL_CHARTS_CLOSE,
       PANEL_TRASH_CLOSE,
       PANEL_SETTING_CLOSE
     ]

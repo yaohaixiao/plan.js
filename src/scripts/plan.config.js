@@ -22,7 +22,6 @@ export const TEMPLATES = [
         create: '2019-07-05',
         update: [],
         status: 3,
-        archived: false,
         marked: true,
         delayed: false,
         deleted: false
@@ -37,7 +36,6 @@ export const TEMPLATES = [
         create: '2019-07-05',
         update: [],
         status: 2,
-        archived: false,
         marked: false,
         delayed: false,
         deleted: false
@@ -52,7 +50,6 @@ export const TEMPLATES = [
         create: '2019-07-05',
         update: [],
         status: 1,
-        archived: false,
         marked: false,
         delayed: false,
         deleted: false
@@ -67,7 +64,6 @@ export const TEMPLATES = [
         create: '2019-07-05',
         update: [],
         status: 0,
-        archived: false,
         marked: true,
         delayed: false,
         deleted: false
@@ -82,7 +78,6 @@ export const TEMPLATES = [
         create: '2019-07-05',
         update: [],
         status: 0,
-        archived: false,
         marked: true,
         delayed: false,
         deleted: true
@@ -97,7 +92,6 @@ export const TEMPLATES = [
         create: '2019-07-15',
         update: [],
         status: 0,
-        archived: false,
         marked: false,
         delayed: false,
         deleted: false
@@ -112,7 +106,6 @@ export const TEMPLATES = [
         create: '2019-07-15',
         update: [],
         status: 0,
-        archived: false,
         marked: true,
         delayed: false,
         deleted: false
@@ -126,8 +119,7 @@ export const TEMPLATES = [
         desc: '将最终的产品交付给客户，项目结束',
         create: '2019-07-15',
         update: [],
-        status: 0,
-        archived: true,
+        status: 4,
         marked: true,
         delayed: false,
         deleted: false
@@ -226,9 +218,5 @@ export const OPERATIONS = {
   replace: {
     code: 6,
     text: '还原任务'
-  },
-  archive: {
-    code: 7,
-    text: '任务归档'
   }
 }
