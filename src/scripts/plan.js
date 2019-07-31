@@ -11,7 +11,9 @@ import {
 } from './time'
 
 import {
-  addClass
+  addClass,
+  removeClass,
+  replaceClass
 } from './dom'
 
 import {
@@ -58,13 +60,16 @@ import {
   PANEL_ARCHIVES_EMPTY,
   PANEL_ARCHIVES_CLOSE,
   PANEL_TRASH_ADD,
+  PANEL_TRASH_PUSH,
   PANEL_TRASH_EMPTY,
   PANEL_TRASH_CLOSE,
   PANEL_SETTING_CLOSE,
   COLUMNS_EMPTY,
   COLUMNS_FILTER,
   COLUMNS_ADD,
-  COLUMNS_EDIT
+  COLUMNS_PUSH,
+  COLUMNS_EDIT,
+  COLUMNS_DELETE
 } from './plan.actions'
 
 import dragula from 'dragula'
@@ -140,6 +145,7 @@ class Plan {
     columnsEls = this.$columns.getEls()
 
     this.$dragula = dragula([
+      this.$panelTrash.getEls().tasksTrash,
       columnsEls.tasksTodo,
       columnsEls.tasksDoing,
       columnsEls.tasksChecking,
@@ -467,29 +473,116 @@ class Plan {
   drop ($plan, $target, $source) {
     let id = $plan.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
+    let filter = this.getFilter()
     let $columns = this.$columns
     let sourceStatus = $source.getAttribute('data-status')
     let targetStatus = $target.getAttribute('data-status')
-    let $sourceCount = $columns.getStatusCountEl(sourceStatus)
-    let $targetCount = $columns.getStatusCountEl(targetStatus)
+    let $trashElements = this.$panelTrash.getEls()
+    let $sourceCount
+    let $targetCount
+    let code
+    let text
 
     if (targetStatus === sourceStatus) {
       return this
     }
 
-    plan.status = parseInt(targetStatus, 10)
+    // 移动到回收站
+    if (targetStatus === 'deleted') {
+      plan.deleted = true
 
+      code = OPERATIONS.remove.code
+      text = OPERATIONS.remove.text
+
+      $sourceCount = $columns.getStatusCountEl(sourceStatus)
+      $targetCount = $trashElements.trashCount
+    } else {
+      $sourceCount = $trashElements.trashCount
+      $targetCount = $columns.getStatusCountEl(targetStatus)
+
+      // 从回收站移出来
+      if (sourceStatus === 'deleted') {
+        // 根据过滤器，更新相应的属性
+        switch (filter) {
+          case 'marked':
+            plan.marked = true
+            break
+          case 'spades':
+            plan.level = 0
+            break
+          case 'heart':
+            plan.level = 1
+            break
+          case 'clubs':
+            plan.level = 2
+            break
+          case 'diamonds':
+            plan.level = 3
+            break
+        }
+
+        plan.deleted = false
+
+        code = OPERATIONS.replace.text
+        text = OPERATIONS.replace.text
+      } else {
+        code = OPERATIONS.status.text
+        text = OPERATIONS.status.text
+
+        $sourceCount = $columns.getStatusCountEl(sourceStatus)
+        $targetCount = $columns.getStatusCountEl(targetStatus)
+      }
+    }
+
+    plan.status = parseInt(targetStatus, 10)
     plan.update.unshift({
       time: getMoments(),
-      code: OPERATIONS.status.text,
-      operate: OPERATIONS.status.text
+      code: code,
+      operate: text
     })
     plan.delayed = isDelayed(plan)
     this.setPlan(plan)
 
-    updateStatusChangedCount($sourceCount, $targetCount)
+    if (targetStatus === 'deleted') {
+      this.setPlan(plan)
+      emitter.emit(PANEL_TRASH_PUSH, plan)
+      emitter.emit(COLUMNS_DELETE, plan)
+    } else {
+      if (sourceStatus === 'deleted') {
+        emitter.emit(COLUMNS_PUSH, plan)
+      } else {
+        emitter.emit(COLUMNS_EDIT, plan)
+      }
+    }
 
-    emitter.emit(COLUMNS_EDIT, plan)
+    if (plan.deleted) {
+      addClass($plan, 'task-deleted')
+      $plan.setAttribute('data-deleted', '1')
+    } else {
+      removeClass($plan, 'task-deleted')
+      $plan.setAttribute('data-deleted', '0')
+
+      replaceClass($plan, 'task-status-' + plan.status, 'task-status-' + sourceStatus)
+      $plan.setAttribute('data-status', plan.status)
+    }
+
+    if (plan.marked) {
+      addClass($plan, 'task-marked')
+      $plan.setAttribute('data-marked', '1')
+    } else {
+      removeClass($plan, 'task-marked')
+      $plan.setAttribute('data-marked', '0')
+    }
+
+    if (plan.delayed) {
+      addClass($plan, 'task-delayed')
+      $plan.setAttribute('data-delay', '1')
+    } else {
+      removeClass($plan, 'task-delayed')
+      $plan.setAttribute('data-delay', '0')
+    }
+
+    updateStatusChangedCount($sourceCount, $targetCount)
 
     return this
   }

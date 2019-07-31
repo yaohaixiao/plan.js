@@ -27,8 +27,8 @@
             <div class="toolbar-button toolbar-bookmark" data-filter="marked"><i class="icon-bookmark"></i></div>
           </div>
         </div>
-        <div class="toolbar-button toolbar-archives" data-filter="archives"><i class="icon-inbox-check"></i></div>
-        <div class="toolbar-button toolbar-trash" data-filter="deleted"><i class="icon-bin"></i></div>
+        <div class="toolbar-button toolbar-archives"><i class="icon-inbox-check"></i></div>
+        <div class="toolbar-button toolbar-trash"><i class="icon-bin"></i></div>
         <div class="toolbar-button toolbar-setting"><i class="icon-cog"></i></div>
       </div>
     </div>
@@ -186,10 +186,11 @@
       <div class="panel panel-trash" id="archives-panel">
         <div class="panel-hd">
           <div class="panel-button panel-cancel archives-cancel" id="archives-cancel"><i class="icon-cheveron-left"></i></div>
-          <h2 class="panel-title">任务归档（<strong class="panel-count" id="archives-count">0</strong>）</h2>
+          <h2 class="panel-title">归档（<strong class="panel-count" id="archives-count">0</strong>）</h2>
+          <div class="panel-button panel-export archives-export" id="archives-export"><i class="icon-share"></i></div>
         </div>
         <div class="panel-bd">
-          <div class="tasks" id="tasks-archives" data-status="archives"></div>
+          <div class="tasks" id="tasks-archives" data-status="archived"></div>
         </div>
       </div>
       <div class="panel panel-trash" id="trash-panel">

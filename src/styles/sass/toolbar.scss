@@ -15,7 +15,7 @@
 
 .toolbar {
   box-sizing: border-box;
-  padding: 48px 0 144px;
+  padding: 48px 0 96px;
 }
 
 .toolbar-filters {
@@ -40,12 +40,21 @@
   z-index: 2;
 }
 
+.toolbar-button {
+  @include button(48px, 48px, 18px);
+  cursor: pointer;
+
+  &:hover {
+    color: $gray;
+  }
+}
+
 .toolbar-plus {
   top: 48px;
 }
 
-.toolbar-archives{
-  bottom:96px;
+.toolbar-archives {
+  bottom: 96px;
 }
 
 .toolbar-trash {
@@ -54,15 +63,6 @@
 
 .toolbar-setting {
   bottom: 0;
-}
-
-.toolbar-button {
-  @include button(48px, 48px, 18px);
-  cursor: pointer;
-
-  &:hover {
-    color: $gray;
-  }
 }
 
 .toolbar-active {

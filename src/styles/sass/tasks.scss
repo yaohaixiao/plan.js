@@ -51,7 +51,7 @@
     }
 
     .task-main {
-      margin-left: 30px;
+      margin-left: 24px;
     }
   }
 }
@@ -186,14 +186,14 @@
 
 .task-side {
   height: 100%;
-  left: -31px;
+  left: -25px;
   top: 0;
   transition: .3s;
-  width: 30px;
+  width: 24px;
 }
 
 .task-button {
-  @include button(30px, 24px, 13px);
+  @include button(24px, 24px, 13px);
   cursor: pointer;
 }
 
@@ -205,11 +205,11 @@
 }
 
 .task-delete {
-  @include button(30px, 24px, 13px, $light-gray, $pink);
+  @include button(24px, 24px, 13px, $light-gray, $pink);
 }
 
 .task-archive {
-  @include button(30px, 24px, 13px, $light-gray, $green);
+  @include button(24px, 24px, 13px, $light-gray, $green);
 }
 
 .task-marked {

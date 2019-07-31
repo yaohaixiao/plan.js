@@ -44,6 +44,12 @@
     .columns-overlay {
       display: block;
     }
+
+    &.panel-trash-opened {
+      .columns-overlay {
+        display: none;
+      }
+    }
   }
 }
 

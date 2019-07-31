@@ -32,6 +32,7 @@ import {
   PLAN_CLOSE_PANELS,
   TOOLBAR_TRASH_TOGGLE_HIGHLIGHT,
   PANEL_TRASH_ADD,
+  PANEL_TRASH_PUSH,
   PANEL_TRASH_OPEN,
   PANEL_TRASH_CLOSE,
   PANEL_TRASH_EMPTY,
@@ -62,6 +63,7 @@ const Panel = {
     on($wrap, '.task-delete', 'click', this._onDeleteClick, this)
 
     emitter.on(PANEL_TRASH_ADD, this.add.bind(this))
+    emitter.on(PANEL_TRASH_PUSH, this.push.bind(this))
     emitter.on(PANEL_TRASH_OPEN, this.open.bind(this))
     emitter.on(PANEL_TRASH_CLOSE, this.close.bind(this))
     emitter.on(PANEL_TRASH_TOGGLE, this.toggle.bind(this))
@@ -75,6 +77,7 @@ const Panel = {
     off($wrap, 'click', this._onDeleteClick)
 
     emitter.off(PANEL_TRASH_ADD, this.add.bind(this))
+    emitter.off(PANEL_TRASH_PUSH, this.push.bind(this))
     emitter.off(PANEL_TRASH_OPEN, this.open.bind(this))
     emitter.off(PANEL_TRASH_CLOSE, this.close.bind(this))
     emitter.off(PANEL_TRASH_TOGGLE, this.toggle.bind(this))
@@ -142,6 +145,15 @@ const Panel = {
     count += 1
     $count.innerHTML = count.toString()
     $tasks.appendChild(createTaskElement(plan))
+
+    return this
+  },
+  push (plan) {
+    let plans = clone(this.getPlans())
+
+    plans.push(plan)
+
+    this.setPlans(plans)
 
     return this
   },
@@ -228,7 +240,7 @@ const Panel = {
     }
 
     emitter.emit(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT)
-    emitter.emit(COLUMNS_OPEN)
+    emitter.emit(COLUMNS_OPEN, true)
 
     removeClass($wrap, 'panel-opened')
 
@@ -241,7 +253,7 @@ const Panel = {
 
     emitter.emit(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT)
     emitter.emit(PLAN_CLOSE_PANELS, 'panel.trash.close')
-    emitter.emit(COLUMNS_CLOSE)
+    emitter.emit(COLUMNS_CLOSE, true)
 
     addClass($wrap, 'panel-opened')
 

@@ -2,9 +2,11 @@ div#archives-panel.panel.panel-trash
   div.panel-hd
     div#archives-cancel.panel-button.panel-cancel.archives-cancel
       i.icon-cheveron-left
-    h2.panel-title 任务归档
+    h2.panel-title 归档
       | （
       strong#archives-count.panel-count 0
       | ）
+    div#archives-export.panel-button.panel-export.archives-export
+      i.icon-share
   div.panel-bd
-    div#tasks-archives.tasks(data-status="archives")
+    div#tasks-archives.tasks(data-status="archived")

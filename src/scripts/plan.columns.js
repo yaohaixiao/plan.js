@@ -42,7 +42,9 @@ import {
   COLUMNS_EMPTY,
   COLUMNS_FILTER,
   COLUMNS_ADD,
-  COLUMNS_EDIT
+  COLUMNS_PUSH,
+  COLUMNS_EDIT,
+  COLUMNS_DELETE
 } from './plan.actions'
 
 let $wrap = document.querySelector('#columns')
@@ -89,7 +91,9 @@ const Columns = {
 
     emitter.on(COLUMNS_FILTER, this.filter.bind(this))
     emitter.on(COLUMNS_ADD, this.add.bind(this))
+    emitter.on(COLUMNS_PUSH, this.push.bind(this))
     emitter.on(COLUMNS_EDIT, this.edit.bind(this))
+    emitter.on(COLUMNS_DELETE, this.delete.bind(this))
 
     return this
   },
@@ -111,9 +115,11 @@ const Columns = {
     emitter.off(COLUMNS_CLOSE, this.close.bind(this))
     emitter.off(COLUMNS_EMPTY, this.empty.bind(this))
 
-    emitter.on(COLUMNS_FILTER, this.filter.bind(this))
-    emitter.on(COLUMNS_ADD, this.add.bind(this))
-    emitter.on(COLUMNS_EDIT, this.edit.bind(this))
+    emitter.off(COLUMNS_FILTER, this.filter.bind(this))
+    emitter.off(COLUMNS_ADD, this.add.bind(this))
+    emitter.off(COLUMNS_PUSH, this.push.bind(this))
+    emitter.off(COLUMNS_EDIT, this.edit.bind(this))
+    emitter.off(COLUMNS_DELETE, this.delete.bind(this))
 
     return this
   },
@@ -295,6 +301,15 @@ const Columns = {
 
     return this
   },
+  push (plan) {
+    let plans = clone(this.getPlans())
+
+    plans.push(plan)
+
+    this.setPlans(plans)
+
+    return this
+  },
   edit (plan) {
     let $plan = createTaskElement(plan)
     let $originPlan = $wrap.querySelector(`.task[data-id="${plan.id}"]`)
@@ -342,6 +357,15 @@ const Columns = {
     })
 
     emitter.emit(PLAN_REMOVE, clone(plan))
+
+    return this
+  },
+  delete (plan) {
+    let plans = clone(this.getPlans())
+
+    plans = plans.filter(task => plan.id !== task.id)
+
+    this.setPlans(plans)
 
     return this
   },
@@ -647,13 +671,21 @@ const Columns = {
 
     return this
   },
-  open () {
+  open (isTrashPanelOpened) {
     removeClass($wrap, 'panel-opened')
+
+    if(isTrashPanelOpened){
+      removeClass($wrap, 'panel-trash-opened')
+    }
 
     return this
   },
-  close () {
+  close (isTrashPanelOpened) {
     addClass($wrap, 'panel-opened')
+
+    if(isTrashPanelOpened){
+      addClass($wrap, 'panel-trash-opened')
+    }
 
     return this
   },
