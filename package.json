@@ -17,6 +17,7 @@
   "author": "Robert Yao",
   "license": "MIT",
   "dependencies": {
+    "chart.js": "^2.8.0",
     "dragula": "^3.7.2",
     "marked": "^0.7.0",
     "mitt": "^1.1.3",

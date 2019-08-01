@@ -121,25 +121,68 @@ export const assign = (target, ...source) => {
 
   // TypeError if undefined or null
   if (target == null) {
-    throw new TypeError('Cannot convert undefined or null to object');
+    throw new TypeError('Cannot convert undefined or null to object')
   }
 
-  to = Object(target);
+  to = Object(target)
 
   for (let index = 0; index < source.length; index++) {
-    let nextSource = source[index];
+    let nextSource = source[index]
 
     if (nextSource != null) { // Skip over if undefined or null
       for (let nextKey in nextSource) {
         // Avoid bugs when hasOwnProperty is shadowed
         if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-          to[nextKey] = nextSource[nextKey];
+          to[nextKey] = nextSource[nextKey]
         }
       }
     }
   }
 
-  return to;
+  return to
+}
+
+/**
+ * findIndex 的 polyfill 函数 - 查询某个值在数组中的索引值，没有则返回 -1
+ * ========================================================================
+ * 代码修改至 MDN 给出的 Array.prototype.findIndex 的 polyfill 方法：
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex#Polyfill
+ * 对 findIndex 函数的说明，可以查看 ECMA-262 的文档：
+ * https://tc39.github.io/ecma262/#sec-array.prototype.findindex
+ * ========================================================================
+ * @param {Array|*} source - 要查询的数组
+ * @param {Function} filter - 过滤值的回调方法
+ * @param {Object|*} [context] - filter 回调函数中的 this 上下文
+ * @returns {*}
+ */
+export const findIndex = (source, filter, context = source) => {
+  let o = Object(source)
+  let len = o.length >>> 0
+  let k = 0
+
+  if (!isArray(source)) {
+    throw new TypeError('source must be an array')
+  }
+
+  if (!isFunction(filter)) {
+    throw new TypeError('filter must be a function')
+  }
+
+  if (isFunction(Array.prototype.findIndex)) {
+    return source.findIndex(filter, context)
+  } else {
+    while (k < len) {
+      let value = o[k]
+
+      if (filter.call(context, value, k, o)) {
+        return k
+      }
+
+      k += 1
+    }
+  }
+
+  return -1
 }
 
 /**
@@ -194,5 +237,6 @@ export default {
   toSafeText,
   clone,
   assign,
-  guid
+  guid,
+  findIndex
 }

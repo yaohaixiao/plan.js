@@ -22,6 +22,17 @@ import {
   on
 } from './delegate'
 
+import {
+  PLAN_ADD,
+  PANEL_ADD_OPEN,
+  PANEL_ADD_CLOSE,
+  PANEL_ADD_TOGGLE,
+  PANEL_ADD_EMPTY,
+  PLAN_CLOSE_PANELS,
+  COLUMNS_OPEN,
+  COLUMNS_CLOSE
+} from './plan.actions'
+
 import Calendar from './calendar'
 
 import { OPERATIONS } from './plan.config'
@@ -81,9 +92,10 @@ const Panel = {
     on($wrap, '.add-deadline-input', 'click', this._onDeadlineInputFocus, this)
     on($wrap, '.add-calendar-icon', 'click', this._onCalendarIconClick, this)
 
-    emitter.on('panel.add.open', this.open.bind(this))
-    emitter.on('panel.add.close', this.close.bind(this))
-    emitter.on('panel.add.toggle', this.toggle.bind(this))
+    emitter.on(PANEL_ADD_OPEN, this.open.bind(this))
+    emitter.on(PANEL_ADD_CLOSE, this.close.bind(this))
+    emitter.on(PANEL_ADD_TOGGLE, this.toggle.bind(this))
+    emitter.on(PANEL_ADD_EMPTY, this.empty.bind(this))
 
     return this
   },
@@ -94,9 +106,10 @@ const Panel = {
     off($wrap, 'click', this._onDeadlineInputFocus)
     off($wrap, 'click', this._onCalendarIconClick)
 
-    emitter.off('panel.add.open', this.open.bind(this))
-    emitter.off('panel.add.close', this.close.bind(this))
-    emitter.off('panel.add.toggle', this.toggle.bind(this))
+    emitter.off(PANEL_ADD_OPEN, this.open.bind(this))
+    emitter.off(PANEL_ADD_CLOSE, this.close.bind(this))
+    emitter.off(PANEL_ADD_TOGGLE, this.toggle.bind(this))
+    emitter.off(PANEL_ADD_EMPTY, this.empty.bind(this))
 
     return this
   },
@@ -107,7 +120,7 @@ const Panel = {
 
     removeClass($wrap, 'panel-opened')
 
-    emitter.emit('columns.open')
+    emitter.emit(COLUMNS_OPEN)
 
     if ($calendar) {
       $calendar.destroy()
@@ -128,10 +141,7 @@ const Panel = {
       return this
     }
 
-    emitter.emit('panel.view.close')
-    emitter.emit('panel.edit.close')
-    emitter.emit('panel.trash.close')
-    emitter.emit('panel.setting.close')
+    emitter.emit(PLAN_CLOSE_PANELS, PANEL_ADD_CLOSE)
 
     $calendar = new Calendar({
       parent: 'add-calendar',
@@ -150,7 +160,7 @@ const Panel = {
 
     addClass($wrap, 'panel-opened')
 
-    emitter.emit('columns.close')
+    emitter.emit(COLUMNS_CLOSE)
 
     return this
   },
@@ -255,7 +265,7 @@ const Panel = {
       delayed: isDelayed(plan)
     }
 
-    emitter.emit('plan.add', clone(plan))
+    emitter.emit(PLAN_ADD, clone(plan))
 
     return this
   },
