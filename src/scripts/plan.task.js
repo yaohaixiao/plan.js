@@ -75,7 +75,7 @@ export const createTaskEditElement = (plan) => {
     'data-id': `${id}`
   }, [
     createElement('i', {
-      'className': 'icon-edit-pencil'
+      'className': 'icon-pencil'
     })
   ])
 }
@@ -101,7 +101,7 @@ export const createTasKDeleteElement = (plan) => {
     'data-id': `${id}`
   }, [
     createElement('i', {
-      'className': 'icon-trash'
+      'className': 'icon-bin'
     })
   ])
 }

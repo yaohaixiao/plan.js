@@ -3,6 +3,7 @@
 import {
   addClass,
   createElement,
+  hasClass,
   removeClass
 } from './dom'
 
@@ -15,6 +16,17 @@ import { format } from './time'
 import marked from 'marked'
 
 import emitter from './plan.emitter'
+
+import {
+  PLAN_CLOSE_PANELS,
+  PANEL_VIEW_UPDATE,
+  PANEL_VIEW_OPEN,
+  PANEL_VIEW_CLOSE,
+  PANEL_VIEW_EMPTY,
+  PANEL_EDIT_UPDATE,
+  COLUMNS_OPEN,
+  COLUMNS_CLOSE
+} from './plan.actions'
 
 const $wrap = document.querySelector('#view-panel')
 
@@ -46,6 +58,28 @@ const Panel = {
     delayed: false,
     deleted: false
   },
+  addEventListeners () {
+    on($wrap, '.view-cancel', 'click', this._onCancelClick, this)
+    on($wrap, '.view-edit', 'click', this._onEditClick, this)
+
+    emitter.on(PANEL_VIEW_UPDATE, this.update.bind(this))
+    emitter.on(PANEL_VIEW_OPEN, this.open.bind(this))
+    emitter.on(PANEL_VIEW_CLOSE, this.close.bind(this))
+    emitter.on(PANEL_VIEW_EMPTY, this.empty.bind(this))
+
+    return this
+  },
+  removeEventListeners () {
+    off($wrap, 'click', this._onCancelClick)
+    off($wrap, 'click', this._onEditClick)
+
+    emitter.off(PANEL_VIEW_UPDATE, this.update.bind(this))
+    emitter.off(PANEL_VIEW_OPEN, this.open.bind(this))
+    emitter.off(PANEL_VIEW_CLOSE, this.close.bind(this))
+    emitter.off(PANEL_VIEW_EMPTY, this.empty.bind(this))
+
+    return this
+  },
   getPlan () {
     return this._plan
   },
@@ -57,46 +91,34 @@ const Panel = {
   getEls () {
     return this._elements
   },
-  addEventListeners () {
-    on($wrap, '.view-cancel', 'click', this._onCancelClick, this)
-    on($wrap, '.view-edit', 'click', this._onEditClick, this)
-
-    emitter.on('panel.view.update', this.update.bind(this))
-    emitter.on('panel.view.open', this.open.bind(this))
-    emitter.on('panel.view.close', this.close.bind(this))
-
-    return this
-  },
-  removeEventListeners () {
-    off($wrap, 'click', this._onCancelClick)
-    off($wrap, 'click', this._onEditClick)
-
-    emitter.off('panel.view.update', this.update.bind(this))
-    emitter.off('panel.view.open', this.open.bind(this))
-    emitter.off('panel.view.close', this.close.bind(this))
-
-    return this
-  },
   close () {
+    if (!this.isOpened()) {
+      return this
+    }
+
     removeClass($wrap, 'panel-opened')
 
-    emitter.emit('columns.open')
+    emitter.emit(COLUMNS_OPEN)
 
     this.empty()
 
     return this
   },
   open () {
-    emitter.emit('panel.add.close')
-    emitter.emit('panel.edit.close')
-    emitter.emit('panel.trash.close')
-    emitter.emit('panel.setting.close')
+    if (this.isOpened()) {
+      return this
+    }
+
+    emitter.emit(PLAN_CLOSE_PANELS, PANEL_VIEW_CLOSE)
 
     addClass($wrap, 'panel-opened')
 
-    emitter.emit('columns.close')
+    emitter.emit(COLUMNS_CLOSE)
 
     return this
+  },
+  isOpened () {
+    return hasClass($wrap, 'panel-opened')
   },
   update (plan) {
     const CLS_LEVEL = 'field-view-level field-level-icon field-level-checked'
@@ -218,7 +240,7 @@ const Panel = {
     return this
   },
   _onEditClick () {
-    emitter.emit('panel.edit.update', this.getPlan())
+    emitter.emit(PANEL_EDIT_UPDATE, this.getPlan())
 
     return this
   }

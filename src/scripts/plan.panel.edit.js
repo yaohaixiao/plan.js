@@ -24,6 +24,17 @@ import { OPERATIONS } from './plan.config'
 import { isDelayed } from './plan.static'
 import emitter from './plan.emitter'
 
+import {
+  PLAN_EDIT,
+  PLAN_CLOSE_PANELS,
+  PANEL_EDIT_UPDATE,
+  PANEL_EDIT_OPEN,
+  PANEL_EDIT_CLOSE,
+  PANEL_EDIT_EMPTY,
+  COLUMNS_OPEN,
+  COLUMNS_CLOSE
+} from './plan.actions'
+
 const $wrap = document.querySelector('#edit-panel')
 
 let $calendar
@@ -76,9 +87,10 @@ const Panel = {
     on($wrap, '.edit-deadline-input', 'click', this._onDeadlineInputFocus, this)
     on($wrap, '.edit-calendar-icon', 'click', this._onCalendarIconClick, this)
 
-    emitter.on('panel.edit.update', this.update.bind(this))
-    emitter.on('panel.edit.open', this.open.bind(this))
-    emitter.on('panel.edit.close', this.close.bind(this))
+    emitter.on(PANEL_EDIT_UPDATE, this.update.bind(this))
+    emitter.on(PANEL_EDIT_OPEN, this.open.bind(this))
+    emitter.on(PANEL_EDIT_CLOSE, this.close.bind(this))
+    emitter.on(PANEL_EDIT_EMPTY, this.empty.bind(this))
 
     return this
   },
@@ -89,9 +101,10 @@ const Panel = {
     off($wrap, 'click', this._onDeadlineInputFocus)
     off($wrap, 'click', this._onCalendarIconClick)
 
-    emitter.off('panel.edit.update', this.setPlan.bind(this))
-    emitter.off('panel.edit.open', this.open.bind(this))
-    emitter.off('panel.edit.close', this.close.bind(this))
+    emitter.off(PANEL_EDIT_UPDATE, this.setPlan.bind(this))
+    emitter.off(PANEL_EDIT_OPEN, this.open.bind(this))
+    emitter.off(PANEL_EDIT_CLOSE, this.close.bind(this))
+    emitter.off(PANEL_EDIT_EMPTY, this.empty.bind(this))
 
     return this
   },
@@ -102,7 +115,7 @@ const Panel = {
 
     removeClass($wrap, 'panel-opened')
 
-    emitter.emit('columns.open')
+    emitter.emit(COLUMNS_OPEN)
 
     if ($calendar) {
       $calendar.destroy()
@@ -118,14 +131,11 @@ const Panel = {
       return this
     }
 
-    emitter.emit('panel.add.close')
-    emitter.emit('panel.view.close')
-    emitter.emit('panel.trash.close')
-    emitter.emit('panel.setting.close')
+    emitter.emit(PLAN_CLOSE_PANELS, PANEL_EDIT_CLOSE)
 
     addClass($wrap, 'panel-opened')
 
-    emitter.emit('columns.close')
+    emitter.emit(COLUMNS_CLOSE)
 
     return this
   },
@@ -261,7 +271,7 @@ const Panel = {
 
     this.close()
 
-    emitter.emit('plan.edit', clone(plan))
+    emitter.emit(PLAN_EDIT, clone(plan))
 
     return this
   },
