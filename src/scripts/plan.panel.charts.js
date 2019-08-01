@@ -12,9 +12,7 @@ import {
 } from './delegate'
 
 import { clone } from './utils'
-import { getMoments } from './time'
-
-import { OPERATIONS } from './plan.config'
+import Chart from 'chart.js'
 import emitter from './plan.emitter'
 
 import {
@@ -28,13 +26,10 @@ import {
   PLAN_CLOSE_PANELS
 } from './plan.actions'
 
-import {
-  createTaskElement,
-  getTasksFragment
-} from './plan.task'
-
-import { isDelayed } from './plan.static'
-
+const blue = '#2196f3'
+const red = '#d31f1f'
+const orange = '#ff9000'
+const green = '#4caf50'
 const $wrap = document.querySelector('#charts-panel')
 
 const Panel = {
@@ -70,13 +65,122 @@ const Panel = {
     return this
   },
   render () {
+    this.drawPie()
+      .drawBar()
+
+    return this
+  },
+  drawPie () {
     let plans = this.getPlans()
     let elements = this.getEls()
-    let $tasksCharts = elements.tasksCharts
-    let $fragment = getTasksFragment(plans)
+    let $pie = elements.tasksCharts.querySelector('#chart-pie')
+    let ctx = $pie.getContext('2d')
+    let $chartPie = null
+    let config = {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: [
+            plans.filter(plan => plan.status===0).length,
+            plans.filter(plan => plan.status===1).length,
+            plans.filter(plan => plan.status===2).length,
+            plans.filter(plan => plan.status===3).length
+          ],
+          backgroundColor: [
+            blue,
+            orange,
+            red,
+            green
+          ],
+          label: 'Dataset 1'
+        }],
+        labels: [
+          '待处理',
+          '处理中',
+          '待验收',
+          '已完成'
+        ]
+      },
+      options: {
+        responsive: true,
+        legend: {
+          position: 'bottom',
+        },
+        title: {
+          display: true,
+          text: '任务进度比例图'
+        },
+        animation: {
+          animateScale: true,
+          animateRotate: true
+        }
+      }
+    }
 
-    $tasksCharts.innerHTML = ''
-    $tasksCharts.appendChild($fragment)
+    $pie.innerHTML = ''
+    $chartPie = new Chart(ctx, config)
+
+    return this
+  },
+  drawBar () {
+    let plans = this.getPlans()
+    let elements = this.getEls()
+    let $bar = elements.tasksCharts.querySelector('#chart-bar')
+    let ctx = $bar.getContext('2d')
+    let color = Chart.helpers.color
+    let $chartBar = null
+    let config = {
+      type: 'bar',
+      data: {
+        labels: [
+          '待处理',
+          '处理中',
+          '待验收',
+          '已完成'
+        ],
+        datasets: [
+          {
+            backgroundColor: [
+              color(blue).alpha(0.5).rgbString(),
+              color(orange).alpha(0.5).rgbString(),
+              color(red).alpha(0.5).rgbString(),
+              color(green).alpha(0.5).rgbString()
+            ],
+            data: [
+              plans.filter(plan => plan.status === 0).length,
+              plans.filter(plan => plan.status === 1).length,
+              plans.filter(plan => plan.status === 2).length,
+              plans.filter(plan => plan.status === 3).length
+            ]
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        legend: {
+          display: false,
+          position: 'bottom'
+        },
+        title: {
+          display: true,
+          text: '工作量统计图'
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        animation: {
+          animateScale: true,
+          animateRotate: true
+        }
+      }
+    }
+
+    $bar.innerHTML = ''
+    $chartBar = new Chart(ctx, config)
 
     return this
   },
@@ -108,23 +212,9 @@ const Panel = {
     return index
   },
   update (plan) {
-    let elements = this.getEls()
-    let $tasks = elements.tasksCharts
     let plans = clone(this.getPlans())
 
-    plan.status = 4
-    plan.archived = true
-    plan.delayed = isDelayed(plan)
-    plan.update.unshift({
-      time: getMoments(),
-      code: OPERATIONS.archive.code,
-      operate: OPERATIONS.archive.text
-    })
 
-    plans.unshift(plan)
-    this.setPlans(plans)
-
-    $tasks.appendChild(createTaskElement(plan))
 
     return this
   },

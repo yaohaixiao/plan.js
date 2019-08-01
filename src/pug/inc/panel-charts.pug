@@ -1,7 +1,11 @@
-div#charts-panel.panel.panel-trash
+div#charts-panel.panel.panel-chart
   div.panel-hd
     div#charts-cancel.panel-button.panel-cancel.charts-cancel
       i.icon-cheveron-left
     h2.panel-title 统计分析
   div.panel-bd
     div#tasks-charts.tasks
+      div.panel-chart-area
+        canvas.panel-chart-canvas#chart-pie(height="320")
+      div.panel-chart-area
+        canvas.panel-chart-canvas#chart-bar(height="320")

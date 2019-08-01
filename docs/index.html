@@ -183,13 +183,16 @@
           </div>
         </div>
       </div>
-      <div class="panel panel-trash" id="charts-panel">
+      <div class="panel panel-chart" id="charts-panel">
         <div class="panel-hd">
           <div class="panel-button panel-cancel charts-cancel" id="charts-cancel"><i class="icon-cheveron-left"></i></div>
           <h2 class="panel-title">统计分析</h2>
         </div>
         <div class="panel-bd">
-          <div class="tasks" id="tasks-charts"></div>
+          <div class="tasks" id="tasks-charts">
+            <div class="panel-chart-area"><canvas class="panel-chart-canvas" id="chart-pie" height="320"></canvas></div>
+            <div class="panel-chart-area"><canvas class="panel-chart-canvas" id="chart-bar" height="320"></canvas></div>
+          </div>
         </div>
       </div>
       <div class="panel panel-trash" id="trash-panel">

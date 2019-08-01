@@ -99,6 +99,17 @@
   font-size: 12px;
 }
 
+.panel-chart-area{
+  margin:10px;
+  height:320px;
+}
+
+.panel-chart-canvas{
+  margin:0 auto;
+  height:100%;
+  overflow:hidden;
+}
+
 .panel-trash {
   .task-title {
     cursor: move;
