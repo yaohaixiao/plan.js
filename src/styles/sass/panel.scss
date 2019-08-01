@@ -71,7 +71,6 @@
   left: 0;
 }
 
-.panel-export,
 .panel-save,
 .panel-modify {
   font-size: 18px;
@@ -97,17 +96,6 @@
   color: $light-gray;
   float: right;
   font-size: 12px;
-}
-
-.panel-chart-area{
-  margin:10px;
-  height:320px;
-}
-
-.panel-chart-canvas{
-  margin:0 auto;
-  height:100%;
-  overflow:hidden;
 }
 
 .panel-trash {

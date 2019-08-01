@@ -2,8 +2,7 @@
 
 import {
   assign,
-  clone,
-  findIndex
+  clone
 } from './utils'
 
 import {
@@ -30,48 +29,14 @@ import Toolbar from './plan.toolbar'
 import PanelView from './plan.panel.view'
 import PanelAdd from './plan.panel.add'
 import PanelEdit from './plan.panel.edit'
-import PanelCharts from './plan.panel.charts'
 import PanelTrash from './plan.panel.trash'
 import PanelSetting from './plan.panel.setting'
 import Columns from './plan.columns'
 
 import emitter from './plan.emitter'
 
-import {
-  PLAN_UPDATE_TEMPLATE,
-  PLAN_UPDATE_THEME,
-  PLAN_UPDATE_CACHE,
-  PLAN_FILTER,
-  PLAN_UPDATE,
-  PLAN_ADD,
-  PLAN_EDIT,
-  PLAN_DELETE,
-  PLAN_REMOVE,
-  PLAN_REPLACE,
-  PLAN_CLOSE_PANELS,
-  PANEL_VIEW_EMPTY,
-  PANEL_VIEW_CLOSE,
-  PANEL_ADD_EMPTY,
-  PANEL_ADD_CLOSE,
-  PANEL_EDIT_EMPTY,
-  PANEL_EDIT_CLOSE,
-  PANEL_CHARTS_UPDATE,
-  PANEL_CHARTS_EMPTY,
-  PANEL_CHARTS_CLOSE,
-  PANEL_TRASH_ADD,
-  PANEL_TRASH_PUSH,
-  PANEL_TRASH_EMPTY,
-  PANEL_TRASH_CLOSE,
-  PANEL_SETTING_CLOSE,
-  COLUMNS_EMPTY,
-  COLUMNS_FILTER,
-  COLUMNS_ADD,
-  COLUMNS_PUSH,
-  COLUMNS_EDIT,
-  COLUMNS_DELETE
-} from './plan.actions'
-
 import dragula from 'dragula'
+import marked from 'marked'
 
 class Plan {
   constructor (options) {
@@ -86,7 +51,6 @@ class Plan {
     this.$panelView = null
     this.$panelAdd = null
     this.$panelEdit = null
-    this.$panelCharts = null
     this.$panelTrash = null
     this.$panelSetting = null
     this.$columns = null
@@ -112,8 +76,8 @@ class Plan {
     this.$panelView = PanelView
     this.$panelAdd = PanelAdd
     this.$panelEdit = PanelEdit
-    this.$panelCharts = PanelCharts
     this.$panelTrash = PanelTrash
+
     this.$panelSetting = PanelSetting
 
     this.$columns = Columns
@@ -127,7 +91,6 @@ class Plan {
     this.$panelAdd.initialize()
     this.$panelEdit.initialize()
 
-    this.$panelCharts.initialize(this.getPlans().filter(plan => !plan.deleted))
     this.$panelTrash.initialize(this.getPlans().filter(plan => plan.deleted))
 
     this.$panelSetting.initialize({
@@ -144,7 +107,6 @@ class Plan {
     columnsEls = this.$columns.getEls()
 
     this.$dragula = dragula([
-      this.$panelTrash.getEls().tasksTrash,
       columnsEls.tasksTodo,
       columnsEls.tasksDoing,
       columnsEls.tasksChecking,
@@ -157,7 +119,6 @@ class Plan {
   render () {
     document.body.className = THEMES[this.get('theme')].theme
 
-    this.$panelCharts.render()
     this.$panelTrash.render()
     this.$panelSetting.render()
     this.$columns.render()
@@ -167,21 +128,21 @@ class Plan {
 
   addEventListeners () {
     // 更新配置
-    emitter.on(PLAN_UPDATE_TEMPLATE, this.setTemplate.bind(this))
-    emitter.on(PLAN_UPDATE_THEME, this.setTheme.bind(this))
-    emitter.on(PLAN_UPDATE_CACHE, this.setCache.bind(this))
+    emitter.on('plan.update.template', this.setTemplate.bind(this))
+    emitter.on('plan.update.theme', this.setTheme.bind(this))
+    emitter.on('plan.update.cache', this.setCache.bind(this))
 
     // 更新数据
-    emitter.on(PLAN_FILTER, this.filter.bind(this))
-    emitter.on(PLAN_ADD, this.add.bind(this))
-    emitter.on(PLAN_EDIT, this.edit.bind(this))
-    emitter.on(PLAN_UPDATE, this.update.bind(this))
-    emitter.on(PLAN_REMOVE, this.remove.bind(this))
-    emitter.on(PLAN_REPLACE, this.replace.bind(this))
-    emitter.on(PLAN_DELETE, this.delete.bind(this))
+    emitter.on('plan.filter', this.filter.bind(this))
+    emitter.on('plan.add', this.add.bind(this))
+    emitter.on('plan.edit', this.edit.bind(this))
+    emitter.on('plan.update', this.update.bind(this))
+    emitter.on('plan.remove', this.remove.bind(this))
+    emitter.on('plan.replace', this.replace.bind(this))
+    emitter.on('plan.delete', this.delete.bind(this))
 
     // 收起 Panel
-    emitter.on(PLAN_CLOSE_PANELS, this.closePanels.bind(this))
+    emitter.on('plan.close.panels', this.closePanels.bind(this))
 
     // 拖动完成，更新任务状态
     this.$dragula.on('drop', ($plan, $target, $source) => {
@@ -201,20 +162,20 @@ class Plan {
     this.$columns.removeEventListeners()
 
     // 更新配置
-    emitter.off(PLAN_UPDATE_TEMPLATE, this.setTemplate.bind(this))
-    emitter.off(PLAN_UPDATE_THEME, this.setTheme.bind(this))
-    emitter.off(PLAN_UPDATE_CACHE, this.setCache.bind(this))
+    emitter.off('plan.update.template', this.setTemplate.bind(this))
+    emitter.off('plan.update.theme', this.setTheme.bind(this))
+    emitter.off('plan.update.cache', this.setCache.bind(this))
 
     // 更新数据
-    emitter.off(PLAN_FILTER, this.filter.bind(this))
-    emitter.off(PLAN_ADD, this.add.bind(this))
-    emitter.off(PLAN_EDIT, this.edit.bind(this))
-    emitter.off(PLAN_UPDATE, this.update.bind(this))
-    emitter.off(PLAN_REMOVE, this.remove.bind(this))
-    emitter.off(PLAN_REPLACE, this.replace.bind(this))
-    emitter.off(PLAN_DELETE, this.delete.bind(this))
+    emitter.off('plan.filter', this.filter.bind(this))
+    emitter.off('plan.add', this.add.bind(this))
+    emitter.off('plan.edit', this.edit.bind(this))
+    emitter.off('plan.update', this.update.bind(this))
+    emitter.off('plan.remove', this.remove.bind(this))
+    emitter.off('plan.replace', this.replace.bind(this))
+    emitter.off('plan.delete', this.delete.bind(this))
 
-    emitter.off(PLAN_CLOSE_PANELS, this.closePanels.bind(this))
+    emitter.off('plan.close.panels', this.closePanels.bind(this))
 
     this.$dragula.destroy()
 
@@ -263,12 +224,12 @@ class Plan {
   }
 
   empty () {
-    emitter.emit(PANEL_VIEW_EMPTY)
-    emitter.emit(PANEL_ADD_EMPTY)
-    emitter.emit(PANEL_EDIT_EMPTY)
-    emitter.emit(PANEL_CHARTS_EMPTY)
-    emitter.emit(PANEL_TRASH_EMPTY)
-    emitter.emit(COLUMNS_EMPTY)
+    emitter.emit('panel.view.empty')
+    emitter.emit('panel.add.empty')
+    emitter.emit('panel.edit.empty')
+    emitter.emit('panel.trash.empty')
+    emitter.emit('panel.setting.empty')
+    emitter.emit('panel.columns.empty')
 
     return this
   }
@@ -291,8 +252,13 @@ class Plan {
 
   setPlan (plan) {
     let plans = clone(this.getPlans())
-    let index = findIndex(plans, (task) => {
-      return task.id === plan.id
+    let index = -1
+
+    // 查询是否存在
+    plans.forEach((task, i) => {
+      if (task.id === plan.id) {
+        index = i
+      }
     })
 
     // 如果存在，则更新数据
@@ -304,10 +270,6 @@ class Plan {
     return this
   }
 
-  /**
-   *
-   * @returns {Array}
-   */
   getPlans () {
     return this.data.plans
   }
@@ -373,7 +335,7 @@ class Plan {
   filter(filter) {
     this.setFilter(filter)
 
-    emitter.emit(COLUMNS_FILTER, filter)
+    emitter.emit('columns.filter', filter)
 
     return this
   }
@@ -385,7 +347,7 @@ class Plan {
 
     this.setPlans(plans)
 
-    emitter.emit(COLUMNS_ADD, plan)
+    emitter.emit('columns.add', plan)
 
     return this
   }
@@ -393,7 +355,7 @@ class Plan {
   edit (plan) {
     this.setPlan(plan)
 
-    emitter.emit(COLUMNS_EDIT, plan)
+    emitter.emit('columns.edit', plan)
 
     return this
   }
@@ -407,7 +369,7 @@ class Plan {
   remove (plan) {
     this.setPlan(plan)
 
-    emitter.emit(PANEL_TRASH_ADD, plan)
+    emitter.emit('panel.trash.add', plan)
 
     return this
   }
@@ -415,7 +377,7 @@ class Plan {
   replace (plan) {
     this.setPlan(plan)
 
-    emitter.emit(COLUMNS_ADD, plan)
+    emitter.emit('columns.add', plan)
 
     return this
   }
@@ -440,21 +402,12 @@ class Plan {
     return this
   }
 
-  closePanels (action) {
-    let actions = [
-      PANEL_VIEW_CLOSE,
-      PANEL_ADD_CLOSE,
-      PANEL_EDIT_CLOSE,
-      PANEL_CHARTS_CLOSE,
-      PANEL_TRASH_CLOSE,
-      PANEL_SETTING_CLOSE
-    ]
-
-    if (action) {
-      actions = actions.filter(evt => evt !== action)
-    }
-
-    actions.forEach(evt => emitter.emit(evt))
+  closePanels () {
+    emitter.emit('panel.view.close')
+    emitter.emit('panel.add.close')
+    emitter.emit('panel.edit.close')
+    emitter.emit('panel.trash.close')
+    emitter.emit('panel.setting.close')
 
     return this
   }
@@ -462,116 +415,29 @@ class Plan {
   drop ($plan, $target, $source) {
     let id = $plan.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
-    let filter = this.getFilter()
     let $columns = this.$columns
     let sourceStatus = $source.getAttribute('data-status')
     let targetStatus = $target.getAttribute('data-status')
-    let $trashElements = this.$panelTrash.getEls()
-    let $sourceCount
-    let $targetCount
-    let code
-    let text
+    let $sourceCount = $columns.getStatusCountEl(sourceStatus)
+    let $targetCount = $columns.getStatusCountEl(targetStatus)
 
     if (targetStatus === sourceStatus) {
       return this
     }
 
-    // 移动到回收站
-    if (targetStatus === 'deleted') {
-      plan.deleted = true
-
-      code = OPERATIONS.remove.code
-      text = OPERATIONS.remove.text
-
-      $sourceCount = $columns.getStatusCountEl(sourceStatus)
-      $targetCount = $trashElements.trashCount
-    } else {
-      $sourceCount = $trashElements.trashCount
-      $targetCount = $columns.getStatusCountEl(targetStatus)
-
-      // 从回收站移出来
-      if (sourceStatus === 'deleted') {
-        // 根据过滤器，更新相应的属性
-        switch (filter) {
-          case 'marked':
-            plan.marked = true
-            break
-          case 'spades':
-            plan.level = 0
-            break
-          case 'heart':
-            plan.level = 1
-            break
-          case 'clubs':
-            plan.level = 2
-            break
-          case 'diamonds':
-            plan.level = 3
-            break
-        }
-
-        plan.deleted = false
-
-        code = OPERATIONS.replace.text
-        text = OPERATIONS.replace.text
-      } else {
-        code = OPERATIONS.status.text
-        text = OPERATIONS.status.text
-
-        $sourceCount = $columns.getStatusCountEl(sourceStatus)
-        $targetCount = $columns.getStatusCountEl(targetStatus)
-      }
-    }
-
     plan.status = parseInt(targetStatus, 10)
+
     plan.update.unshift({
       time: getMoments(),
-      code: code,
-      operate: text
+      code: OPERATIONS.status.text,
+      operate: OPERATIONS.status.text
     })
     plan.delayed = isDelayed(plan)
     this.setPlan(plan)
 
-    if (targetStatus === 'deleted') {
-      this.setPlan(plan)
-      emitter.emit(PANEL_TRASH_PUSH, plan)
-      emitter.emit(COLUMNS_DELETE, plan)
-    } else {
-      if (sourceStatus === 'deleted') {
-        emitter.emit(COLUMNS_PUSH, plan)
-      } else {
-        emitter.emit(COLUMNS_EDIT, plan)
-      }
-    }
-
-    if (plan.deleted) {
-      addClass($plan, 'task-deleted')
-      $plan.setAttribute('data-deleted', '1')
-    } else {
-      removeClass($plan, 'task-deleted')
-      $plan.setAttribute('data-deleted', '0')
-
-      replaceClass($plan, 'task-status-' + plan.status, 'task-status-' + sourceStatus)
-      $plan.setAttribute('data-status', plan.status)
-    }
-
-    if (plan.marked) {
-      addClass($plan, 'task-marked')
-      $plan.setAttribute('data-marked', '1')
-    } else {
-      removeClass($plan, 'task-marked')
-      $plan.setAttribute('data-marked', '0')
-    }
-
-    if (plan.delayed) {
-      addClass($plan, 'task-delayed')
-      $plan.setAttribute('data-delay', '1')
-    } else {
-      removeClass($plan, 'task-delayed')
-      $plan.setAttribute('data-delay', '0')
-    }
-
     updateStatusChangedCount($sourceCount, $targetCount)
+
+    emitter.emit('columns.edit', plan)
 
     return this
   }

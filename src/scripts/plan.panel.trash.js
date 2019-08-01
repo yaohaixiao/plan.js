@@ -26,21 +26,6 @@ import {
 
 import { isDelayed } from './plan.static'
 
-import {
-  PLAN_DELETE,
-  PLAN_REPLACE,
-  PLAN_CLOSE_PANELS,
-  TOOLBAR_TRASH_TOGGLE_HIGHLIGHT,
-  PANEL_TRASH_ADD,
-  PANEL_TRASH_PUSH,
-  PANEL_TRASH_OPEN,
-  PANEL_TRASH_CLOSE,
-  PANEL_TRASH_EMPTY,
-  PANEL_TRASH_TOGGLE,
-  COLUMNS_OPEN,
-  COLUMNS_CLOSE
-} from './plan.actions'
-
 const $wrap = document.querySelector('#trash-panel')
 let $confirm
 
@@ -57,34 +42,6 @@ const Panel = {
     tasksTrash: $wrap.querySelector('#tasks-trash')
   },
   _plans: [],
-  addEventListeners () {
-    on($wrap, '.trash-cancel', 'click', this._onCancelClick, this)
-    on($wrap, '.task-replace', 'click', this._onReplaceClick, this)
-    on($wrap, '.task-delete', 'click', this._onDeleteClick, this)
-
-    emitter.on(PANEL_TRASH_ADD, this.add.bind(this))
-    emitter.on(PANEL_TRASH_PUSH, this.push.bind(this))
-    emitter.on(PANEL_TRASH_OPEN, this.open.bind(this))
-    emitter.on(PANEL_TRASH_CLOSE, this.close.bind(this))
-    emitter.on(PANEL_TRASH_TOGGLE, this.toggle.bind(this))
-    emitter.on(PANEL_TRASH_EMPTY, this.empty.bind(this))
-
-    return this
-  },
-  removeEventListeners () {
-    off($wrap, 'click', this._onCancelClick)
-    off($wrap, 'click', this._onReplaceClick)
-    off($wrap, 'click', this._onDeleteClick)
-
-    emitter.off(PANEL_TRASH_ADD, this.add.bind(this))
-    emitter.off(PANEL_TRASH_PUSH, this.push.bind(this))
-    emitter.off(PANEL_TRASH_OPEN, this.open.bind(this))
-    emitter.off(PANEL_TRASH_CLOSE, this.close.bind(this))
-    emitter.off(PANEL_TRASH_TOGGLE, this.toggle.bind(this))
-    emitter.off(PANEL_TRASH_EMPTY, this.empty.bind(this))
-
-    return this
-  },
   render () {
     let plans = this.getPlans()
     let elements = this.getEls()
@@ -112,6 +69,30 @@ const Panel = {
   },
   getEls () {
     return this._elements
+  },
+  addEventListeners () {
+    on($wrap, '.trash-cancel', 'click', this._onCancelClick, this)
+    on($wrap, '.task-replace', 'click', this._onReplaceClick, this)
+    on($wrap, '.task-delete', 'click', this._onDeleteClick, this)
+
+    emitter.on('panel.trash.add', this.add.bind(this))
+    emitter.on('panel.trash.open', this.open.bind(this))
+    emitter.on('panel.trash.close', this.close.bind(this))
+    emitter.on('panel.trash.toggle', this.toggle.bind(this))
+
+    return this
+  },
+  removeEventListeners () {
+    off($wrap, 'click', this._onCancelClick)
+    off($wrap, 'click', this._onReplaceClick)
+    off($wrap, 'click', this._onDeleteClick)
+
+    emitter.off('panel.trash.add', this.add.bind(this))
+    emitter.off('panel.trash.open', this.open.bind(this))
+    emitter.off('panel.trash.close', this.close.bind(this))
+    emitter.off('panel.trash.toggle', this.toggle.bind(this))
+
+    return this
   },
   indexOf (plans, plan) {
     let index = -1
@@ -148,15 +129,6 @@ const Panel = {
 
     return this
   },
-  push (plan) {
-    let plans = clone(this.getPlans())
-
-    plans.push(plan)
-
-    this.setPlans(plans)
-
-    return this
-  },
   delete (plan) {
     let plans = clone(this.getPlans())
     let elements = this.getEls()
@@ -179,7 +151,7 @@ const Panel = {
     $plan = $tasks.querySelector(`.task[data-id="${plan.id}"]`)
     $tasks.removeChild($plan)
 
-    emitter.emit(PLAN_DELETE, clone(plan))
+    emitter.emit('plan.delete', clone(plan))
 
     return this
   },
@@ -213,7 +185,7 @@ const Panel = {
     $plan = $tasks.querySelector(`div.task[data-id="${plan.id}"]`)
     $tasks.removeChild($plan)
 
-    emitter.emit(PLAN_REPLACE, clone(plan))
+    emitter.emit('plan.replace', clone(plan))
 
     return this
   },
@@ -239,8 +211,8 @@ const Panel = {
       return this
     }
 
-    emitter.emit(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT)
-    emitter.emit(COLUMNS_OPEN, true)
+    emitter.emit('toolbar.trash.toggle.highlight')
+    emitter.emit('columns.open')
 
     removeClass($wrap, 'panel-opened')
 
@@ -251,9 +223,13 @@ const Panel = {
       return this
     }
 
-    emitter.emit(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT)
-    emitter.emit(PLAN_CLOSE_PANELS, PANEL_TRASH_CLOSE)
-    emitter.emit(COLUMNS_CLOSE, true)
+    emitter.emit('toolbar.trash.toggle.highlight')
+
+    emitter.emit('panel.view.close')
+    emitter.emit('panel.add.close')
+    emitter.emit('panel.edit.close')
+    emitter.emit('panel.setting.close')
+    emitter.emit('columns.close')
 
     addClass($wrap, 'panel-opened')
 

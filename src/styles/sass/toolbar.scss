@@ -15,7 +15,7 @@
 
 .toolbar {
   box-sizing: border-box;
-  padding: 48px 0 144px;
+  padding: 48px 0 96px;
 }
 
 .toolbar-filters {
@@ -29,7 +29,6 @@
   width: 68px;
 }
 
-.toolbar-charts,
 .toolbar-plus,
 .toolbar-trash,
 .toolbar-setting {
@@ -40,21 +39,8 @@
   z-index: 2;
 }
 
-.toolbar-button {
-  @include button(48px, 48px, 18px);
-  cursor: pointer;
-
-  &:hover {
-    color: $gray;
-  }
-}
-
 .toolbar-plus {
   top: 48px;
-}
-
-.toolbar-charts {
-  bottom: 96px;
 }
 
 .toolbar-trash {
@@ -63,6 +49,15 @@
 
 .toolbar-setting {
   bottom: 0;
+}
+
+.toolbar-button {
+  @include button(48px, 48px, 18px);
+  cursor: pointer;
+
+  &:hover {
+    color: $gray;
+  }
 }
 
 .toolbar-active {

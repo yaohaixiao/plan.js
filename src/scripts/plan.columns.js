@@ -10,10 +10,7 @@ import {
   removeClass
 } from './dom'
 
-import {
-  clone,
-  findIndex
-} from './utils'
+import { clone } from './utils'
 import { getMoments } from './time'
 import Confirm from './confirm'
 
@@ -29,22 +26,6 @@ import {
   isDelayed,
   updateStatusChangedCount
 } from './plan.static'
-
-import {
-  PLAN_REMOVE,
-  PLAN_UPDATE,
-  PLAN_CLOSE_PANELS,
-  PANEL_VIEW_UPDATE,
-  PANEL_EDIT_UPDATE,
-  COLUMNS_CLOSE,
-  COLUMNS_OPEN,
-  COLUMNS_EMPTY,
-  COLUMNS_FILTER,
-  COLUMNS_ADD,
-  COLUMNS_PUSH,
-  COLUMNS_EDIT,
-  COLUMNS_DELETE
-} from './plan.actions'
 
 let $wrap = document.querySelector('#columns')
 let $confirm
@@ -70,56 +51,6 @@ const Columns = {
   },
   _plans: [],
   _filter: 'inbox',
-  addEventListeners () {
-    on($wrap, '.column-up', 'click', this._onCollapseClick, this)
-    on($wrap, '.column-down', 'click', this._onExpandClick, this)
-    on($wrap, '.columns-overlay', 'click', this._onOverlayClick, this)
-
-    // ---------- task ----------
-    on($wrap, '.task-title', 'click', this._onTitleClick, this)
-    on($wrap, '.task-prev', 'click', this._onPrevButtonClick, this)
-    on($wrap, '.task-edit', 'click', this._onEditButtonClick, this)
-    on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
-    on($wrap, '.task-delete', 'click', this._onDeleteButtonClick, this)
-    on($wrap, '.task-next', 'click', this._onNextButtonClick, this)
-
-    emitter.on(COLUMNS_OPEN, this.open.bind(this))
-    emitter.on(COLUMNS_CLOSE, this.close.bind(this))
-    emitter.on(COLUMNS_EMPTY, this.empty.bind(this))
-
-    emitter.on(COLUMNS_FILTER, this.filter.bind(this))
-    emitter.on(COLUMNS_ADD, this.add.bind(this))
-    emitter.on(COLUMNS_PUSH, this.push.bind(this))
-    emitter.on(COLUMNS_EDIT, this.edit.bind(this))
-    emitter.on(COLUMNS_DELETE, this.delete.bind(this))
-
-    return this
-  },
-  removeEventListeners () {
-    off($wrap, 'click', this._onCollapseClick)
-    off($wrap, 'click', this._onExpandClick)
-    off($wrap, 'click', this._onOverlayClick)
-
-    // ---------- task ----------
-    off($wrap, 'click', this._onTitleClick)
-    off($wrap, 'click', this._onPrevButtonClick)
-    off($wrap, 'click', this._onEditButtonClick)
-    off($wrap, 'click', this._onMarkedButtonClick)
-    off($wrap, 'click', this._onDeleteButtonClick)
-    off($wrap, 'click', this._onNextButtonClick)
-
-    emitter.off(COLUMNS_OPEN, this.open.bind(this))
-    emitter.off(COLUMNS_CLOSE, this.close.bind(this))
-    emitter.off(COLUMNS_EMPTY, this.empty.bind(this))
-
-    emitter.off(COLUMNS_FILTER, this.filter.bind(this))
-    emitter.off(COLUMNS_ADD, this.add.bind(this))
-    emitter.off(COLUMNS_PUSH, this.push.bind(this))
-    emitter.off(COLUMNS_EDIT, this.edit.bind(this))
-    emitter.off(COLUMNS_DELETE, this.delete.bind(this))
-
-    return this
-  },
   render () {
     this.updateColumns()
 
@@ -140,8 +71,13 @@ const Columns = {
   },
   setPlan (plan) {
     let plans = clone(this.getPlans())
-    let index = findIndex(plans, (task) => {
-      return task.id === plan.id
+    let index = -1
+
+    // 查询是否存在
+    plans.forEach((task, i) => {
+      if (task.id === plan.id) {
+        index = i
+      }
     })
 
     // 如果存在，则更新数据
@@ -163,7 +99,50 @@ const Columns = {
   getEls () {
     return this._elements
   },
+  addEventListeners () {
+    on($wrap, '.column-up', 'click', this._onCollapseClick, this)
+    on($wrap, '.column-down', 'click', this._onExpandClick, this)
+    on($wrap, '.columns-overlay', 'click', this._onOverlayClick, this)
 
+    // ---------- task ----------
+    on($wrap, '.task-title', 'click', this._onTitleClick, this)
+    on($wrap, '.task-prev', 'click', this._onPrevButtonClick, this)
+    on($wrap, '.task-edit', 'click', this._onEditButtonClick, this)
+    on($wrap, '.task-bookmark', 'click', this._onMarkedButtonClick, this)
+    on($wrap, '.task-delete', 'click', this._onDeleteButtonClick, this)
+    on($wrap, '.task-next', 'click', this._onNextButtonClick, this)
+
+    emitter.on('columns.open', this.open.bind(this))
+    emitter.on('columns.close', this.close.bind(this))
+
+    emitter.on('columns.filter', this.filter.bind(this))
+    emitter.on('columns.add', this.add.bind(this))
+    emitter.on('columns.edit', this.edit.bind(this))
+
+    return this
+  },
+  removeEventListeners () {
+    off($wrap, 'click', this._onCollapseClick)
+    off($wrap, 'click', this._onExpandClick)
+    off($wrap, 'click', this._onOverlayClick)
+
+    // ---------- task ----------
+    off($wrap, 'click', this._onTitleClick)
+    off($wrap, 'click', this._onPrevButtonClick)
+    off($wrap, 'click', this._onEditButtonClick)
+    off($wrap, 'click', this._onMarkedButtonClick)
+    off($wrap, 'click', this._onDeleteButtonClick)
+    off($wrap, 'click', this._onNextButtonClick)
+
+    emitter.off('columns.open', this.open.bind(this))
+    emitter.off('columns.close', this.close.bind(this))
+
+    emitter.on('columns.filter', this.filter.bind(this))
+    emitter.on('columns.add', this.add.bind(this))
+    emitter.on('columns.edit', this.edit.bind(this))
+
+    return this
+  },
   getStatusCountEl (status) {
     let elements = this.getEls()
     let $count
@@ -298,15 +277,6 @@ const Columns = {
 
     return this
   },
-  push (plan) {
-    let plans = clone(this.getPlans())
-
-    plans.push(plan)
-
-    this.setPlans(plans)
-
-    return this
-  },
   edit (plan) {
     let $plan = createTaskElement(plan)
     let $originPlan = $wrap.querySelector(`.task[data-id="${plan.id}"]`)
@@ -353,16 +323,7 @@ const Columns = {
       operate: OPERATIONS.remove.text
     })
 
-    emitter.emit(PLAN_REMOVE, clone(plan))
-
-    return this
-  },
-  delete (plan) {
-    let plans = clone(this.getPlans())
-
-    plans = plans.filter(task => plan.id !== task.id)
-
-    this.setPlans(plans)
+    emitter.emit('plan.remove', clone(plan))
 
     return this
   },
@@ -382,7 +343,7 @@ const Columns = {
     })
     this.setPlan(plan)
 
-    emitter.emit(PLAN_UPDATE, clone(plan))
+    emitter.emit('plan.update', clone(plan))
 
     switch (status) {
       case 0:
@@ -462,7 +423,7 @@ const Columns = {
     })
     this.setPlan(plan)
 
-    emitter.emit(PLAN_UPDATE, clone(plan))
+    emitter.emit('plan.update', clone(plan))
 
     $targetCount = this.getStatusCountEl(plan.status)
     $targetTasks = this.getStatusTasksEl(plan.status)
@@ -488,6 +449,7 @@ const Columns = {
 
     return this
   },
+
   updateDoingColumn () {
     let doingPlans = this.getDoingPlans()
     let elements = this.getEls()
@@ -502,6 +464,7 @@ const Columns = {
 
     return this
   },
+
   updateCheckingColumn () {
     let checkingPlans = this.getCheckingPlans()
     let elements = this.getEls()
@@ -516,6 +479,7 @@ const Columns = {
 
     return this
   },
+
   updateDoneColumn () {
     let donePlans = this.getDonePlans()
     let elements = this.getEls()
@@ -595,7 +559,7 @@ const Columns = {
     return this
   },
 
-  empty () {
+  emptyColumns () {
     this.emptyTodoColumn()
         .emptyDoingColumn()
         .emptyCheckingColumn()
@@ -628,21 +592,13 @@ const Columns = {
 
     return this
   },
-  open (isTrashPanelOpened) {
+  open () {
     removeClass($wrap, 'panel-opened')
-
-    if(isTrashPanelOpened){
-      removeClass($wrap, 'panel-trash-opened')
-    }
 
     return this
   },
-  close (isTrashPanelOpened) {
+  close () {
     addClass($wrap, 'panel-opened')
-
-    if(isTrashPanelOpened){
-      addClass($wrap, 'panel-trash-opened')
-    }
 
     return this
   },
@@ -651,7 +607,7 @@ const Columns = {
     let id = $title.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
 
-    emitter.emit(PANEL_VIEW_UPDATE, plan)
+    emitter.emit('panel.view.update', plan)
 
     return this
   },
@@ -678,7 +634,7 @@ const Columns = {
     let id = $button.getAttribute('data-id')
     let plan = this.getPlan(parseInt(id, 10))
 
-    emitter.emit(PANEL_EDIT_UPDATE, plan)
+    emitter.emit('panel.edit.update', plan)
 
     return this
   },
@@ -711,7 +667,7 @@ const Columns = {
     return this
   },
   _onOverlayClick () {
-    emitter.emit(PLAN_CLOSE_PANELS)
+    emitter.emit('plan.close.panels')
 
     this.open()
 

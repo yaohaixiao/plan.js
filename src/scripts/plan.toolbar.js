@@ -9,18 +9,6 @@ import {
   removeClass
 } from './dom'
 
-import {
-  PLAN_FILTER,
-  PLAN_CLOSE_PANELS,
-  TOOLBAR_SETTING_TOGGLE_HIGHLIGHT,
-  TOOLBAR_TRASH_TOGGLE_HIGHLIGHT,
-  TOOLBAR_CHARTS_TOGGLE_HIGHLIGHT,
-  PANEL_ADD_TOGGLE,
-  PANEL_CHARTS_TOGGLE,
-  PANEL_SETTING_TOGGLE,
-  PANEL_TRASH_TOGGLE
-} from './plan.actions'
-
 let $wrap = document.querySelector('#toolbar')
 
 const Toolbar = {
@@ -42,16 +30,13 @@ const Toolbar = {
     on($wrap, '.toolbar-diamonds', 'click', this._onDiamondsFilterClick, this)
     // 重要任务
     on($wrap, '.toolbar-bookmark', 'click', this._onBookmarkFilterClick, this)
-    // 任务归档
-    on($wrap, '.toolbar-charts', 'click', this._onChartsClick, this)
     // 回收站
     on($wrap, '.toolbar-trash', 'click', this._onTrashClick, this)
     // 设置
     on($wrap, '.toolbar-setting', 'click', this._onSettingClick, this)
 
-    emitter.on(TOOLBAR_CHARTS_TOGGLE_HIGHLIGHT, this.chartsToggleHighlight.bind(this))
-    emitter.on(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT, this.trashToggleHighlight.bind(this))
-    emitter.on(TOOLBAR_SETTING_TOGGLE_HIGHLIGHT, this.settingToggleHighlight.bind(this))
+    emitter.on('toolbar.trash.toggle.highlight', this.trashToggleHighlight.bind(this))
+    emitter.on('toolbar.setting.toggle.highlight', this.settingToggleHighlight.bind(this))
 
     return this
   },
@@ -71,9 +56,8 @@ const Toolbar = {
     // 设置
     off($wrap, 'click', this._onSettingClick)
 
-    emitter.off(TOOLBAR_CHARTS_TOGGLE_HIGHLIGHT, this.chartsToggleHighlight.bind(this))
-    emitter.off(TOOLBAR_TRASH_TOGGLE_HIGHLIGHT, this.trashToggleHighlight.bind(this))
-    emitter.off(TOOLBAR_SETTING_TOGGLE_HIGHLIGHT, this.settingToggleHighlight.bind(this))
+    emitter.off('toolbar.trash.toggle.highlight', this.trashToggleHighlight.bind(this))
+    emitter.off('toolbar.setting.toggle.highlight', this.settingToggleHighlight.bind(this))
 
     return this
   },
@@ -102,13 +86,8 @@ const Toolbar = {
 
     this.setFilter(prop)
 
-    emitter.emit(PLAN_FILTER, prop)
-    emitter.emit(PLAN_CLOSE_PANELS)
-
-    return this
-  },
-  chartsToggleHighlight () {
-    this.toggleHighlight($wrap.querySelector('.toolbar-charts'))
+    emitter.emit('plan.filter', prop)
+    emitter.emit('plan.close.panels')
 
     return this
   },
@@ -134,7 +113,7 @@ const Toolbar = {
     return this
   },
   _onPlusClick () {
-    emitter.emit(PANEL_ADD_TOGGLE)
+    emitter.emit('panel.add.toggle')
 
     return this
   },
@@ -168,18 +147,13 @@ const Toolbar = {
 
     return this
   },
-  _onChartsClick () {
-    emitter.emit(PANEL_CHARTS_TOGGLE)
-
-    return this
-  },
   _onTrashClick () {
-    emitter.emit(PANEL_TRASH_TOGGLE)
+    emitter.emit('panel.trash.toggle')
 
     return this
   },
   _onSettingClick () {
-    emitter.emit(PANEL_SETTING_TOGGLE)
+    emitter.emit('panel.setting.toggle')
 
     return this
   }

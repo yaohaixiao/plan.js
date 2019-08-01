@@ -20,19 +20,6 @@ import {
 
 import emitter from './plan.emitter'
 
-import {
-  PLAN_UPDATE_TEMPLATE,
-  PLAN_UPDATE_THEME,
-  PLAN_UPDATE_CACHE,
-  PLAN_CLOSE_PANELS,
-  TOOLBAR_SETTING_TOGGLE_HIGHLIGHT,
-  PANEL_SETTING_OPEN,
-  PANEL_SETTING_CLOSE,
-  PANEL_SETTING_TOGGLE,
-  COLUMNS_OPEN,
-  COLUMNS_CLOSE
-} from './plan.actions'
-
 const CLS_OPTION_CHECKED = 'field-option-checked'
 const CLS_RADIO_CHECKED = 'field-radio-checked'
 const $wrap = document.querySelector('#setting-panel')
@@ -55,30 +42,6 @@ const Panel = {
   _template: 0,
   _theme: 0,
   _cache: 0,
-  addEventListeners () {
-    on($wrap, '.setting-cancel', 'click', this._onCancelClick, this)
-    on($wrap, '.setting-template', 'click', this._onTemplateClick, this)
-    on($wrap, '.setting-theme', 'click', this._onThemeClick, this)
-    on($wrap, '.setting-cache', 'click', this._onCacheClick, this)
-
-    emitter.on(PANEL_SETTING_OPEN, this.open.bind(this))
-    emitter.on(PANEL_SETTING_CLOSE, this.close.bind(this))
-    emitter.on(PANEL_SETTING_TOGGLE, this.toggle.bind(this))
-
-    return this
-  },
-  removeEventListeners () {
-    off($wrap, 'click', this._onCancelClick)
-    off($wrap, 'click', this._onTemplateClick)
-    off($wrap, 'click', this._onThemeClick)
-    off($wrap, 'click', this._onCacheClick)
-
-    emitter.off(PANEL_SETTING_OPEN, this.open.bind(this))
-    emitter.off(PANEL_SETTING_CLOSE, this.close.bind(this))
-    emitter.off(PANEL_SETTING_TOGGLE, this.toggle.bind(this))
-
-    return this
-  },
   render () {
     const SPACE = ' '
     const CLS_RADIOS_GROUP = 'field-radios-group'
@@ -249,13 +212,37 @@ const Panel = {
   getEls () {
     return this._elements
   },
+  addEventListeners () {
+    on($wrap, '.setting-cancel', 'click', this._onCancelClick, this)
+    on($wrap, '.setting-template', 'click', this._onTemplateClick, this)
+    on($wrap, '.setting-theme', 'click', this._onThemeClick, this)
+    on($wrap, '.setting-cache', 'click', this._onCacheClick, this)
+
+    emitter.on('panel.setting.open', this.open.bind(this))
+    emitter.on('panel.setting.close', this.close.bind(this))
+    emitter.on('panel.setting.toggle', this.toggle.bind(this))
+
+    return this
+  },
+  removeEventListeners () {
+    off($wrap, 'click', this._onCancelClick)
+    off($wrap, 'click', this._onTemplateClick)
+    off($wrap, 'click', this._onThemeClick)
+    off($wrap, 'click', this._onCacheClick)
+
+    emitter.off('panel.setting.open', this.open.bind(this))
+    emitter.off('panel.setting.close', this.close.bind(this))
+    emitter.off('panel.setting.toggle', this.toggle.bind(this))
+
+    return this
+  },
   close () {
     if (!this.isOpened()) {
       return this
     }
 
-    emitter.emit(TOOLBAR_SETTING_TOGGLE_HIGHLIGHT)
-    emitter.emit(COLUMNS_OPEN)
+    emitter.emit('toolbar.setting.toggle.highlight')
+    emitter.emit('columns.open')
 
     removeClass($wrap, 'panel-opened')
 
@@ -266,9 +253,13 @@ const Panel = {
       return this
     }
 
-    emitter.emit(TOOLBAR_SETTING_TOGGLE_HIGHLIGHT)
-    emitter.emit(PLAN_CLOSE_PANELS, PANEL_SETTING_CLOSE)
-    emitter.emit(COLUMNS_CLOSE)
+    emitter.emit('toolbar.setting.toggle.highlight')
+
+    emitter.emit('panel.view.close')
+    emitter.emit('panel.add.close')
+    emitter.emit('panel.edit.close')
+    emitter.emit('panel.trash.close')
+    emitter.emit('columns.close')
 
     addClass($wrap, 'panel-opened')
 
@@ -303,7 +294,7 @@ const Panel = {
     }
     addClass($button, CLS_OPTION_CHECKED)
 
-    emitter.emit(PLAN_UPDATE_TEMPLATE, parseInt(value, 10))
+    emitter.emit('plan.update.template', parseInt(value, 10))
 
     return this
   },
@@ -327,7 +318,7 @@ const Panel = {
 
     $body.className = THEMES[parseInt(value, 10)].theme
 
-    emitter.emit(PLAN_UPDATE_THEME, parseInt(value, 10))
+    emitter.emit('plan.update.theme', parseInt(value, 10))
 
     return this
   },
@@ -354,7 +345,7 @@ const Panel = {
     }
     addClass($radio, CLS_RADIO_CHECKED)
 
-    emitter.emit(PLAN_UPDATE_CACHE, parseInt(value, 10))
+    emitter.emit('plan.update.cache', parseInt(value, 10))
 
     return this
   },
