@@ -102,7 +102,7 @@ const Panel = {
         ]
       },
       options: {
-        responsive: true,
+        responsive: false,
         legend: {
           position: 'bottom',
         },
@@ -156,7 +156,7 @@ const Panel = {
         ]
       },
       options: {
-        responsive: true,
+        responsive: false,
         legend: {
           display: false,
           position: 'bottom'
