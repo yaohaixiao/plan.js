@@ -100,11 +100,11 @@
 }
 
 .panel-chart-area {
+  height: 320px;
+  margin: 10px;
+  overflow: hidden;
   position: relative;
   z-index: 1;
-  margin: 10px;
-  height: 320px;
-  overflow: hidden;
 }
 
 .panel-chart-canvas {
