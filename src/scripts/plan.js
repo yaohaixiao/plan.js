@@ -138,7 +138,7 @@ class Plan {
 
     this.$columns.initialize({
       filter: this.getFilter(),
-      plans: this.getPlans().filter(plan => !plan.deleted)
+      plans: this.getPlans().filter(plan => !plan.deleted && !plan.archived)
     })
 
     columnsEls = this.$columns.getEls()
