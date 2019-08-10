@@ -50,6 +50,7 @@ Plan 是一个纯 JavaScript 开发的 Todo 类型的任务管理应用。使用
 - [dragula](https://github.com/bevacqua/dragula)
 - [marked](https://github.com/markedjs/marked)
 - [mitt](https://github.com/developit/mitt)
+- [chart.js](https://github.com/chartjs/Chart.js)
 - [normalize.css](https://github.com/necolas/normalize.css)
 
 ## License
