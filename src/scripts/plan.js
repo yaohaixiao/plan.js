@@ -387,6 +387,8 @@ class Plan {
 
     emitter.emit(COLUMNS_ADD, plan)
 
+    emitter.emit(PANEL_CHARTS_UPDATE, this.getPlans().filter(plan => !plan.deleted))
+
     return this
   }
 
@@ -395,11 +397,15 @@ class Plan {
 
     emitter.emit(COLUMNS_EDIT, plan)
 
+    emitter.emit(PANEL_CHARTS_UPDATE, this.getPlans().filter(plan => !plan.deleted))
+
     return this
   }
 
   update (plan) {
     this.setPlan(plan)
+
+    emitter.emit(PANEL_CHARTS_UPDATE, this.getPlans().filter(plan => !plan.deleted))
 
     return this
   }
@@ -409,6 +415,8 @@ class Plan {
 
     emitter.emit(PANEL_TRASH_ADD, plan)
 
+    emitter.emit(PANEL_CHARTS_UPDATE, this.getPlans().filter(plan => !plan.deleted))
+
     return this
   }
 
@@ -416,6 +424,8 @@ class Plan {
     this.setPlan(plan)
 
     emitter.emit(COLUMNS_ADD, plan)
+
+    emitter.emit(PANEL_CHARTS_UPDATE, this.getPlans().filter(plan => !plan.deleted))
 
     return this
   }
@@ -531,6 +541,8 @@ class Plan {
     })
     plan.delayed = isDelayed(plan)
     this.setPlan(plan)
+
+    emitter.emit(PANEL_CHARTS_UPDATE, this.getPlans().filter(plan => !plan.deleted))
 
     if (targetStatus === 'deleted') {
       this.setPlan(plan)

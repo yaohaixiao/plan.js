@@ -37,7 +37,7 @@ export const getMonth = (val) => {
 
   return {
     value: month,
-    text: year.text + '-' + month,
+    text: year.text + '-' + (month < 10 ? '0' + month : month),
     fullText: year.fullText + month + '月'
   }
 }
@@ -54,7 +54,7 @@ export const getDate = (val) => {
   let month = getMonth(val)
   let date = time.getDate()
   let day = getDay(val)
-  let fullDate = year.value + '-' + month.value + '-' + date
+  let fullDate = month.text + '-' + (date < 10 ? '0' + date : date)
   let text = month.fullText + date + '日'
 
   return {

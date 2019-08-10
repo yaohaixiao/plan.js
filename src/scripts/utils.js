@@ -225,6 +225,45 @@ export const guid = (len, radix) => {
   return uuid.join('')
 }
 
+export const keys = (obj) => {
+  let hasOwnProperty = Object.prototype.hasOwnProperty
+  let hasDontEnumBug = !({ toString: null }).propertyIsEnumerable('toString')
+  let dontEnums = [
+    'toString',
+    'toLocaleString',
+    'valueOf',
+    'hasOwnProperty',
+    'isPrototypeOf',
+    'propertyIsEnumerable',
+    'constructor'
+  ]
+  let dontEnumsLength = dontEnums.length
+
+  if (typeof obj !== 'function' && (typeof obj !== 'object' || obj === null)) {
+    throw new TypeError('Object.keys called on non-object')
+  }
+
+  let result = []
+  let prop
+  let i
+
+  for (prop in obj) {
+    if (hasOwnProperty.call(obj, prop)) {
+      result.push(prop)
+    }
+  }
+
+  if (hasDontEnumBug) {
+    for (i = 0; i < dontEnumsLength; i++) {
+      if (hasOwnProperty.call(obj, dontEnums[i])) {
+        result.push(dontEnums[i])
+      }
+    }
+  }
+
+  return result
+}
+
 export default {
   isArray,
   isElement,
@@ -238,5 +277,6 @@ export default {
   clone,
   assign,
   guid,
-  findIndex
+  findIndex,
+  keys
 }

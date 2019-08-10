@@ -6,12 +6,16 @@ import {
   removeClass
 } from './dom'
 
+import { getDate } from './time'
+
 import {
   off,
   on
 } from './delegate'
 
-import { clone } from './utils'
+import {
+  clone
+} from './utils'
 import Chart from 'chart.js'
 import emitter from './plan.emitter'
 
@@ -30,7 +34,12 @@ const blue = '#2196f3'
 const red = '#d31f1f'
 const orange = '#ff9000'
 const green = '#4caf50'
+const purple = '#673ab7'
 const $wrap = document.querySelector('#charts-panel')
+
+let $chartBar = null
+let $chartPie = null
+let $chartLine = null
 
 const Panel = {
   initialize (plans) {
@@ -66,34 +75,30 @@ const Panel = {
   },
   render () {
     this.drawPie()
-      .drawBar()
+        .drawBar()
+        .drawLine()
 
     return this
   },
   drawPie () {
-    let plans = this.getPlans()
     let elements = this.getEls()
     let $pie = elements.tasksCharts.querySelector('#chart-pie')
     let ctx = $pie.getContext('2d')
-    let $chartPie = null
     let config = {
       type: 'pie',
       data: {
-        datasets: [{
-          data: [
-            plans.filter(plan => plan.status===0).length,
-            plans.filter(plan => plan.status===1).length,
-            plans.filter(plan => plan.status===2).length,
-            plans.filter(plan => plan.status===3).length
-          ],
-          backgroundColor: [
-            blue,
-            orange,
-            red,
-            green
-          ],
-          label: 'Dataset 1'
-        }],
+        datasets: [
+          {
+            data: this.getPieChartData(),
+            backgroundColor: [
+              blue,
+              orange,
+              red,
+              green
+            ],
+            label: 'Dataset 1'
+          }
+        ],
         labels: [
           '待处理',
           '处理中',
@@ -102,13 +107,13 @@ const Panel = {
         ]
       },
       options: {
-        responsive: true,
+        responsive: false,
         legend: {
-          position: 'bottom',
+          position: 'bottom'
         },
         title: {
           display: true,
-          text: '任务进度比例图'
+          text: '任务状态统计图'
         },
         animation: {
           animateScale: true,
@@ -123,12 +128,10 @@ const Panel = {
     return this
   },
   drawBar () {
-    let plans = this.getPlans()
     let elements = this.getEls()
     let $bar = elements.tasksCharts.querySelector('#chart-bar')
     let ctx = $bar.getContext('2d')
     let color = Chart.helpers.color
-    let $chartBar = null
     let config = {
       type: 'bar',
       data: {
@@ -136,7 +139,8 @@ const Panel = {
           '待处理',
           '处理中',
           '待验收',
-          '已完成'
+          '已完成',
+          '合计'
         ],
         datasets: [
           {
@@ -144,19 +148,15 @@ const Panel = {
               color(blue).alpha(0.5).rgbString(),
               color(orange).alpha(0.5).rgbString(),
               color(red).alpha(0.5).rgbString(),
-              color(green).alpha(0.5).rgbString()
+              color(green).alpha(0.5).rgbString(),
+              color(purple).alpha(0.5).rgbString()
             ],
-            data: [
-              plans.filter(plan => plan.status === 0).length,
-              plans.filter(plan => plan.status === 1).length,
-              plans.filter(plan => plan.status === 2).length,
-              plans.filter(plan => plan.status === 3).length
-            ]
+            data: this.getBarChartData()
           }
         ]
       },
       options: {
-        responsive: true,
+        responsive: false,
         legend: {
           display: false,
           position: 'bottom'
@@ -166,11 +166,13 @@ const Panel = {
           text: '工作量统计图'
         },
         scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true
+              }
             }
-          }]
+          ]
         },
         animation: {
           animateScale: true,
@@ -181,6 +183,69 @@ const Panel = {
 
     $bar.innerHTML = ''
     $chartBar = new Chart(ctx, config)
+
+    return this
+  },
+  drawLine () {
+    let plans = this.getPlans()
+    let elements = this.getEls()
+    let $line = elements.tasksCharts.querySelector('#chart-line')
+    let ctx = $line.getContext('2d')
+    let color = Chart.helpers.color
+    let allDates = plans.map(plan => getDate(plan.deadline).text.replace(/^(\d{4}-)/, ''))
+    let dates = Array.from(new Set([ ...allDates ]))
+    let config = {
+      type: 'line',
+      data: {
+        // Date Objects
+        labels: dates,
+        datasets: [
+          {
+            label: '任务数量',
+            backgroundColor: color(blue).alpha(0.5).rgbString(),
+            borderColor: blue,
+            fill: false,
+            data: this.getLineChartData()
+          }
+        ]
+      },
+      options: {
+        responsive: false,
+        legend: {
+          display: false,
+          position: 'bottom'
+        },
+        title: {
+          display: true,
+          text: '到期日统计图'
+        },
+        scales: {
+          xAxes: [
+            {
+              // type: 'time',
+              // time: {
+              //   parser: 'MM/DD/YYYY'
+              // },
+              scaleLabel: {
+                display: false,
+                labelString: 'Date'
+              }
+            }
+          ],
+          yAxes: [
+            {
+              scaleLabel: {
+                display: false,
+                labelString: 'value'
+              }
+            }
+          ]
+        }
+      }
+    }
+
+    $line.innerHTML = ''
+    $chartLine = new Chart(ctx, config)
 
     return this
   },
@@ -211,10 +276,76 @@ const Panel = {
 
     return index
   },
-  update (plan) {
-    let plans = clone(this.getPlans())
+  getPieChartData () {
+    let plans = this.getPlans()
+    let todoCount = plans.filter(plan => plan.status === 0).length
+    let doingCount = plans.filter(plan => plan.status === 1).length
+    let checkingCount = plans.filter(plan => plan.status === 2).length
+    let doneCount = plans.filter(plan => plan.status === 3).length
 
+    return [
+      todoCount,
+      doingCount,
+      checkingCount,
+      doneCount
+    ]
+  },
+  getBarChartData () {
+    let plans = this.getPlans()
+    let todo = plans.filter(plan => plan.status === 0).map((plan) => plan.estimate)
+    let doing = plans.filter(plan => plan.status === 1).map((plan) => plan.estimate)
+    let checking = plans.filter(plan => plan.status === 2).map((plan) => plan.estimate)
+    let done = plans.filter(plan => plan.status === 3).map((plan) => plan.estimate)
+    let total = plans.map((plan) => plan.estimate)
+    let todoCount = todo.length > 0 ? todo.reduce((sum, num) => sum + num) : 0
+    let doingCount = doing.length > 0 ? doing.reduce((sum, num) => sum + num) : 0
+    let checkingCount = checking.length > 0 ? checking.reduce((sum, num) => sum + num) : 0
+    let doneCount = done.length > 0 ? done.reduce((sum, num) => sum + num) : 0
+    let totalCount = total.length > 0 ? total.reduce((sum, num) => sum + num) : 0
 
+    return [
+      todoCount,
+      doingCount,
+      checkingCount,
+      doneCount,
+      totalCount
+    ]
+  },
+  getLineChartData () {
+    let plans = this.getPlans()
+    let allDates = plans.map(plan => getDate(plan.deadline).text.replace(/^(\d{4}-)/, ''))
+    let counts = []
+    let obj = allDates.reduce((allNames, name) => {
+      if (name in allNames) {
+        allNames[name]++
+      } else {
+        allNames[name] = 1
+      }
+
+      return allNames
+    }, {})
+
+    Object.keys(obj).forEach((key) => {
+      counts.push(obj[key])
+    })
+
+    return counts
+  },
+  update (plans) {
+    this.setPlans(plans)
+        .repaint()
+
+    return this
+  },
+  repaint () {
+    $chartPie.data.datasets[0].data = this.getPieChartData()
+    $chartPie.update()
+
+    $chartBar.data.datasets[0].data = this.getBarChartData()
+    $chartBar.update()
+
+    $chartLine.data.datasets[0].data = this.getLineChartData()
+    $chartLine.update()
 
     return this
   },
