@@ -49,14 +49,11 @@ import {
 let $wrap = document.querySelector('#columns')
 let $confirm
 
+/**
+ * Plan 的 Columns 模块：主要负责显示任务，以及每个任务视图上的各个按钮的交互逻辑
+ * ========================================================================
+ */
 const Columns = {
-  initialize ({ filter, plans }) {
-    this.setFilter(filter)
-        .setPlans(plans)
-        .addEventListeners()
-
-    return this
-  },
   _elements: {
     wrap: $wrap,
     todoCount: $wrap.querySelector('#todo-count'),
@@ -70,6 +67,26 @@ const Columns = {
   },
   _plans: [],
   _filter: 'inbox',
+  /**
+   * 初始化方法
+   * ========================================================================
+   * @param filter
+   * @param plans
+   * @returns {Columns}
+   */
+  initialize ({ filter, plans }) {
+    this.setFilter(filter)
+        .setPlans(plans)
+        .addEventListeners()
+
+    return this
+  },
+  /**
+   * 绑定 Columns 模块包含的各个 DOM 节点的事件处理器，以及订阅 Columns 模块需要接收
+   * 的消息和相应的（事件）处理器
+   * ========================================================================
+   * @returns {Columns}
+   */
   addEventListeners () {
     on($wrap, '.column-up', 'click', this._onCollapseClick, this)
     on($wrap, '.column-down', 'click', this._onExpandClick, this)
@@ -95,6 +112,11 @@ const Columns = {
 
     return this
   },
+  /**
+   * 移除 Columns 模块绑定的事件处理器和取消订阅的消息
+   * ========================================================================
+   * @returns {Columns}
+   */
   removeEventListeners () {
     off($wrap, 'click', this._onCollapseClick)
     off($wrap, 'click', this._onExpandClick)

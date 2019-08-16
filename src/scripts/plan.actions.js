@@ -1,3 +1,8 @@
+/**
+ * Plan 中所有的自定义的事件
+ * ========================================================================
+ * @type {string}
+ */
 export const PLAN_UPDATE_TEMPLATE = 'plan.update.template'
 export const PLAN_UPDATE_THEME = 'plan.update.theme'
 export const PLAN_UPDATE_CACHE = 'plan.update.cache'
